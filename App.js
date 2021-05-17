@@ -8,18 +8,9 @@ import { WebView } from "react-native-webview";
 export default class App extends React.Component {
   constructor() {
     super();
-    this.state = {
-      selectedIndex: 2,
-    };
-    this.updateIndex = this.updateIndex.bind(this);
-  }
-  updateIndex(selectedIndex) {
-    this.setState({ selectedIndex });
   }
 
   render() {
-    // const component1 = () => <Icon name="flag" color={selectedIndex === 0 ? '#fff' : '#000'} />;
-    // const buttons = ["Explore","Favourites", "History"];
 
     return (
       <View style={styles.container}>
