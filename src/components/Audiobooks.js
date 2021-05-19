@@ -1,4 +1,3 @@
-import React, { useState, useEffect } from "react";
 import {
   FlatList,
   Button,
@@ -9,9 +8,10 @@ import {
 } from "react-native";
 import { ListItem, Image } from "react-native-elements";
 import AudiobookCard from "./AudiobookCard";
-import { withNavigation } from 'react-navigation';
+import { useNavigation } from '@react-navigation/native';
+import React, { useState, useEffect } from "react";
   
-function Audiobooks({navigation}) {
+function Audiobooks() {
   const [isLoading, setLoading] = useState(true);
   const [data, setData] = useState([]);
 
@@ -35,8 +35,10 @@ function Audiobooks({navigation}) {
   }, []);
   // keyExtractor = (item, index) => index.toString()
   // keyExtractor=({ id }, index) => id
+  const navigation = useNavigation();
   const keyExtractor = (item, index) => index.toString();
-  const renderItem = ({ item ,navigation  }) => (
+  const renderItem = ({ item }) => (
+
     <ListItem bottomDivider>
       <ListItem.Content>
         <ListItem.Title>{item.title}</ListItem.Title>
@@ -48,7 +50,7 @@ function Audiobooks({navigation}) {
       </ListItem.Content>
       <ListItem.Chevron />
       <Button
-        onPress={() => navigation.navigate("Home")}
+        onPress={() => navigation.navigate("Audio")}
         title="Loading"
         color="#841584"
         accessibilityLabel="Learn more about this purple button"
@@ -61,10 +63,9 @@ function Audiobooks({navigation}) {
         data={data.books}
         keyExtractor={keyExtractor}
         renderItem={renderItem}
-        navigation={navigation}
       />
     </View>
   );
 }
 
-export default withNavigation(Audiobooks);
+export default Audiobooks;
