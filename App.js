@@ -1,51 +1,22 @@
-import React from "react";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
-import Search from "./src/components/SearchBar";
-import ButtonPanel from "./src/components/ButtonPanel";
-import Audiobooks from "./src/components/Audiobooks";
-import { WebView } from "react-native-webview";
+import { createAppContainer } from "react-navigation";
+import { createStackNavigator } from "react-navigation-stack";
+import HomeScreen from "./src/screens/Homescreen";
+import AudioTracks from "./src/screens/Audiotracks";
 
-export default class App extends React.Component {
-  constructor() {
-    super();
-  }
 
-  render() {
+const navigator = createStackNavigator(
+  {
+    Home: HomeScreen,
+    Audio: AudioTracks,
+  },
+  {
+    initialRouteName: "Home",
+    defaultNavigationOptions: {
+      title: "",
+      headerShown:false,
+    },
+  } 
+);
 
-    return (
-      <View style={styles.container}>
-        <View style={styles.searchBarStyle}>
-          <Search />
-        </View>
-        <View style={styles.scrollStyle}>
-      <Audiobooks/>
-        </View>
-        <View style={styles.buttonStyle}>
-          <ButtonPanel />
-        </View>
-      </View>
-    );
-  }
-}
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "blue",
-  },
-  searchBarStyle: {
-    bottom: -30,
-    backgroundColor: "darkgreen",
-  },
-  scrollStyle: {
-    bottom: -30,
-    flex: 8,
-    backgroundColor: "lightblue",
-  },
-  buttonStyle: {
-    flexDirection: "row",
-    flex: 1,
-    justifyContent: "center",
-    backgroundColor: "black",
-    position: "relative",
-  },
-});
+
+export default createAppContainer(navigator);

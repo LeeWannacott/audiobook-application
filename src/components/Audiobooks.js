@@ -1,17 +1,22 @@
 import React, { useState, useEffect } from "react";
-import { FlatList, ScrollView, StyleSheet, Text, View } from "react-native";
-import {ListItem , Image}from 'react-native-elements';
+import {
+  FlatList,
+  Button,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
+import { ListItem, Image } from "react-native-elements";
 import AudiobookCard from "./AudiobookCard";
-import * as rssParser from "react-native-rss-parser";
-
-function Audiobooks() {
+import { withNavigation } from 'react-navigation';
+  
+function Audiobooks({navigation}) {
   const [isLoading, setLoading] = useState(true);
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    fetch(
-      "https://librivox.org/api/feed/audiobooks/?&extended=1&format=json"
-    )
+    fetch("https://librivox.org/api/feed/audiobooks/?&extended=1&format=json")
       .then((response) => response.json())
       .then((json) => setData(json))
       .catch((error) => console.error(error))
@@ -28,36 +33,38 @@ function Audiobooks() {
     // });
     //
   }, []);
-
   // keyExtractor = (item, index) => index.toString()
-    // keyExtractor=({ id }, index) => id
-  const keyExtractor = (item, index) => index.toString()
-  const renderItem = ({ item }) => (
+  // keyExtractor=({ id }, index) => id
+  const keyExtractor = (item, index) => index.toString();
+  const renderItem = ({ item ,navigation  }) => (
     <ListItem bottomDivider>
       <ListItem.Content>
         <ListItem.Title>{item.title}</ListItem.Title>
-    <ListItem.Subtitle>Author: {item.authors[0].first_name} {item.authors[0].last_name}, Lived: {item.authors[0].dob} - {item.authors[0].dod}</ListItem.Subtitle>
-    <ListItem.Subtitle>Listen: {item.url_rss}</ListItem.Subtitle>
+        <ListItem.Subtitle>
+          Author: {item.authors[0].first_name} {item.authors[0].last_name},
+          Lived: {item.authors[0].dob} - {item.authors[0].dod}
+        </ListItem.Subtitle>
+        <ListItem.Subtitle>Listen: {item.url_rss}</ListItem.Subtitle>
       </ListItem.Content>
       <ListItem.Chevron />
+      <Button
+        onPress={() => navigation.navigate("Home")}
+        title="Loading"
+        color="#841584"
+        accessibilityLabel="Learn more about this purple button"
+      />
     </ListItem>
-  )
+  );
   return (
-    // <View>
+    <View>
       <FlatList
         data={data.books}
         keyExtractor={keyExtractor}
-        // keyExtractor={({ id }, index) => id}
-        // renderItem={({ item }) => (
-          // <Text>{`${item.id} - ${item.title} \n by: ${item.authors[0].first_name} ${item.authors[0].last_name} dob: ${item.authors[0].dob} dod: ${item.authors[0].dod}  \n time: ${item.totaltime} \n ${item.url_rss}`}</Text>
-        // )}
         renderItem={renderItem}
+        navigation={navigation}
       />
-      // <Text>
-        // <AudiobookCard />
-      // </Text>
-    // </View>
+    </View>
   );
 }
 
-export default Audiobooks;
+export default withNavigation(Audiobooks);
