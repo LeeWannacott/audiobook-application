@@ -51,7 +51,7 @@ function Audiobooks() {
       <ListItem.Chevron />
       <Button
         onPress={() => navigation.navigate("Audio")}
-        title="Loading"
+        title="Listen"
         color="#841584"
         accessibilityLabel="Learn more about this purple button"
       />
