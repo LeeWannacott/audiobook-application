@@ -21,6 +21,7 @@ function Audiobooks() {
       .then((json) => setData(json))
       .catch((error) => console.error(error))
       .finally(() => setLoading(false));
+    // console.log(data.books)
 
     // fetch('https://librivox.org/rss/52')
     // .then((response) => response.text())
@@ -50,7 +51,7 @@ function Audiobooks() {
       </ListItem.Content>
       <ListItem.Chevron />
       <Button
-        onPress={() => navigation.navigate("Audio")}
+        onPress={() => navigation.navigate("Audio",[item.url_rss,item.id])}
         title="Listen"
         color="#841584"
         accessibilityLabel="Learn more about this purple button"
