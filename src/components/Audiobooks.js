@@ -5,6 +5,7 @@ import {
   StyleSheet,
   Text,
   View,
+  ActivityIndicator,
 } from "react-native";
 import { ListItem, Image } from "react-native-elements";
 import AudiobookCard from "./AudiobookCard";
@@ -12,7 +13,7 @@ import { useNavigation } from '@react-navigation/native';
 import React, { useState, useEffect } from "react";
   
 function Audiobooks() {
-  const [isLoading, setLoading] = useState(true);
+  const [loadingAudioBooks, setLoadingAudioBooks] = useState(true);
   const [data, setData] = useState([]);
 
   useEffect(() => {
@@ -20,7 +21,7 @@ function Audiobooks() {
       .then((response) => response.json())
       .then((json) => setData(json))
       .catch((error) => console.error(error))
-      .finally(() => setLoading(false));
+      .finally(() => setLoadingAudioBooks(false));
     // console.log(data.books)
 
     // fetch('https://librivox.org/rss/52')
@@ -58,6 +59,8 @@ function Audiobooks() {
       />
     </ListItem>
   );
+
+  if (!loadingAudioBooks) {
   return (
     <View>
       <FlatList
@@ -67,6 +70,13 @@ function Audiobooks() {
       />
     </View>
   );
+  }else{
+    return (
+      <View>
+    <ActivityIndicator size="large" color="#00ff00" />
+      </View>
+    );
+  }
 }
 
 export default Audiobooks;
