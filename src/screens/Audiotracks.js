@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { ActivityIndicator, SafeAreaView } from "react-native";
-import { ListItem, Image ,Tile} from "react-native-elements";
+import { ListItem, Image, Tile } from "react-native-elements";
 import * as rssParser from "react-native-rss-parser";
 // import Sound from 'react-native-sound';
 import { Audio } from "expo-av";
@@ -28,20 +28,20 @@ function Audiotracks(props) {
   const [
     AudioBooksRSSLinkToAudioTracks,
     AudioBookId,
-    urlZipFile,
+    bookCoverImage,
   ] = props.route.params;
 
-  useEffect(() => {
-    console.log(urlZipFile, "test");
-    if (urlZipFile.length !== 0) {
-      var bookCoverImagePath = urlZipFile;
-      bookCoverImagePath = bookCoverImagePath.split("/");
-      bookCoverImagePath = bookCoverImagePath[bookCoverImagePath.length - 2];
+  // useEffect(() => {
+    // console.log(urlZipFile, "test");
+    // if (urlZipFile.length !== 0) {
+      // var bookCoverImagePath = urlZipFile;
+      // bookCoverImagePath = bookCoverImagePath.split("/");
+      // bookCoverImagePath = bookCoverImagePath[bookCoverImagePath.length - 2];
       // console.log(bookCoverImagePath, "test1");
-      bookCoverImagePath = `https://archive.org/services/get-item-image.php?identifier=${bookCoverImagePath}`;
-      setImageURL(bookCoverImagePath);
-    }
-  }, []);
+      // bookCoverImagePath = `https://archive.org/services/get-item-image.php?identifier=${bookCoverImagePath}`;
+      // setImageURL(bookCoverImagePath);
+    // }
+  // }, []);
 
   useEffect(() => {
     fetch(AudioBooksRSSLinkToAudioTracks)
@@ -102,7 +102,7 @@ function Audiotracks(props) {
         }
       : undefined;
   }, [sound]);
-// console.log(data)
+  // console.log(data)
   const listRSSURLS = [];
   const rssURLS = Object.entries(data);
   rssURLS.forEach(([key, value]) => {
@@ -140,21 +140,21 @@ function Audiotracks(props) {
   );
 
   if (!loading && !loading2) {
-    const imageData = Object.entries(AudioBookData);
+    // const imageData = Object.entries(AudioBookData);
     // console.log(imageData[0][1].url_iarchive);
-    let AudioBooksCoverImage = imageData[0][1].url_iarchive;
-    AudioBooksCoverImage = AudioBooksCoverImage.substr(
-      AudioBooksCoverImage.lastIndexOf("/") + 1
-    );
+    // let AudioBooksCoverImage = imageData[0][1].url_iarchive;
+    // AudioBooksCoverImage = AudioBooksCoverImage.substr(
+      // AudioBooksCoverImage.lastIndexOf("/") + 1
+    // );
     // console.log(AudioBooksCoverImage);
     const getHeader = () => {
       return (
         <View style={styles.bookHeader}>
           <Text style={styles.bookTitle}> {AudioBookData[0].title}</Text>
-<Image
-  source={{ uri: imageURL }}
-  style={{ width: 200, height: 200 }}
-/>
+          <Image
+            source={{ uri: bookCoverImage }}
+            style={{ width: 200, height: 200 }}
+          />
           <Text style={styles.bookDescription}>
             {" "}
             By {AudioBookData[0].authors[0].first_name}{" "}
