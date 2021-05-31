@@ -10,14 +10,10 @@ export default class App extends React.Component {
   }
 
   render() {
-
     return (
       <View style={styles.container}>
-        <View style={styles.searchBarStyle}>
-          <Search />
-        </View>
         <View style={styles.scrollStyle}>
-      <Audiobooks/>
+          <Search />
         </View>
         <View style={styles.buttonStyle}>
           <ButtonPanel />

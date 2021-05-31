@@ -11,35 +11,53 @@ import { ListItem, Image, Avatar } from "react-native-elements";
 import AudiobookCard from "./AudiobookCard";
 import { useNavigation } from "@react-navigation/native";
 import React, { useState, useEffect } from "react";
+// import Search from "../components/SearchBar";
 
-function Audiobooks() {
+function Audiobooks(props) {
   const [loadingAudioBooks, setLoadingAudioBooks] = useState(true);
   const [data, setData] = useState([]);
-  const [imageData, setImageData] = useState([]);
+  // const [imageData, setImageData] = useState([]);
+  // console.log(props.searchBarInput)
 
   useEffect(() => {
-    fetch("https://librivox.org/api/feed/audiobooks/?&extended=1&format=json")
+    console.log(props.searchBarInput);
+  }, [props.searchBarInput]);
+
+  const bookCoverURL = [];
+  useEffect(() => {
+    // setLoadingAudioBooks(true)
+    let searchQuery = props.searchBarInput;
+    searchQuery = searchQuery.replace(/\s/g, "%");
+    fetch(
+      `https://librivox.org/api/feed/audiobooks/?&title=^${searchQuery}&extended=1&format=json`
+    )
       .then((response) => response.json())
       .then((json) => setData(json))
+      .then(() => {})
       .catch((error) => console.error(error))
       .finally(() => {
         setLoadingAudioBooks(false);
       });
-  }, []);
+  }, [props.searchBarInput]);
 
-  const bookCoverURL = [];
-  if (!loadingAudioBooks) {
-    const dataKeys = Object.entries(data.books);
-    var bookCoverImagePath;
-    dataKeys.forEach(([key, value]) => {
-      console.log(key, value.url_zip_file);
-      bookCoverImagePath = value.url_zip_file;
-      bookCoverImagePath = bookCoverImagePath.split("/");
-      bookCoverImagePath = bookCoverImagePath[bookCoverImagePath.length - 2];
-      bookCoverImagePath = `https://archive.org/services/get-item-image.php?identifier=${bookCoverImagePath}`;
-      bookCoverURL.push(bookCoverImagePath);
-    });
-  }
+  useEffect(() => {
+    if (!loadingAudioBooks) {
+      if (data.books != null || data.books != undefined) {
+        const dataKeys = Object.entries(data.books);
+        var bookCoverImagePath;
+        dataKeys.forEach(([key, value]) => {
+          // console.log(key, value.url_zip_file);
+          bookCoverImagePath = value.url_zip_file;
+          bookCoverImagePath = bookCoverImagePath.split("/");
+          bookCoverImagePath =
+            bookCoverImagePath[bookCoverImagePath.length - 2];
+          bookCoverImagePath = `https://archive.org/services/get-item-image.php?identifier=${bookCoverImagePath}`;
+          bookCoverURL.push(bookCoverImagePath);
+        });
+      }
+    }
+  });
+
   const navigation = useNavigation();
   const keyExtractor = (item, index) => index.toString();
   const renderItem = ({ item, index }) => (
@@ -53,7 +71,7 @@ function Audiobooks() {
         <ListItem.Subtitle>
           Author: {item.authors[0].first_name} {item.authors[0].last_name},
           Lived: {item.authors[0].dob} - {item.authors[0].dod}
-          Genre {item.genres[0].name}
+    {item.genres[0].name.length !== 0 || item.genres !== undefined || item.genres[0] !== null ? <ListItem.Subtitle> Genres: {item.genres[0].name} </ListItem.Subtitle> : <ListItem.Subtitle></ListItem.Subtitle>}
         </ListItem.Subtitle>
       </ListItem.Content>
       <ListItem.Chevron />
@@ -76,6 +94,7 @@ function Audiobooks() {
     // console.log(data.books[1].url_zip_file)
     return (
       <View>
+        <View></View>
         <FlatList
           data={data.books}
           keyExtractor={keyExtractor}
@@ -86,6 +105,7 @@ function Audiobooks() {
   } else {
     return (
       <View>
+        <View></View>
         <ActivityIndicator size="large" color="#00ff00" />
       </View>
     );
