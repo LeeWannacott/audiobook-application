@@ -20,14 +20,14 @@ function Audiobooks(props) {
   // console.log(props.searchBarInput)
 
   useEffect(() => {
-    console.log(props.searchBarInput);
+    // console.log(props.searchBarInput);
   }, [props.searchBarInput]);
 
   const bookCoverURL = [];
   useEffect(() => {
     // setLoadingAudioBooks(true)
     let searchQuery = props.searchBarInput;
-    searchQuery = searchQuery.replace(/\s/g, "%");
+    searchQuery = searchQuery.replace(/\s/g, "%20");
     fetch(
       `https://librivox.org/api/feed/audiobooks/?&title=^${searchQuery}&extended=1&format=json`
     )
@@ -41,7 +41,7 @@ function Audiobooks(props) {
   }, [props.searchBarInput]);
 
   useEffect(() => {
-    if (!loadingAudioBooks) {
+    // if (!loadingAudioBooks) {
       if (data.books != null || data.books != undefined) {
         const dataKeys = Object.entries(data.books);
         var bookCoverImagePath;
@@ -52,26 +52,34 @@ function Audiobooks(props) {
           bookCoverImagePath =
             bookCoverImagePath[bookCoverImagePath.length - 2];
           bookCoverImagePath = `https://archive.org/services/get-item-image.php?identifier=${bookCoverImagePath}`;
+          console.log(bookCoverImagePath)
           bookCoverURL.push(bookCoverImagePath);
         });
-      }
+      // }
     }
   });
 
   const navigation = useNavigation();
   const keyExtractor = (item, index) => index.toString();
   const renderItem = ({ item, index }) => (
-    <ListItem bottomDivider>
+    <ListItem topDivider>
       <Avatar
-        source={{ uri: bookCoverURL[index] }}
+    source={{ uri: bookCoverURL[index]}}
         style={{ width: 150, height: 150 }}
+    
+        onPress={() =>
+          navigation.navigate("Audio", [
+            item.url_rss,
+            item.id,
+            bookCoverURL[index],
+          ])
+        }
       />
       <ListItem.Content>
         <ListItem.Title>{item.title}</ListItem.Title>
         <ListItem.Subtitle>
           Author: {item.authors[0].first_name} {item.authors[0].last_name},
           Lived: {item.authors[0].dob} - {item.authors[0].dod}
-    {item.genres[0].name.length !== 0 || item.genres !== undefined || item.genres[0] !== null ? <ListItem.Subtitle> Genres: {item.genres[0].name} </ListItem.Subtitle> : <ListItem.Subtitle></ListItem.Subtitle>}
         </ListItem.Subtitle>
       </ListItem.Content>
       <ListItem.Chevron />

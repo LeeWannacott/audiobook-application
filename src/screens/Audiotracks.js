@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { ActivityIndicator, SafeAreaView } from "react-native";
-import { ListItem, Image, Tile } from "react-native-elements";
+import { ListItem, Image, Tile,LinearProgress } from "react-native-elements";
 import * as rssParser from "react-native-rss-parser";
 // import Sound from 'react-native-sound';
 import { Audio } from "expo-av";
@@ -25,6 +25,7 @@ function Audiotracks(props) {
   const [imageURL, setImageURL] = React.useState();
   const [isPlaying, setisPlaying] = useState(false);
   const [sliderValue, setSliderValue] = useState(0);
+  const [linearProgessBar, setlinearProgressBar] = useState(0);
   const [
     AudioBooksRSSLinkToAudioTracks,
     AudioBookId,
@@ -79,11 +80,11 @@ function Audiotracks(props) {
     });
     const { sound } = await Audio.Sound.createAsync({ uri: itemURL });
     setSound(sound);
-
     setisPlaying(true);
 
     console.log("Playing Sound");
     await sound.playAsync();
+    sound.setStatusAsync({ shouldPlay: true, positionMillis:8000 })
   }
 
   function changeSliderValue() {
@@ -126,6 +127,8 @@ function Audiotracks(props) {
             Read by: {item.readers[0].display_name}
           </ListItem.Subtitle>
           <ListItem.Subtitle>Playtime: {item.playtime}</ListItem.Subtitle>
+    <LinearProgress color="primary"
+    value={linearProgessBar} variant="determinate"/>
         </ListItem.Content>
         <ListItem.Chevron />
 
