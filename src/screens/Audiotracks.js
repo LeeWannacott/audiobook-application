@@ -1,10 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { ActivityIndicator, SafeAreaView } from "react-native";
-import { ListItem, Image, Tile,LinearProgress } from "react-native-elements";
+import {
+  ActivityIndicator,
+  SafeAreaView,
+  TouchableOpacity,
+} from "react-native";
+import { ListItem, Image, Tile, LinearProgress } from "react-native-elements";
 import * as rssParser from "react-native-rss-parser";
 // import Sound from 'react-native-sound';
 import { Audio } from "expo-av";
 import Slider from "@react-native-community/slider";
+import { Ionicons } from "@expo/vector-icons";
 
 import {
   FlatList,
@@ -23,9 +28,14 @@ function Audiotracks(props) {
   const [AudioBookDescription, setAudioBookDescription] = useState([]);
   const [sound, setSound] = React.useState();
   const [imageURL, setImageURL] = React.useState();
-  const [isPlaying, setisPlaying] = useState(false);
   const [sliderValue, setSliderValue] = useState(0);
   const [linearProgessBar, setlinearProgressBar] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [playbackInstance, setPlaybackInstance] = useState(null);
+  const [volume, setVolume] = useState(1.0);
+  const [isBuffering, setIsBuffering] = useState(false);
+  const [currentAudioTrackIndex, setCurrentAudioTrackIndex] = useState(0);
+
   const [
     AudioBooksRSSLinkToAudioTracks,
     AudioBookId,
@@ -33,15 +43,15 @@ function Audiotracks(props) {
   ] = props.route.params;
 
   // useEffect(() => {
-    // console.log(urlZipFile, "test");
-    // if (urlZipFile.length !== 0) {
-      // var bookCoverImagePath = urlZipFile;
-      // bookCoverImagePath = bookCoverImagePath.split("/");
-      // bookCoverImagePath = bookCoverImagePath[bookCoverImagePath.length - 2];
-      // console.log(bookCoverImagePath, "test1");
-      // bookCoverImagePath = `https://archive.org/services/get-item-image.php?identifier=${bookCoverImagePath}`;
-      // setImageURL(bookCoverImagePath);
-    // }
+  // console.log(urlZipFile, "test");
+  // if (urlZipFile.length !== 0) {
+  // var bookCoverImagePath = urlZipFile;
+  // bookCoverImagePath = bookCoverImagePath.split("/");
+  // bookCoverImagePath = bookCoverImagePath[bookCoverImagePath.length - 2];
+  // console.log(bookCoverImagePath, "test1");
+  // bookCoverImagePath = `https://archive.org/services/get-item-image.php?identifier=${bookCoverImagePath}`;
+  // setImageURL(bookCoverImagePath);
+  // }
   // }, []);
 
   useEffect(() => {
@@ -73,26 +83,56 @@ function Audiotracks(props) {
       .finally(() => setLoading2(false));
   }, []);
 
-  async function playSound(itemURL) {
+  async function playSound(itemURL, index) {
     console.log("Loading Sound");
     await Audio.setAudioModeAsync({
       staysActiveInBackground: true,
     });
+    setCurrentAudioTrackIndex(index);
     const { sound } = await Audio.Sound.createAsync({ uri: itemURL });
-    setSound(sound);
-    setisPlaying(true);
 
+    // );
+    // const status = {
+    // shouldPlay: isPlaying,
+    // volume,
+    // };
+    // onPlaybackStatusUpdate = (status) => {
+    // setIsBuffering(status);
+    // };
+    setSound(sound);
+    setIsPlaying(true);
     console.log("Playing Sound");
     await sound.playAsync();
-    sound.setStatusAsync({ shouldPlay: true, positionMillis:8000 })
+    // sound.setStatusAsync({ shouldPlay: true, positionMillis: 8000 });
+    console.log(sound.getStatusAsync());
   }
 
-  function changeSliderValue() {
-    if (isPlaying) {
-      // setSliderValue(0.5);
-      setSliderValue(0.4);
+  const handlePlayPause = async () => {
+    isPlaying ? await sound.pauseAsync() : await sound.playAsync();
+    setIsPlaying(!isPlaying);
+  };
+
+  const handlePreviousTrack = async () => {
+    if (sound) {
+      await sound.unloadAsync();
+      currentAudioTrackIndex < listRSSURLS.length - 1 &&
+      currentAudioTrackIndex >= 1
+        ? setCurrentAudioTrackIndex((currentAudioTrackIndex - 1))
+        : setCurrentAudioTrackIndex((0));
+      playSound(listRSSURLS[currentAudioTrackIndex], currentAudioTrackIndex);
     }
-  }
+  };
+
+  const handleNextTrack = async () => {
+    if (sound) {
+      console.log(currentAudioTrackIndex, listRSSURLS.length - 1);
+      await sound.unloadAsync();
+      currentAudioTrackIndex < listRSSURLS.length - 1
+        ? setCurrentAudioTrackIndex((currentAudioTrackIndex + 1))
+        : setCurrentAudioTrackIndex(0);
+      playSound(listRSSURLS[currentAudioTrackIndex], currentAudioTrackIndex);
+    }
+  };
 
   React.useEffect(() => {
     return sound
@@ -103,16 +143,22 @@ function Audiotracks(props) {
         }
       : undefined;
   }, [sound]);
-  // console.log(data)
+
+  function changeSliderValue() {
+    if (isPlaying) {
+      // setSliderValue(0.5);
+      setSliderValue(0.4);
+    }
+  }
+  function printHello(hey) {
+    console.log(hey);
+  }
+
   const listRSSURLS = [];
   const rssURLS = Object.entries(data);
   rssURLS.forEach(([key, value]) => {
     listRSSURLS.push(value.enclosures[0].url);
-    // console.log(value)
   });
-
-  // const imageData = Object.entries(AudioBookData);
-  // console.log(imageData[0][1].url_iarchive);
 
   const keyExtractor = (item, index) => index.toString();
   const renderItem = ({ item, index }) => (
@@ -127,13 +173,15 @@ function Audiotracks(props) {
             Read by: {item.readers[0].display_name}
           </ListItem.Subtitle>
           <ListItem.Subtitle>Playtime: {item.playtime}</ListItem.Subtitle>
-    <LinearProgress color="primary"
-    value={linearProgessBar} variant="determinate"/>
+          <LinearProgress
+            color="primary"
+            value={linearProgessBar}
+            variant="determinate"
+          />
         </ListItem.Content>
         <ListItem.Chevron />
-
         <Button
-          onPress={() => playSound(listRSSURLS[index])}
+          onPress={() => playSound(listRSSURLS[index], index)}
           title="Listen"
           color="#841584"
           accessibilityLabel="purple button"
@@ -143,13 +191,6 @@ function Audiotracks(props) {
   );
 
   if (!loading && !loading2) {
-    // const imageData = Object.entries(AudioBookData);
-    // console.log(imageData[0][1].url_iarchive);
-    // let AudioBooksCoverImage = imageData[0][1].url_iarchive;
-    // AudioBooksCoverImage = AudioBooksCoverImage.substr(
-      // AudioBooksCoverImage.lastIndexOf("/") + 1
-    // );
-    // console.log(AudioBooksCoverImage);
     const getHeader = () => {
       return (
         <View style={styles.bookHeader}>
@@ -181,6 +222,7 @@ function Audiotracks(props) {
             ListHeaderComponent={getHeader}
           />
         </View>
+
         <View style={styles.bottom}>
           <Slider
             style={{ width: 320, height: 40 }}
@@ -194,6 +236,30 @@ function Audiotracks(props) {
             maximumValue={100}
           />
           <Text>{sliderValue} world</Text>
+        </View>
+        <View style={styles.controls}>
+          <TouchableOpacity
+            style={styles.control}
+            onPress={() => handlePreviousTrack()}
+          >
+            <Ionicons name="play-back" size={48} color="#444" />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.control}
+            onPress={() => handlePlayPause()}
+          >
+            {isPlaying ? (
+              <Ionicons name="pause-circle" size={48} color="#444" />
+            ) : (
+              <Ionicons name="play" size={48} color="#444" />
+            )}
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.control}
+            onPress={() => handleNextTrack()}
+          >
+            <Ionicons name="play-forward" size={48} color="#444" />
+          </TouchableOpacity>
         </View>
       </View>
     );
@@ -214,13 +280,15 @@ const styles = StyleSheet.create({
   container: {
     flex: 0.9,
     backgroundColor: "blue",
+    backgroundColor: "#fff",
+    alignItems: "center",
+    justifyContent: "center",
   },
   bottom: {
     backgroundColor: "purple",
     alignContent: "flex-end",
-    // top:100,
+    top: 100,
     padding: 10,
-    top: -100,
   },
   listItemHeaderStyle: {
     fontSize: 20,
@@ -240,6 +308,20 @@ const styles = StyleSheet.create({
   },
   bookHeader: {
     padding: 10,
+  },
+  albumCover: {
+    width: 250,
+    height: 250,
+  },
+  controls: {
+    flexDirection: "row",
+    backgroundColor: "red",
+    top: -100,
+  },
+  control: {
+    backgroundColor: "blue",
+    color: "purple",
+    margin: 30,
   },
 });
 
