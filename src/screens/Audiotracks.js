@@ -21,38 +21,32 @@ import {
 } from "react-native";
 
 function Audiotracks(props) {
-  const [loading, setLoading] = useState(true);
-  const [loading2, setLoading2] = useState(true);
-  const [data, setData] = useState([]);
   const [AudioBookData, setAudioBookData] = useState([]);
   const [AudioBookDescription, setAudioBookDescription] = useState([]);
-  const [sound, setSound] = React.useState();
-  const [imageURL, setImageURL] = React.useState();
-  const [sliderValue, setSliderValue] = useState(0);
-  const [linearProgessBar, setlinearProgressBar] = useState(0);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [playbackInstance, setPlaybackInstance] = useState(null);
-  const [volume, setVolume] = useState(1.0);
-  const [isBuffering, setIsBuffering] = useState(false);
   const [currentAudioTrackIndex, setCurrentAudioTrackIndex] = useState(0);
+  const [data, setData] = useState([]);
+  const [imageURL, setImageURL] = React.useState();
+  const [isBuffering, setIsBuffering] = useState(false);
+  const [linearProgessBar, setlinearProgressBar] = useState(0);
+  const [loading2, setLoading2] = useState(true);
+  const [loading, setLoading] = useState(true);
+  const [playbackInstance, setPlaybackInstance] = useState(null);
+  const [sliderValue, setSliderValue] = useState(0);
+  const [sound, setSound] = React.useState();
+  const [volume, setVolume] = useState(1.0);
+  const [audioTrackLength, setAudioTrackLength] = useState(0);
+  const [Loaded, SetLoaded] = React.useState(false);
+  const [Loading, SetLoading] = React.useState(false);
+  const [Playing, SetPlaying] = React.useState(false);
+  const [Duration, SetDuration] = React.useState(0);
+  const [Value, SetValue] = React.useState(0);
+  // const sound = React.useRef(new Audio.Sound());
 
   const [
     AudioBooksRSSLinkToAudioTracks,
     AudioBookId,
     bookCoverImage,
   ] = props.route.params;
-
-  // useEffect(() => {
-  // console.log(urlZipFile, "test");
-  // if (urlZipFile.length !== 0) {
-  // var bookCoverImagePath = urlZipFile;
-  // bookCoverImagePath = bookCoverImagePath.split("/");
-  // bookCoverImagePath = bookCoverImagePath[bookCoverImagePath.length - 2];
-  // console.log(bookCoverImagePath, "test1");
-  // bookCoverImagePath = `https://archive.org/services/get-item-image.php?identifier=${bookCoverImagePath}`;
-  // setImageURL(bookCoverImagePath);
-  // }
-  // }, []);
 
   useEffect(() => {
     fetch(AudioBooksRSSLinkToAudioTracks)
@@ -69,6 +63,7 @@ function Audiotracks(props) {
         const rssURLS = Object.entries(data);
         rssURLS.forEach(([key, value]) => {
           listRSSURLS.push(value.enclosures[0].url);
+          // console.log(value);
         });
       });
   }, []);
@@ -83,33 +78,165 @@ function Audiotracks(props) {
       .finally(() => setLoading2(false));
   }, []);
 
-  async function playSound(itemURL, index) {
-    console.log("Loading Sound");
-    await Audio.setAudioModeAsync({
-      staysActiveInBackground: true,
-    });
-    setCurrentAudioTrackIndex(index);
-    const { sound } = await Audio.Sound.createAsync({ uri: itemURL });
+  const UpdateStatus = async (data) => {
+    try {
+      if (data.didJustFinish) {
+        console.log("hello");
+        ResetPlayer();
+      } else if (data.positionMillis && Playing === true) {
+        console.log(Value, "beep1", data.positionMillis, data.durationMillis);
+        if (data.durationMillis) {
+          console.log(Value, "beep2", data.positionMillis, data.durationMillis);
+          let positionInAudiobook = ((data.positionMillis / data.durationMillis) * 100)
+          SetValue(positionInAudiobook);
+          console.log(Value, "beep3", data.positionMillis, data.durationMillis);
+        }
+      }
+    } catch (error) {
+      console.log("Error");
+      console.log("yelop");
+    }
+  };
 
-    // );
-    // const status = {
-    // shouldPlay: isPlaying,
-    // volume,
-    // };
-    // onPlaybackStatusUpdate = (status) => {
-    // setIsBuffering(status);
-    // };
-    setSound(sound);
-    setIsPlaying(true);
-    console.log("Playing Sound");
-    await sound.playAsync();
-    // sound.setStatusAsync({ shouldPlay: true, positionMillis: 8000 });
-    console.log(sound.getStatusAsync());
+  const SeekUpdate = async (data) => {
+    try {
+      sound.getStatusAsync();
+      if (sound.isLoaded === true) {
+        const result = (data / 100) * Duration;
+        await sound.current.setPositionAsync(Math.round(result));
+      }
+    } catch (error) {
+      console.log("Error", error);
+    }
+  };
+
+  // const LoadAudio = async (itemURL, index, time) => {
+  // SetLoading(true);
+  // console.log("playing");
+  // if (sound) {
+  // const checkLoading = await sound.getStatusAsync();
+  // if (checkLoading.isLoaded === false) {
+  // try {
+  // const result = await sound.loadAsync( { uri: itemURL },{},true);
+  // const { sound } = await Audio.Sound.createAsync({ uri: itemURL });
+  // setSound(sound);
+  // if (sound.isLoaded === false) {
+  // SetLoading(false);
+  // SetLoaded(false);
+  // console.log("Error in Loading Audio");
+  // } else {
+  // sound.playAsync();
+  // sound.setOnPlaybackStatusUpdate(UpdateStatus);
+  // console.log(UpdateStatus)
+  // SetLoading(false);
+  // SetLoaded(true);
+  // SetDuration(sound.durationMillis);
+  // console.log(duration)
+  // console.log("update");
+  // }
+  // } catch (error) {
+  // SetLoading(false);
+  // SetLoaded(false);
+  // console.log(error);
+  // }
+  // } else {
+  // SetLoading(false);
+  // SetLoaded(true);
+  // }
+  // } else {
+  // const { sound } = await Audio.Sound.createAsync({ uri: itemURL });
+  // setSound(sound);
+  // sound.playAsync();
+  // sound.setOnPlaybackStatusUpdate(UpdateStatus);
+  // SetLoading(false);
+  // SetLoaded(true);
+  // SetDuration(sound.durationMillis);
+  // console.log("update2");
+  // return;
+  // }
+  // };
+
+  const ResetPlayer = async () => {
+    try {
+      const checkLoading = await sound.getStatusAsync();
+      if (checkLoading.isLoaded === true) {
+        SetValue(0);
+        SetPlaying(false);
+        await sound.setPositionAsync(0);
+        await sound.stopAsync();
+      }
+    } catch (error) {
+      console.log("Error");
+    }
+  };
+
+  async function playSound(itemURL, index, time) {
+    console.log(index, currentAudioTrackIndex);
+    console.log(time * 1000, "time");
+    try {
+      console.log("Loading Sound");
+      await Audio.setAudioModeAsync({
+        allowsRecordingIOS: false,
+        interruptionModeIOS: Audio.INTERRUPTION_MODE_IOS_DO_NOT_MIX,
+        playsInSilentModeIOS: true,
+        interruptionModeAndroid: Audio.INTERRUPTION_MODE_ANDROID_DUCK_OTHERS,
+        shouldDuckAndroid: true,
+        staysActiveInBackground: true,
+        playThroughEarpieceAndroid: true,
+      });
+      const { sound } = await Audio.Sound.createAsync({ uri: itemURL });
+      setSound(sound);
+      await sound.playAsync();
+      SetPlaying(true);
+      sound.setStatusAsync({ progressUpdateIntervalMillis: 100 });
+      // SetDuration(sound.durationMillis)
+      sound.setOnPlaybackStatusUpdate(UpdateStatus);
+      console.log("Playing Sound");
+      // sound.setStatusAsync({ shouldPlay: true, positionMillis: 8000 });
+
+      console.log(2, sound.getStatusAsync());
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   const handlePlayPause = async () => {
-    isPlaying ? await sound.pauseAsync() : await sound.playAsync();
-    setIsPlaying(!isPlaying);
+    if (!sound) {
+      console.log("else");
+      playSound(listRSSURLS[currentAudioTrackIndex], currentAudioTrackIndex);
+      setCurrentAudioTrackIndex(currentAudioTrackIndex + 1);
+    } else {
+      Playing ? await sound.pauseAsync() : await sound.playAsync();
+      SetPlaying(!Playing);
+    }
+  };
+
+  const handlePlayAudio = async () => {
+    try {
+      await sound.getStatusAsync();
+      if (sound.isLoaded) {
+        if (sound.Playing === false) {
+          sound.playAsync();
+          SetPlaying(true);
+        }
+      }
+    } catch (error) {
+      SetPlaying(false);
+    }
+  };
+
+  const handlePauseAudio = async () => {
+    try {
+      await sound.getStatusAsync();
+      if (sound.isLoaded) {
+        if (result.Playing === true) {
+          sound.pauseAsync();
+          SetPlaying(false);
+        }
+      }
+    } catch (error) {
+      SetPlaying(true);
+    }
   };
 
   const handlePreviousTrack = async () => {
@@ -117,8 +244,8 @@ function Audiotracks(props) {
       await sound.unloadAsync();
       currentAudioTrackIndex < listRSSURLS.length - 1 &&
       currentAudioTrackIndex >= 1
-        ? setCurrentAudioTrackIndex((currentAudioTrackIndex - 1))
-        : setCurrentAudioTrackIndex((0));
+        ? setCurrentAudioTrackIndex(currentAudioTrackIndex - 1)
+        : setCurrentAudioTrackIndex(0);
       playSound(listRSSURLS[currentAudioTrackIndex], currentAudioTrackIndex);
     }
   };
@@ -128,7 +255,7 @@ function Audiotracks(props) {
       console.log(currentAudioTrackIndex, listRSSURLS.length - 1);
       await sound.unloadAsync();
       currentAudioTrackIndex < listRSSURLS.length - 1
-        ? setCurrentAudioTrackIndex((currentAudioTrackIndex + 1))
+        ? setCurrentAudioTrackIndex(currentAudioTrackIndex + 1)
         : setCurrentAudioTrackIndex(0);
       playSound(listRSSURLS[currentAudioTrackIndex], currentAudioTrackIndex);
     }
@@ -144,15 +271,36 @@ function Audiotracks(props) {
       : undefined;
   }, [sound]);
 
-  function changeSliderValue() {
-    if (isPlaying) {
-      // setSliderValue(0.5);
-      setSliderValue(0.4);
+  // function changeSliderValue() {
+  // if (Playing) {
+  // setSliderValue(0.5);
+  // setSliderValue(0.4);
+  // }
+  // }
+
+  const changeSliderValue = async (data) => {
+    try {
+      const checkLoading = await sound.getStatusAsync();
+      if (checkLoading.isLoaded === true) {
+        const result = (data / 100) * Duration;
+        await sound.setPositionAsync(Math.round(result));
+      }
+    } catch (error) {
+      console.log("Error");
     }
-  }
+  };
+
   function printHello(hey) {
     console.log(hey);
   }
+  const GetDurationFormat = (duration) => {
+    let time = duration / 1000;
+    let minutes = Math.floor(time / 60);
+    let timeForSeconds = time - minutes * 60;
+    let seconds = Math.floor(timeForSeconds);
+    let secondsReadable = seconds > 9 ? seconds : `0${seconds}`;
+    return `${minutes}:${secondsReadable}`;
+  };
 
   const listRSSURLS = [];
   const rssURLS = Object.entries(data);
@@ -181,7 +329,11 @@ function Audiotracks(props) {
         </ListItem.Content>
         <ListItem.Chevron />
         <Button
-          onPress={() => playSound(listRSSURLS[index], index)}
+          onPress={() => {
+            setCurrentAudioTrackIndex(index);
+            playSound(listRSSURLS[index], index, item.playtime);
+            setAudioTrackLength(item.playtime * 1000);
+          }}
           title="Listen"
           color="#841584"
           accessibilityLabel="purple button"
@@ -212,6 +364,7 @@ function Audiotracks(props) {
         </View>
       );
     };
+
     return (
       <View style={styles.container}>
         <View style={styles.listItemHeaderStyle}>
@@ -226,16 +379,23 @@ function Audiotracks(props) {
         <View style={styles.bottom}>
           <Slider
             style={{ width: 320, height: 40 }}
-            value={sliderValue}
-            onValueChange={(sliderValue) => {
-              setSliderValue(sliderValue);
-            }}
-            step={0.1}
+            value={Value}
+            // onValueChange={(Value) => {
+            // setSliderValue(sliderValue);
+            // }}
+            // step={0.1}
             allowTouchTrack={true}
             minimumValue={0}
             maximumValue={100}
+            onSlidingComplete={(data) => SeekUpdate(data)}
           />
-          <Text>{sliderValue} world</Text>
+          <Text>{Value} world</Text>
+          <Text>{audioTrackLength} length track</Text>
+          <Text>
+            {Playing
+              ? GetDurationFormat((Value * Duration) / 100)
+              : GetDurationFormat(Duration)}
+          </Text>
         </View>
         <View style={styles.controls}>
           <TouchableOpacity
@@ -248,7 +408,7 @@ function Audiotracks(props) {
             style={styles.control}
             onPress={() => handlePlayPause()}
           >
-            {isPlaying ? (
+            {Playing ? (
               <Ionicons name="pause-circle" size={48} color="#444" />
             ) : (
               <Ionicons name="play" size={48} color="#444" />
@@ -287,7 +447,7 @@ const styles = StyleSheet.create({
   bottom: {
     backgroundColor: "purple",
     alignContent: "flex-end",
-    top: 100,
+    top: -300,
     padding: 10,
   },
   listItemHeaderStyle: {
