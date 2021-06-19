@@ -25,10 +25,10 @@ function Audiotracks(props) {
   const currentAudioTrackIndex = useRef(0);
   const [data, setData] = useState([]);
   const [linearProgessBar, setlinearProgressBar] = useState(0);
-  const [loading2, setLoading2] = useState(true);
-  const [loading, setLoading] = useState(true);
-  const [Loading, SetLoading] = useState(false);
-  const [Loaded, SetLoaded] = useState(false);
+  const [loadingAudiobookData, setLoadingAudioBookData] = useState(true);
+  const [loadingAudioListeningLinks, setLoadingAudioListeningLinks] = useState(true);
+  const [loadingCurrentAudiotrack, setLoadingCurrentAudiotrack] = useState(false);
+  const [loadedCurrentAudiotrack, setLoadedCurrentAudiotrack] = useState(false);
   // const [sound, setSound] = React.useState();
   const [volume, setVolume] = useState(1.0);
   const [audioTrackLength, setAudioTrackLength] = useState(0);
@@ -53,7 +53,7 @@ function Audiotracks(props) {
       })
       .catch((error) => console.error(error))
       .finally(() => {
-        setLoading(false);
+        setLoadingAudioListeningLinks(false);
       });
   }, []);
 
@@ -64,7 +64,7 @@ function Audiotracks(props) {
       .then((response) => response.json())
       .then((json) => setAudioBookData(json.books))
       .catch((error) => console.error(error))
-      .finally(() => setLoading2(false));
+      .finally(() => setLoadingAudioBookData(false));
   }, []);
 
   React.useEffect(() => {
@@ -91,23 +91,6 @@ function Audiotracks(props) {
     }
   };
 
-  // const UpdateStatus = async (data) => {
-  // try {
-  // if (data.didJustFinish) {
-  // ResetPlayer();
-  // } else if (data.positionMillis) {
-  // if (data.durationMillis) {
-  // let positionInAudiobook =
-  // (data.positionMillis / data.durationMillis) * 100;
-  // SetValue(positionInAudiobook);
-  // console.log(Value, "time", data.positionMillis, data.durationMillis);
-  // }
-  // }
-  // } catch (error) {
-  // console.log(error);
-  // }
-  // };
-  //
   const SeekUpdate = async (data) => {
     try {
       const result = await sound.current.getStatusAsync();
@@ -165,7 +148,7 @@ function Audiotracks(props) {
   // }
   // }
   const LoadAudio = async (index) => {
-    SetLoading(true);
+    setLoadingCurrentAudiotrack(true);
     console.log(index, "Playing");
     const checkLoading = await sound.current.getStatusAsync();
     if (checkLoading.isLoaded === false) {
@@ -176,24 +159,25 @@ function Audiotracks(props) {
           true
         );
         if (result.isLoaded === false) {
-          SetLoading(false);
-          SetLoaded(false);
+          setLoadingCurrentAudiotrack(false);
+          setLoadedCurrentAudiotrack(false);
         } else {
           sound.current.setOnPlaybackStatusUpdate(UpdateStatus);
-          SetLoading(false);
-          SetLoaded(true);
+          setLoadingCurrentAudiotrack(false);
+          setLoadedCurrentAudiotrack(true);
           SetDuration(result.durationMillis);
           PlayAudio();
         }
       } catch (error) {
-        SetLoading(false);
-        SetLoaded(false);
+        setLoadingCurrentAudiotrack(false);
+        setLoadedCurrentAudiotrack(false);
       }
     } else {
-      SetLoading(false);
-      SetLoaded(true);
+      setLoadingCurrentAudiotrack(false);
+      setLoadedCurrentAudiotrack(true);
     }
   };
+
   // const handlePlayPause = async () => {
   // try {
   // const asyncStatus = await sound.current.getStatusAsync();
@@ -352,7 +336,7 @@ function Audiotracks(props) {
     listRSSURLS.push(value.enclosures[0].url);
   });
 
-  if (!loading && !loading2) {
+  if (!loadingAudioListeningLinks && !loadingAudiobookData) {
     const getHeader = () => {
       return (
         <View style={styles.bookHeader}>
@@ -415,9 +399,9 @@ function Audiotracks(props) {
               />
             </TouchableOpacity>
 
-            {Loading ? (
+            {loadingCurrentAudiotrack ? (
               <ActivityIndicator size={"large"} color={"dodgerblue"} />
-            ) : Loaded === false ? (
+            ) : loadedCurrentAudiotrack === false ? (
               <TouchableOpacity
                 onPress={() => LoadAudio(currentAudioTrackIndex.current)}
               >
