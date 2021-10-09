@@ -25,23 +25,22 @@ export default class App extends React.Component {
 
 const styles = StyleSheet.create({
   container: {
+    flexDirection: "column",
     flex: 1,
+    padding: 10,
     backgroundColor: "blue",
   },
   searchBarStyle: {
-    bottom: -30,
     backgroundColor: "darkgreen",
   },
   scrollStyle: {
-    bottom: -30,
+    top: 30,
     flex: 8,
     backgroundColor: "lightblue",
   },
   buttonStyle: {
-    flexDirection: "row",
-    flex: 1,
+    flex: 2,
     justifyContent: "center",
     backgroundColor: "black",
-    position: "relative",
   },
 });

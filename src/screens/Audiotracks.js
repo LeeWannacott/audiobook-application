@@ -6,7 +6,6 @@ import {
 } from "react-native";
 import { ListItem, Image, Tile, LinearProgress } from "react-native-elements";
 import * as rssParser from "react-native-rss-parser";
-// import Sound from 'react-native-sound';
 import { Audio } from "expo-av";
 import Slider from "@react-native-community/slider";
 import { Ionicons, MaterialIcons, Entypo } from "@expo/vector-icons";
@@ -26,15 +25,22 @@ function Audiotracks(props) {
   const [data, setData] = useState([]);
   const [linearProgessBar, setlinearProgressBar] = useState(0);
   const [loadingAudiobookData, setLoadingAudioBookData] = useState(true);
-  const [loadingAudioListeningLinks, setLoadingAudioListeningLinks] = useState(true);
-  const [loadingCurrentAudiotrack, setLoadingCurrentAudiotrack] = useState(false);
+  const [loadingAudioListeningLinks, setLoadingAudioListeningLinks] = useState(
+    true
+  );
+  const [loadingCurrentAudiotrack, setLoadingCurrentAudiotrack] = useState(
+    false
+  );
   const [loadedCurrentAudiotrack, setLoadedCurrentAudiotrack] = useState(false);
-  // const [sound, setSound] = React.useState();
   const [volume, setVolume] = useState(1.0);
   const [audioTrackLength, setAudioTrackLength] = useState(0);
   const [Playing, SetPlaying] = useState(false);
   const [Duration, SetDuration] = useState(0);
-  const [Value, SetValue] = React.useState(0);
+  const [audioTrackPlayingTitle, setAudioTrackPlayingTitle] = useState("");
+  const [
+    currentAudiotrackPosition,
+    setCurrentAudiotrackPosition,
+  ] = React.useState(0);
   const sound = React.useRef(new Audio.Sound());
 
   const [
@@ -76,15 +82,19 @@ function Audiotracks(props) {
       : undefined;
   }, [sound.current]);
 
-  const UpdateStatus = async (data) => {
+  const UpdateStatus = (data) => {
     try {
       if (data.didJustFinish) {
         HandleNext(CurrentIndex + 1);
-      } else if (data.positionMillis) {
-        if (data.durationMillis) {
-          SetValue(((data.positionMillis / data.durationMillis) * 100).toFixed(2));
-          console.log(data.positionMillis, data.durationMillis, Value);
-        }
+      } else if (data.positionMillis && data.durationMillis) {
+        setCurrentAudiotrackPosition(
+          ((data.positionMillis / data.durationMillis) * 100).toFixed(2)
+        );
+        console.log(
+          data.positionMillis,
+          data.durationMillis,
+          currentAudiotrackPosition
+        );
       }
     } catch (error) {
       console.log("Error");
@@ -108,7 +118,7 @@ function Audiotracks(props) {
     try {
       const checkLoading = await sound.current.getStatusAsync();
       if (checkLoading.isLoaded === true) {
-        SetValue(0);
+        setCurrentAudiotrackPosition(0);
         SetPlaying(false);
         await sound.current.setPositionAsync(0);
         await sound.current.stopAsync();
@@ -148,9 +158,12 @@ function Audiotracks(props) {
   // }
   // }
   const LoadAudio = async (index) => {
+    currentAudioTrackIndex.current = index;
     setLoadingCurrentAudiotrack(true);
     console.log(index, "Playing");
     const checkLoading = await sound.current.getStatusAsync();
+    console.log(listRSSURLS[index]);
+    console.log(AudioBookData[0].sections[index].title);
     if (checkLoading.isLoaded === false) {
       try {
         const result = await sound.current.loadAsync(
@@ -162,6 +175,8 @@ function Audiotracks(props) {
           setLoadingCurrentAudiotrack(false);
           setLoadedCurrentAudiotrack(false);
         } else {
+          setAudioTrackPlayingTitle(AudioBookData[0].sections[index].title);
+          sound.current.setStatusAsync({ progressUpdateIntervalMillis: 5000 });
           sound.current.setOnPlaybackStatusUpdate(UpdateStatus);
           setLoadingCurrentAudiotrack(false);
           setLoadedCurrentAudiotrack(true);
@@ -214,11 +229,9 @@ function Audiotracks(props) {
   const PauseAudio = async () => {
     try {
       const result = await sound.current.getStatusAsync();
-      if (result.isLoaded) {
-        if (result.isPlaying === true) {
-          sound.current.pauseAsync();
-          SetPlaying(false);
-        }
+      if (result.isLoaded && result.isPlaying) {
+        sound.current.pauseAsync();
+        SetPlaying(false);
       }
     } catch (error) {
       SetPlaying(true);
@@ -226,20 +239,28 @@ function Audiotracks(props) {
   };
 
   const HandleNext = async () => {
-    if (currentAudioTrackIndex.current + 1 < listRSSURLS.length) {
-      await sound.current.unloadAsync();
-      LoadAudio(currentAudioTrackIndex.current + 1);
-      currentAudioTrackIndex.current += 1;
+    if (currentAudioTrackIndex.current + 1 < listRSSURLS.length -1) {
+      const unloadSound = await sound.current.unloadAsync();
+      if (unloadSound.isLoaded === false) {
+        currentAudioTrackIndex.current += 1;
+        LoadAudio(currentAudioTrackIndex.current);
+      }
+    }else if(currentAudioTrackIndex.current == listRSSURLS.length -1){
+      console.log("else",currentAudioTrackIndex)
+      currentAudioTrackIndex.current = 0
     }
   };
 
   const HandlePrev = async () => {
     if (currentAudioTrackIndex.current - 1 >= 0) {
-      await sound.current.unloadAsync();
-      LoadAudio(currentAudioTrackIndex.current - 1);
-      currentAudioTrackIndex.current -= 1;
+      const unloadSound = await sound.current.unloadAsync();
+      if (unloadSound.isLoaded === false) {
+        LoadAudio(currentAudioTrackIndex.current - 1);
+        currentAudioTrackIndex.current -= 1;
+      }
     }
   };
+
   // const handlePreviousTrack = async () => {
   // const asyncStatus = await sound.current.getStatusAsync();
   // if (asyncStatus.isPlaying === true) {
@@ -269,16 +290,6 @@ function Audiotracks(props) {
   // currentAudioTrackIndex < listRSSURLS.length - 1
   // ? setCurrentAudioTrackIndex(currentAudioTrackIndex + 1)
   // : setCurrentAudioTrackIndex(0);
-  // playSound(listRSSURLS[currentAudioTrackIndex], currentAudioTrackIndex);
-  // }
-  // else{
-  // SetPlaying(false)
-  // currentAudioTrackIndex < listRSSURLS.length - 1
-  // ? setCurrentAudioTrackIndex(currentAudioTrackIndex + 1)
-  // : setCurrentAudioTrackIndex(0);
-  // playSound(listRSSURLS[currentAudioTrackIndex], currentAudioTrackIndex);
-  // }
-  // };
 
   // React.useEffect(() => {
   // return sound.current
@@ -290,12 +301,11 @@ function Audiotracks(props) {
   // }, [sound.current]);
 
   const GetDurationFormat = (duration) => {
-    let time = duration / 1000;
-    let minutes = Math.floor(time / 60);
-    let timeForSeconds = time - minutes * 60;
-    let seconds = Math.floor(timeForSeconds);
-    let secondsReadable = seconds > 9 ? seconds : `0${seconds}`;
-    return `${minutes}:${secondsReadable}`;
+    const time = duration / 1000;
+    const minutes = Math.floor(time / 60);
+    const seconds = Math.floor(time - minutes * 60);
+    const secondsFormatted = seconds > 9 ? seconds : `0${seconds}`;
+    return `${minutes}:${secondsFormatted}`;
   };
 
   const keyExtractor = (item, index) => index.toString();
@@ -374,19 +384,23 @@ function Audiotracks(props) {
 
         <View style={styles.SliderStyle}>
           <Slider
-            value={Value}
+            value={currentAudiotrackPosition}
             allowTouchTrack={true}
             minimumValue={0}
             maximumValue={100}
             onSlidingComplete={(data) => SeekUpdate(data)}
           />
-          <Text>{Value} world</Text>
-          <Text>{audioTrackLength} length track</Text>
           <Text>
-            {Playing
-              ? GetDurationFormat((Value * Duration) / 100)
-              : GetDurationFormat(Duration)}
+            <Text>
+              {" "}
+              {GetDurationFormat(
+                (currentAudiotrackPosition * Duration) / 100
+              )}{" "}
+            </Text>
+            <Text> {GetDurationFormat(Duration)}</Text>
           </Text>
+
+          <Text> {audioTrackPlayingTitle}</Text>
         </View>
         <View style={styles.controlsVert}>
           <View style={styles.controls}>

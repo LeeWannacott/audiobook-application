@@ -8,7 +8,7 @@
   },
   "dependencies": {
     "@react-native-community/masked-view": "^0.1.10",
-    "@react-navigation/compat": "^5.3.15",
+    "@react-native-community/slider": "^3.0.3",
     "@react-navigation/native": "^5.9.4",
     "@react-navigation/stack": "^5.14.5",
     "expo": "~41.0.1",
@@ -26,11 +26,10 @@
     "react-native-safe-area-context": "^3.2.0",
     "react-native-screens": "^3.0.0",
     "react-native-sound": "^0.11.0",
+    "react-native-track-player": "^1.2.7",
     "react-native-unimodules": "~0.13.3",
     "react-native-web": "~0.13.12",
     "react-native-webview": "^11.4.4",
-    "react-navigation": "^4.4.4",
-    "react-navigation-stack": "^2.10.4",
     "rss-parser": "^3.12.0"
   },
   "devDependencies": {

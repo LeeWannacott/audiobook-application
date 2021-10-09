@@ -6,6 +6,8 @@ import {
   Text,
   View,
   ActivityIndicator,
+  Dimensions,
+  Card
 } from "react-native";
 import { ListItem, Image, Avatar } from "react-native-elements";
 import AudiobookCard from "./AudiobookCard";
@@ -17,11 +19,6 @@ function Audiobooks(props) {
   const [loadingAudioBooks, setLoadingAudioBooks] = useState(true);
   const [data, setData] = useState([]);
   // const [imageData, setImageData] = useState([]);
-  // console.log(props.searchBarInput)
-
-  useEffect(() => {
-    // console.log(props.searchBarInput);
-  }, [props.searchBarInput]);
 
   const bookCoverURL = [];
   useEffect(() => {
@@ -40,21 +37,22 @@ function Audiobooks(props) {
       });
   }, [props.searchBarInput]);
 
+  // console.log(data)
+
   useEffect(() => {
     // if (!loadingAudioBooks) {
-      if (data.books != null || data.books != undefined) {
-        const dataKeys = Object.entries(data.books);
-        var bookCoverImagePath;
-        dataKeys.forEach(([key, value]) => {
-          // console.log(key, value.url_zip_file);
-          bookCoverImagePath = value.url_zip_file;
-          bookCoverImagePath = bookCoverImagePath.split("/");
-          bookCoverImagePath =
-            bookCoverImagePath[bookCoverImagePath.length - 2];
-          bookCoverImagePath = `https://archive.org/services/get-item-image.php?identifier=${bookCoverImagePath}`;
-          console.log(bookCoverImagePath)
-          bookCoverURL.push(bookCoverImagePath);
-        });
+    if (data.books != null || data.books != undefined) {
+      const dataKeys = Object.entries(data.books);
+      var bookCoverImagePath;
+      dataKeys.forEach(([key, value]) => {
+        // console.log(key, value.url_zip_file);
+        bookCoverImagePath = value.url_zip_file;
+        bookCoverImagePath = bookCoverImagePath.split("/");
+        bookCoverImagePath = bookCoverImagePath[bookCoverImagePath.length - 2];
+        bookCoverImagePath = `https://archive.org/services/get-item-image.php?identifier=${bookCoverImagePath}`;
+        // console.log(bookCoverImagePath);
+        bookCoverURL.push(bookCoverImagePath);
+      });
       // }
     }
   });
@@ -62,39 +60,41 @@ function Audiobooks(props) {
   const navigation = useNavigation();
   const keyExtractor = (item, index) => index.toString();
   const renderItem = ({ item, index }) => (
-    <ListItem topDivider>
-      <Avatar
-    source={{ uri: bookCoverURL[index]}}
-        style={{ width: 150, height: 150 }}
-    
-        onPress={() =>
-          navigation.navigate("Audio", [
-            item.url_rss,
-            item.id,
-            bookCoverURL[index],
-          ])
-        }
-      />
-      <ListItem.Content>
+    <ListItem topDivider style={styles.AudioBookListView}>
+      <View style={styles.ImageContainer}>
         <ListItem.Title>{item.title}</ListItem.Title>
+        <Avatar
+          source={{ uri: bookCoverURL[index] }}
+          style={{ width: 150, height: 150 }}
+          onPress={() =>
+            navigation.navigate("Audio", [
+              item.url_rss,
+              item.id,
+              bookCoverURL[index],
+            ])
+          }
+        />
         <ListItem.Subtitle>
-          Author: {item.authors[0].first_name} {item.authors[0].last_name},
-          Lived: {item.authors[0].dob} - {item.authors[0].dod}
+          By: {item.authors[0].first_name} {item.authors[0].last_name}
         </ListItem.Subtitle>
-      </ListItem.Content>
-      <ListItem.Chevron />
-      <Button
-        onPress={() =>
-          navigation.navigate("Audio", [
-            item.url_rss,
-            item.id,
-            bookCoverURL[index],
-          ])
-        }
-        title="Listen"
-        color="#841584"
-        accessibilityLabel="Learn more about this purple button"
-      />
+      </View>
+      <View style={styles.ImageContainer}>
+        <ListItem.Title>{item.title}</ListItem.Title>
+        <Avatar
+          source={{ uri: bookCoverURL[index] }}
+          style={{ width: 150, height: 150 }}
+          onPress={() =>
+            navigation.navigate("Audio", [
+              item.url_rss,
+              item.id,
+              bookCoverURL[index],
+            ])
+          }
+        />
+        <ListItem.Subtitle>
+          By: {item.authors[0].first_name} {item.authors[0].last_name}
+        </ListItem.Subtitle>
+      </View>
     </ListItem>
   );
 
@@ -119,5 +119,20 @@ function Audiobooks(props) {
     );
   }
 }
+
+const windowWidth = Dimensions.get("window").width;
+const styles = StyleSheet.create({
+  ImageContainer: {
+    flexDirection: "column",
+    backgroundColor:"red",
+    width: windowWidth / 2 - 31,
+    padding:1,
+    marginLeft:-2,
+  },
+  AudioBookListView: {
+    flexDirection: "row",
+    backgroundColor:"green",
+  },
+});
 
 export default Audiobooks;

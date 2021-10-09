@@ -2,6 +2,8 @@ import React from "react";
 import { SearchBar } from "react-native-elements";
 import AudioBooks from "../components/Audiobooks";
 import { View } from "react-native";
+import { StyleSheet } from "react-native";
+import ButtonPanel from "../components/ButtonPanel";
 
 class Search extends React.Component {
   state = {
@@ -10,7 +12,6 @@ class Search extends React.Component {
 
   updateSearch = (search) => {
     this.setState({ search });
-
   };
 
   render() {
@@ -22,9 +23,9 @@ class Search extends React.Component {
           onChangeText={this.updateSearch}
           value={search}
         />
-        <View>
+        <React.Fragment>
           <AudioBooks searchBarInput={search} />
-        </View>
+        </React.Fragment>
       </View>
     );
   }
