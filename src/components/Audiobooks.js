@@ -65,7 +65,7 @@ function Audiobooks(props) {
         <ListItem.Title>{item.title}</ListItem.Title>
         <Avatar
           source={{ uri: bookCoverURL[index] }}
-          style={{ width: 150, height: 150 }}
+          style={{ width: 145, height: 150 }}
           onPress={() =>
             navigation.navigate("Audio", [
               item.url_rss,
@@ -82,7 +82,7 @@ function Audiobooks(props) {
         <ListItem.Title>{item.title}</ListItem.Title>
         <Avatar
           source={{ uri: bookCoverURL[index] }}
-          style={{ width: 150, height: 150 }}
+          style={{ width: 145, height: 150 }}
           onPress={() =>
             navigation.navigate("Audio", [
               item.url_rss,
@@ -100,6 +100,7 @@ function Audiobooks(props) {
 
   if (!loadingAudioBooks) {
     // console.log(data.books[1].url_zip_file)
+    console.log(data.books)
     return (
       <View>
         <View></View>
@@ -128,6 +129,9 @@ const styles = StyleSheet.create({
     width: windowWidth / 2 - 31,
     padding:1,
     marginLeft:-2,
+    borderStyle:"solid",
+    borderWidth:1,
+    borderRadius:2,
   },
   AudioBookListView: {
     flexDirection: "row",
