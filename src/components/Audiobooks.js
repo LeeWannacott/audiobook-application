@@ -7,7 +7,7 @@ import {
   View,
   ActivityIndicator,
   Dimensions,
-  Card
+  Card,
 } from "react-native";
 import { ListItem, Image, Avatar } from "react-native-elements";
 import AudiobookCard from "./AudiobookCard";
@@ -57,15 +57,17 @@ function Audiobooks(props) {
     }
   });
 
+  const windowWidth = Dimensions.get("window").width;
+  const windowHeight = Dimensions.get("window").height;
   const navigation = useNavigation();
   const keyExtractor = (item, index) => index.toString();
   const renderItem = ({ item, index }) => (
     <ListItem topDivider style={styles.AudioBookListView}>
       <View style={styles.ImageContainer}>
-        <ListItem.Title>{item.title}</ListItem.Title>
+        {/*<ListItem.Title>{item.title}</ListItem.Title>*/}
         <Avatar
           source={{ uri: bookCoverURL[index] }}
-          style={{ width: 145, height: 150 }}
+          style={{ width: windowWidth / 2 - 42, height: windowHeight / 5 }}
           onPress={() =>
             navigation.navigate("Audio", [
               item.url_rss,
@@ -74,33 +76,16 @@ function Audiobooks(props) {
             ])
           }
         />
-        <ListItem.Subtitle>
+        {/*<ListItem.Subtitle>
           By: {item.authors[0].first_name} {item.authors[0].last_name}
-        </ListItem.Subtitle>
-      </View>
-      <View style={styles.ImageContainer}>
-        <ListItem.Title>{item.title}</ListItem.Title>
-        <Avatar
-          source={{ uri: bookCoverURL[index] }}
-          style={{ width: 145, height: 150 }}
-          onPress={() =>
-            navigation.navigate("Audio", [
-              item.url_rss,
-              item.id,
-              bookCoverURL[index],
-            ])
-          }
-        />
-        <ListItem.Subtitle>
-          By: {item.authors[0].first_name} {item.authors[0].last_name}
-        </ListItem.Subtitle>
+        </ListItem.Subtitle>*/}
       </View>
     </ListItem>
   );
 
   if (!loadingAudioBooks) {
     // console.log(data.books[1].url_zip_file)
-    console.log(data.books)
+    console.log(data.books);
     return (
       <View>
         <View></View>
@@ -108,6 +93,8 @@ function Audiobooks(props) {
           data={data.books}
           keyExtractor={keyExtractor}
           renderItem={renderItem}
+          numColumns={2}
+          backgroundColor="black"
         />
       </View>
     );
@@ -125,17 +112,15 @@ const windowWidth = Dimensions.get("window").width;
 const styles = StyleSheet.create({
   ImageContainer: {
     flexDirection: "column",
-    backgroundColor:"red",
-    width: windowWidth / 2 - 31,
-    padding:1,
-    marginLeft:-2,
-    borderStyle:"solid",
-    borderWidth:1,
-    borderRadius:2,
+    backgroundColor: "red",
+    width: windowWidth / 2 - 40,
+    borderStyle: "solid",
+    borderWidth: 1,
+    borderRadius: 2,
   },
   AudioBookListView: {
     flexDirection: "row",
-    backgroundColor:"green",
+    backgroundColor: "green",
   },
 });
 
