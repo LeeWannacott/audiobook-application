@@ -4,7 +4,13 @@ import {
   SafeAreaView,
   TouchableOpacity,
 } from "react-native";
-import { ListItem, Image, Tile, LinearProgress } from "react-native-elements";
+import {
+  ListItem,
+  Image,
+  Tile,
+  LinearProgress,
+  Rating,
+} from "react-native-elements";
 import * as rssParser from "react-native-rss-parser";
 import { Audio } from "expo-av";
 import Slider from "@react-native-community/slider";
@@ -25,29 +31,22 @@ function Audiotracks(props) {
   const [data, setData] = useState([]);
   const [linearProgessBar, setlinearProgressBar] = useState(0);
   const [loadingAudiobookData, setLoadingAudioBookData] = useState(true);
-  const [loadingAudioListeningLinks, setLoadingAudioListeningLinks] = useState(
-    true
-  );
-  const [loadingCurrentAudiotrack, setLoadingCurrentAudiotrack] = useState(
-    false
-  );
+  const [loadingAudioListeningLinks, setLoadingAudioListeningLinks] =
+    useState(true);
+  const [loadingCurrentAudiotrack, setLoadingCurrentAudiotrack] =
+    useState(false);
   const [loadedCurrentAudiotrack, setLoadedCurrentAudiotrack] = useState(false);
   const [volume, setVolume] = useState(1.0);
   const [audioTrackLength, setAudioTrackLength] = useState(0);
   const [Playing, SetPlaying] = useState(false);
   const [Duration, SetDuration] = useState(0);
   const [audioTrackPlayingTitle, setAudioTrackPlayingTitle] = useState("");
-  const [
-    currentAudiotrackPosition,
-    setCurrentAudiotrackPosition,
-  ] = React.useState(0);
+  const [currentAudiotrackPosition, setCurrentAudiotrackPosition] =
+    React.useState(0);
   const sound = React.useRef(new Audio.Sound());
 
-  const [
-    AudioBooksRSSLinkToAudioTracks,
-    AudioBookId,
-    bookCoverImage,
-  ] = props.route.params;
+  const [AudioBooksRSSLinkToAudioTracks, AudioBookId, bookCoverImage] =
+    props.route.params;
 
   useEffect(() => {
     fetch(AudioBooksRSSLinkToAudioTracks)
@@ -239,15 +238,15 @@ function Audiotracks(props) {
   };
 
   const HandleNext = async () => {
-    if (currentAudioTrackIndex.current + 1 < listRSSURLS.length -1) {
+    if (currentAudioTrackIndex.current + 1 < listRSSURLS.length - 1) {
       const unloadSound = await sound.current.unloadAsync();
       if (unloadSound.isLoaded === false) {
         currentAudioTrackIndex.current += 1;
         LoadAudio(currentAudioTrackIndex.current);
       }
-    }else if(currentAudioTrackIndex.current == listRSSURLS.length -1){
-      console.log("else",currentAudioTrackIndex)
-      currentAudioTrackIndex.current = 0
+    } else if (currentAudioTrackIndex.current == listRSSURLS.length - 1) {
+      console.log("else", currentAudioTrackIndex);
+      currentAudioTrackIndex.current = 0;
     }
   };
 
@@ -346,6 +345,10 @@ function Audiotracks(props) {
     listRSSURLS.push(value.enclosures[0].url);
   });
 
+  function ratingCompleted(rating) {
+    // console.log("Rating is: " + rating)
+  }
+
   if (!loadingAudioListeningLinks && !loadingAudiobookData) {
     const getHeader = () => {
       return (
@@ -364,6 +367,13 @@ function Audiotracks(props) {
             {" "}
             Description: {AudioBookDescription.description}
           </Text>
+          <Rating
+            showRating
+            ratingCount={5}
+            startingValue={0}
+            onFinishRating={ratingCompleted}
+            style={{ paddingVertical: 10 }}
+          />
           <Text> Total time: {AudioBookData[0].totaltime} </Text>
         </View>
       );
