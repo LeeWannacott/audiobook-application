@@ -49,8 +49,8 @@ function Audiotracks(props) {
 
   useEffect(() => {
     async function setAudioMode() {
-      try{
-      await Audio.setAudioModeAsync({
+      try {
+        await Audio.setAudioModeAsync({
           staysActiveInBackground: true,
           interruptionModeAndroid: Audio.INTERRUPTION_MODE_ANDROID_DO_NOT_MIX,
           shouldDuckAndroid: true,
@@ -58,9 +58,10 @@ function Audiotracks(props) {
           allowsRecordingIOS: true,
           interruptionModeIOS: Audio.INTERRUPTION_MODE_IOS_DO_NOT_MIX,
           playsInSilentModeIOS: true,
-        })
-      } 
-      catch(e){console.log(e)}
+        });
+      } catch (e) {
+        console.log(e);
+      }
     }
     setAudioMode();
   }, []);
@@ -252,6 +253,17 @@ function Audiotracks(props) {
     return `${minutes}:${secondsFormatted}`;
   };
 
+  const PlayFromListenButton = async (index) => {
+    try {
+      const unloadSound = await sound.current.unloadAsync();
+      if (unloadSound.isLoaded === false) {
+        return LoadAudio(index);
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
   const keyExtractor = (item, index) => index.toString();
   const renderItem = ({ item, index }) => (
     <View>
@@ -274,7 +286,7 @@ function Audiotracks(props) {
         <ListItem.Chevron />
         <Button
           onPress={() => {
-            LoadAudio(index);
+            PlayFromListenButton(index);
           }}
           title="Listen"
           color="#841584"
