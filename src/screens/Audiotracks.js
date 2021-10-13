@@ -43,10 +43,28 @@ function Audiotracks(props) {
   const [audioTrackPlayingTitle, setAudioTrackPlayingTitle] = useState("");
   const [currentAudiotrackPosition, setCurrentAudiotrackPosition] =
     React.useState(0);
-  const sound = React.useRef(new Audio.Sound());
 
   const [AudioBooksRSSLinkToAudioTracks, AudioBookId, bookCoverImage] =
     props.route.params;
+
+  useEffect(() => {
+    async function setAudioMode() {
+      try{
+      await Audio.setAudioModeAsync({
+          staysActiveInBackground: true,
+          interruptionModeAndroid: Audio.INTERRUPTION_MODE_ANDROID_DO_NOT_MIX,
+          shouldDuckAndroid: true,
+          playThroughEarpieceAndroid: true,
+          allowsRecordingIOS: true,
+          interruptionModeIOS: Audio.INTERRUPTION_MODE_IOS_DO_NOT_MIX,
+          playsInSilentModeIOS: true,
+        })
+      } 
+      catch(e){console.log(e)}
+    }
+    setAudioMode();
+  }, []);
+  const sound = React.useRef(new Audio.Sound());
 
   useEffect(() => {
     fetch(AudioBooksRSSLinkToAudioTracks)
@@ -167,7 +185,16 @@ function Audiotracks(props) {
       try {
         const result = await sound.current.loadAsync(
           { uri: listRSSURLS[index] },
-          {},
+          {
+            progressUpdateIntervalMillis: 1000,
+            positionMillis: 0,
+            shouldPlay: false,
+            rate: 1.0,
+            shouldCorrectPitch: false,
+            volume: 1.0,
+            isMuted: false,
+            isLooping: false,
+          },
           true
         );
         if (result.isLoaded === false) {
@@ -175,7 +202,6 @@ function Audiotracks(props) {
           setLoadedCurrentAudiotrack(false);
         } else {
           setAudioTrackPlayingTitle(AudioBookData[0].sections[index].title);
-          sound.current.setStatusAsync({ progressUpdateIntervalMillis: 1000 });
           sound.current.setOnPlaybackStatusUpdate(UpdateStatus);
           setLoadingCurrentAudiotrack(false);
           setLoadedCurrentAudiotrack(true);
@@ -197,7 +223,7 @@ function Audiotracks(props) {
   // const asyncStatus = await sound.current.getStatusAsync();
   // if (asyncStatus.isPlaying === false) {
   // SetPlaying(!Playing);
-  // playSound(listRSSURLS[currentAudioTrackIndex], currentAudioTrackIndex);
+  // playSound(listR Audio.Sound.createAsync(SSURLS[currentAudioTrackIndex], currentAudioTrackIndex);
   // setCurrentAudioTrackIndex(currentAudioTrackIndex + 1);
   // } else if (asyncStatus.isPlaying === true) {
   // Playing
@@ -216,12 +242,13 @@ function Audiotracks(props) {
       if (result.isLoaded) {
         if (result.isPlaying === false) {
           console.log("playing");
-          sound.current.playAsync();
           SetPlaying(true);
+          return sound.current.playAsync();
         }
       }
     } catch (error) {
-      SetPlaying(false);
+      console.log(error);
+      return SetPlaying(false);
     }
   };
 
@@ -229,11 +256,12 @@ function Audiotracks(props) {
     try {
       const result = await sound.current.getStatusAsync();
       if (result.isLoaded && result.isPlaying) {
-        sound.current.pauseAsync();
         SetPlaying(false);
+        return sound.current.pauseAsync();
       }
     } catch (error) {
-      SetPlaying(true);
+      console.log(error);
+      return SetPlaying(true);
     }
   };
 
