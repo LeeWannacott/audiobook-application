@@ -3,12 +3,14 @@ import {
   ActivityIndicator,
   SafeAreaView,
   TouchableOpacity,
+  Dimensions,
 } from "react-native";
 import {
   ListItem,
   Image,
   Tile,
   LinearProgress,
+  Card,
   Rating,
 } from "react-native-elements";
 import * as rssParser from "react-native-rss-parser";
@@ -306,14 +308,17 @@ function Audiotracks(props) {
     // console.log("Rating is: " + rating)
   }
 
+
   if (!loadingAudioListeningLinks && !loadingAudiobookData) {
     const getHeader = () => {
       return (
         <View style={styles.bookHeader}>
-          <Text style={styles.bookTitle}> {AudioBookData[0].title}</Text>
-          <Image
+        <Card> 
+          <Card.Title style={styles.bookTitle}> {AudioBookData[0].title}</Card.Title>
+        <Card.Divider/>
+          <Card.Image
             source={{ uri: bookCoverImage }}
-            style={{ width: 200, height: 200 }}
+        style={{ width: 200, height: 200 ,marginBottom:20,marginLeft:25}}
           />
           <Text style={styles.bookDescription}>
             {" "}
@@ -332,6 +337,7 @@ function Audiotracks(props) {
             style={{ paddingVertical: 10 }}
           />
           <Text> Total time: {AudioBookData[0].totaltime} </Text>
+        </Card>
         </View>
       );
     };
@@ -443,8 +449,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "blue",
     padding: 10,
-    // alignItems: "center",
-    // justifyContent: "center",
   },
   AudioTracksStyle: {
     flex: 8,
@@ -484,7 +488,8 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   bookHeader: {
-    padding: 10,
+    display:"flex",
+    paddingBottom: 10,
   },
   albumCover: {
     width: 250,
