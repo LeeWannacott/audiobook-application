@@ -43,6 +43,7 @@ function Audiotracks(props) {
   const [Playing, SetPlaying] = useState(false);
   const [Duration, SetDuration] = useState(0);
   const [audioTrackPlayingTitle, setAudioTrackPlayingTitle] = useState("");
+  const [audioTrackReader, setAudioTrackReader] = useState("");
   const [currentAudiotrackPosition, setCurrentAudiotrackPosition] =
     React.useState(0);
 
@@ -175,7 +176,14 @@ function Audiotracks(props) {
           setLoadingCurrentAudiotrack(false);
           setLoadedCurrentAudiotrack(false);
         } else {
-          setAudioTrackPlayingTitle(AudioBookData[0].sections[index].title);
+          setAudioTrackPlayingTitle(
+            AudioBookData[0].sections[index].section_number +
+              ". " +
+              AudioBookData[0].sections[index].title
+          );
+          setAudioTrackReader(
+            AudioBookData[0].sections[index].readers[0]["display_name"]
+          );
           sound.current.setOnPlaybackStatusUpdate(UpdateStatus);
           setLoadingCurrentAudiotrack(false);
           setLoadedCurrentAudiotrack(true);
@@ -308,36 +316,42 @@ function Audiotracks(props) {
     // console.log("Rating is: " + rating)
   }
 
-
   if (!loadingAudioListeningLinks && !loadingAudiobookData) {
     const getHeader = () => {
       return (
         <View style={styles.bookHeader}>
-        <Card> 
-          <Card.Title style={styles.bookTitle}> {AudioBookData[0].title}</Card.Title>
-        <Card.Divider/>
-          <Card.Image
-            source={{ uri: bookCoverImage }}
-        style={{ width: 200, height: 200 ,marginBottom:20,marginLeft:25}}
-          />
-          <Text style={styles.bookDescription}>
-            {" "}
-            By {AudioBookData[0].authors[0].first_name}{" "}
-            {AudioBookData[0].authors[0].last_name}
-          </Text>
-          <Text style={styles.bookDescription}>
-            {" "}
-            Description: {AudioBookDescription.description}
-          </Text>
-          <Rating
-            showRating
-            ratingCount={5}
-            startingValue={0}
-            onFinishRating={ratingCompleted}
-            style={{ paddingVertical: 10 }}
-          />
-          <Text> Total time: {AudioBookData[0].totaltime} </Text>
-        </Card>
+          <Card>
+            <Card.Title style={styles.bookTitle}>
+              {" "}
+              {AudioBookData[0].title}
+            </Card.Title>
+            <Card.Divider />
+            <Card.Image
+              source={{ uri: bookCoverImage }}
+              style={{
+                width: 200,
+                height: 200,
+                marginBottom: 20,
+                marginLeft: 35,
+              }}
+            />
+            <Text style={styles.bookAuthor}>
+              {" "}
+              Author: {AudioBookData[0].authors[0].first_name}{" "}
+              {AudioBookData[0].authors[0].last_name}
+            </Text>
+            <Text style={styles.bookDescription}>
+              {AudioBookDescription.description}
+            </Text>
+            <Rating
+              showRating
+              ratingCount={5}
+              startingValue={0}
+              onFinishRating={ratingCompleted}
+              style={{ paddingVertical: 10 }}
+            />
+            <Text> Total time: {AudioBookData[0].totaltime} </Text>
+          </Card>
         </View>
       );
     };
@@ -363,17 +377,32 @@ function Audiotracks(props) {
             maximumValue={100}
             onSlidingComplete={(data) => SeekUpdate(data)}
           />
-          <Text>
-            <Text>
+          <View style={styles.AudiobookTime}>
+            <Text style={{ marginLeft: 10 }}>
               {" "}
               {GetDurationFormat(
                 (currentAudiotrackPosition * Duration) / 100
               )}{" "}
             </Text>
-            <Text> {GetDurationFormat(Duration)}</Text>
-          </Text>
+            <Text style={{ marginRight: 10 }}>
+              {" "}
+              {GetDurationFormat(Duration)}
+            </Text>
+          </View>
 
-          <Text> {audioTrackPlayingTitle}</Text>
+          <View style={styles.SliderContainer}>
+            <Image
+              source={{ uri: bookCoverImage }}
+              style={{
+                width: 40,
+                height: 40,
+              }}
+            />
+            <View>
+              <Text> {audioTrackPlayingTitle} </Text>
+              <Text> {audioTrackReader} </Text>
+            </View>
+          </View>
         </View>
         <View style={styles.controlsVert}>
           <View style={styles.controls}>
@@ -451,18 +480,28 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   AudioTracksStyle: {
-    flex: 8,
+    flex: 7,
+    marginBottom: 20,
   },
   controlsVert: {
-    flex: 1,
+    flex: 0.8,
   },
   controls: {
     flex: 1,
     // top:-100,
     flexDirection: "row",
-    backgroundColor: "yellow",
+    backgroundColor: "white",
     justifyContent: "center",
     alignItems: "center",
+  },
+  AudiobookTime: {
+    display: "flex",
+    backgroundColor: "purple",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    // top: -200,
+    // padding: 10,
+    flex: 1,
   },
   SliderStyle: {
     backgroundColor: "purple",
@@ -470,10 +509,18 @@ const styles = StyleSheet.create({
     // padding: 10,
     flex: 1,
   },
+  SliderContainer: {
+    backgroundColor: "orange",
+    display: "flex",
+    flexDirection: "row",
+    flexWrap: "nowrap",
+    // top: -200,
+    // padding: 10,
+  },
   listItemHeaderStyle: {
     fontSize: 20,
     top: 20,
-    backgroundColor: "red",
+    backgroundColor: "black",
   },
   ActivityIndicatorStyle: {
     top: 100,
@@ -483,13 +530,19 @@ const styles = StyleSheet.create({
     // top:100,
     fontSize: 30,
   },
+  bookAuthor: {
+    // top:100,
+    fontWeight: "bold",
+  },
   bookDescription: {
     // top:100,
-    fontSize: 14,
+    fontSize: 16,
+    padding: 2,
   },
   bookHeader: {
-    display:"flex",
+    display: "flex",
     paddingBottom: 10,
+    padding: 2,
   },
   albumCover: {
     width: 250,
