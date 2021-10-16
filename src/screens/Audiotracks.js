@@ -78,7 +78,7 @@ function Audiotracks(props) {
         setData(rss.items);
         setAudioBookDescription(rss);
       })
-      .catch((error) => console.error(error))
+      .catch((error) => console.log("Error: ",error))
       .finally(() => {
         setLoadingAudioListeningLinks(false);
       });
@@ -90,7 +90,7 @@ function Audiotracks(props) {
     )
       .then((response) => response.json())
       .then((json) => setAudioBookData(json.books))
-      .catch((error) => console.error(error))
+      .catch((error) => console.log("Error: ",error))
       .finally(() => setLoadingAudioBookData(false));
   }, []);
 
@@ -106,7 +106,9 @@ function Audiotracks(props) {
   const UpdateStatus = async (data) => {
     try {
       if (data.didJustFinish) {
-        return HandleNext(CurrentIndex + 1);
+        console.log("Finished!!!");
+        ResetPlayer();
+        return HandleNext(currentAudioTrackIndex.current);
       } else if (data.positionMillis && data.durationMillis) {
         console.log(
           data.positionMillis,
@@ -118,7 +120,7 @@ function Audiotracks(props) {
         );
       }
     } catch (error) {
-      console.log("Error");
+      console.log("Error: ", error);
     }
   };
 
@@ -131,7 +133,7 @@ function Audiotracks(props) {
         return await sound.current.setPositionAsync(Math.round(result));
       }
     } catch (error) {
-      console.log("Error", error);
+      console.log("Error: ", error);
     }
   };
 
@@ -145,7 +147,7 @@ function Audiotracks(props) {
         await sound.current.stopAsync();
       }
     } catch (error) {
-      console.log("Error");
+      console.log("Error: ", error);
     }
   };
 
@@ -193,6 +195,7 @@ function Audiotracks(props) {
       } catch (error) {
         setLoadingCurrentAudiotrack(false);
         setLoadedCurrentAudiotrack(false);
+        console.log("Error: ", error);
       }
     } else {
       setLoadingCurrentAudiotrack(false);
@@ -211,7 +214,7 @@ function Audiotracks(props) {
         }
       }
     } catch (error) {
-      console.log(error);
+      console.log("Error: ",error);
       return SetPlaying(false);
     }
   };
@@ -224,7 +227,7 @@ function Audiotracks(props) {
         return sound.current.pauseAsync();
       }
     } catch (error) {
-      console.log(error);
+      console.log("Error: ",error);
       return SetPlaying(true);
     }
   };
