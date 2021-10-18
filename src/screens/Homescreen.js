@@ -12,11 +12,8 @@ export default class App extends React.Component {
   render() {
     return (
       <View style={styles.container}>
-        <View style={styles.scrollStyle}>
+        <View>
           <Search />
-        </View>
-        <View style={styles.buttonStyle}>
-          <ButtonPanel />
         </View>
       </View>
     );
@@ -25,8 +22,8 @@ export default class App extends React.Component {
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: "column",
     flex: 1,
+    flexDirection: "column",
     padding: 10,
     backgroundColor: "blue",
   },
@@ -35,12 +32,10 @@ const styles = StyleSheet.create({
   },
   scrollStyle: {
     top: 30,
-    flex: 8,
+    height: 610,
     backgroundColor: "lightblue",
   },
   buttonStyle: {
-    flex: 2,
-    justifyContent: "center",
     backgroundColor: "black",
   },
 });

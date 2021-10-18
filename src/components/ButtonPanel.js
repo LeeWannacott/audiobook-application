@@ -54,14 +54,14 @@ class ButtonPanel extends React.Component {
     const { selectedIndex } = this.state;
 
     return (
-      <View>
+      <>
         <ButtonGroup
           onPress={this.updateIndex}
           selectedIndex={selectedIndex}
           buttons={buttons}
-          containerStyle={{ height: 70}}
+          containerStyle={{ height: 70, width: 340, top: 25, left: -10 }}
         />
-      </View>
+      </>
     );
   }
 }

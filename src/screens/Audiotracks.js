@@ -78,7 +78,7 @@ function Audiotracks(props) {
         setData(rss.items);
         setAudioBookDescription(rss);
       })
-      .catch((error) => console.log("Error: ",error))
+      .catch((error) => console.log("Error: ", error))
       .finally(() => {
         setLoadingAudioListeningLinks(false);
       });
@@ -90,7 +90,7 @@ function Audiotracks(props) {
     )
       .then((response) => response.json())
       .then((json) => setAudioBookData(json.books))
-      .catch((error) => console.log("Error: ",error))
+      .catch((error) => console.log("Error: ", error))
       .finally(() => setLoadingAudioBookData(false));
   }, []);
 
@@ -214,7 +214,7 @@ function Audiotracks(props) {
         }
       }
     } catch (error) {
-      console.log("Error: ",error);
+      console.log("Error: ", error);
       return SetPlaying(false);
     }
   };
@@ -227,7 +227,7 @@ function Audiotracks(props) {
         return sound.current.pauseAsync();
       }
     } catch (error) {
-      console.log("Error: ",error);
+      console.log("Error: ", error);
       return SetPlaying(true);
     }
   };
