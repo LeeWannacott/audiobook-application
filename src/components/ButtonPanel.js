@@ -1,21 +1,10 @@
-import React from "react";
+import React,{useState} from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { Button, ButtonGroup } from "react-native-elements";
 import Icon from "react-native-vector-icons/FontAwesome";
 
-class ButtonPanel extends React.Component {
-  constructor() {
-    super();
-    this.state = {
-      selectedIndex: 2,
-    };
-    this.updateIndex = this.updateIndex.bind(this);
-  }
-  updateIndex(selectedIndex) {
-    this.setState({ selectedIndex });
-  }
-
-  render() {
+function ButtonPanel(props) {
+const [selectedIndex, updateIndex] = useState(2);
     const component1 = () => (
       <Text>
         <Icon
@@ -51,18 +40,23 @@ class ButtonPanel extends React.Component {
       { element: component2 },
       { element: component3 },
     ];
-    const { selectedIndex } = this.state;
 
     return (
       <>
         <ButtonGroup
-          onPress={this.updateIndex}
+          onPress={updateIndex}
           selectedIndex={selectedIndex}
           buttons={buttons}
-          containerStyle={{ height: 70, width: 340, top: 25, left: -10 }}
+          containerStyle={{
+            height: 71,
+            width: 340,
+            top: 24,
+            left: -10,
+            borderRadius: 0,
+          }}
         />
       </>
     );
-  }
+  
 }
 export default ButtonPanel;
