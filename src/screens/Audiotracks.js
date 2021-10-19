@@ -31,7 +31,6 @@ function Audiotracks(props) {
   const [AudioBookDescription, setAudioBookDescription] = useState([]);
   const currentAudioTrackIndex = useRef(0);
   const [data, setData] = useState([]);
-  const [linearProgessBar, setlinearProgressBar] = useState(0);
   const [loadingAudiobookData, setLoadingAudioBookData] = useState(true);
   const [loadingAudioListeningLinks, setLoadingAudioListeningLinks] =
     useState(true);
@@ -46,6 +45,9 @@ function Audiotracks(props) {
   const [audioTrackReader, setAudioTrackReader] = useState("");
   const [currentAudiotrackPosition, setCurrentAudiotrackPosition] =
     React.useState(0);
+
+  const [lengthOfSections, setLengthOfSections] = useState(0);
+  const [linearProgessBar, setlinearProgressBar] = useState([]);
 
   const [AudioBooksRSSLinkToAudioTracks, AudioBookId, bookCoverImage] =
     props.route.params;
@@ -89,9 +91,20 @@ function Audiotracks(props) {
       `https://librivox.org/api/feed/audiobooks/?id=${AudioBookId}&extended=1&format=json`
     )
       .then((response) => response.json())
-      .then((json) => setAudioBookData(json.books))
+      .then((json) => {
+        return (
+          setAudioBookData(json.books),
+          setLengthOfSections(json.books[0].sections.length)
+        );
+      })
       .catch((error) => console.log("Error: ", error))
       .finally(() => setLoadingAudioBookData(false));
+  }, []);
+
+  useEffect(() => {
+    let AudiotracksProgressBars = new Array(lengthOfSections).fill(0);
+    setlinearProgressBar(AudiotracksProgressBars);
+    console.log("useEffect");
   }, []);
 
   React.useEffect(() => {
@@ -107,7 +120,6 @@ function Audiotracks(props) {
     try {
       if (data.didJustFinish) {
         console.log("Finished!!!");
-        ResetPlayer();
         return HandleNext(currentAudioTrackIndex.current);
       } else if (data.positionMillis && data.durationMillis) {
         console.log(
@@ -115,6 +127,12 @@ function Audiotracks(props) {
           data.durationMillis,
           currentAudiotrackPosition
         );
+
+        let newArray = [...linearProgessBar]
+        newArray[currentAudioTrackIndex.current] = linearProgessBar[currentAudioTrackIndex.current] =
+            data.positionMillis / data.durationMillis
+        setlinearProgressBar(newArray)
+
         return setCurrentAudiotrackPosition(
           ((data.positionMillis / data.durationMillis) * 100).toFixed(2)
         );
@@ -163,7 +181,9 @@ function Audiotracks(props) {
         const result = await sound.current.loadAsync(
           { uri: listRSSURLS[index] },
           {
-            progressUpdateIntervalMillis: 1000,
+            // androidImplementation: 'MediaPlayer',
+            // downloadFirst: true,
+            progressUpdateIntervalMillis: 5000,
             positionMillis: 0,
             shouldPlay: false,
             rate: 1.0,
@@ -209,26 +229,28 @@ function Audiotracks(props) {
       if (result.isLoaded) {
         if (result.isPlaying === false) {
           console.log("playing");
+          sound.current.playAsync();
           SetPlaying(true);
-          return sound.current.playAsync();
         }
       }
     } catch (error) {
+      SetPlaying(false);
       console.log("Error: ", error);
-      return SetPlaying(false);
     }
   };
 
   const PauseAudio = async () => {
     try {
       const result = await sound.current.getStatusAsync();
-      if (result.isLoaded && result.isPlaying) {
-        SetPlaying(false);
-        return sound.current.pauseAsync();
+      if (result.isLoaded) {
+        if (result.isPlaying === true) {
+          sound.current.pauseAsync();
+          SetPlaying(false);
+        }
       }
     } catch (error) {
       console.log("Error: ", error);
-      return SetPlaying(true);
+      SetPlaying(true);
     }
   };
 
@@ -237,12 +259,14 @@ function Audiotracks(props) {
       const unloadSound = await sound.current.unloadAsync();
       if (unloadSound.isLoaded === false) {
         currentAudioTrackIndex.current += 1;
+        ResetPlayer();
         return LoadAudio(currentAudioTrackIndex.current);
       }
     } else if (currentAudioTrackIndex.current >= listRSSURLS.length - 1) {
       const unloadSound = await sound.current.unloadAsync();
       if (unloadSound.isLoaded === false) {
         currentAudioTrackIndex.current = 0;
+        ResetPlayer();
         return LoadAudio(currentAudioTrackIndex.current);
       }
     }
@@ -270,6 +294,7 @@ function Audiotracks(props) {
     try {
       const unloadSound = await sound.current.unloadAsync();
       if (unloadSound.isLoaded === false) {
+        ResetPlayer();
         return LoadAudio(index);
       }
     } catch (e) {
@@ -292,8 +317,9 @@ function Audiotracks(props) {
           <ListItem.Subtitle>Playtime: {item.playtime}</ListItem.Subtitle>
           <LinearProgress
             color="primary"
-            value={linearProgessBar}
+            value={linearProgessBar[index]}
             variant="determinate"
+            trackColor="lightblue"
           />
         </ListItem.Content>
         <ListItem.Chevron />
