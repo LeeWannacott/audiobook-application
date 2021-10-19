@@ -18,6 +18,7 @@ import React, { useState, useEffect } from "react";
 function Audiobooks(props) {
   const [loadingAudioBooks, setLoadingAudioBooks] = useState(true);
   const [data, setData] = useState([]);
+  const [bookCovers, setBookCovers] = useState([]);
   // const [imageData, setImageData] = useState([]);
 
   const bookCoverURL = [];
@@ -30,7 +31,6 @@ function Audiobooks(props) {
     )
       .then((response) => response.json())
       .then((json) => setData(json))
-      .then(() => {})
       .catch((error) => console.error(error))
       .finally(() => {
         setLoadingAudioBooks(false);
@@ -40,22 +40,20 @@ function Audiobooks(props) {
   // console.log(data)
 
   useEffect(() => {
-    // if (!loadingAudioBooks) {
     if (data.books != null || data.books != undefined) {
-      const dataKeys = Object.entries(data.books);
+      const dataKeys = Object.values(data.books);
       var bookCoverImagePath;
-      dataKeys.forEach(([key, value]) => {
+      dataKeys.forEach((value) => {
         // console.log(key, value.url_zip_file);
-        bookCoverImagePath = value.url_zip_file;
-        bookCoverImagePath = bookCoverImagePath.split("/");
+        bookCoverImagePath = value.url_zip_file.split("/");
         bookCoverImagePath = bookCoverImagePath[bookCoverImagePath.length - 2];
         bookCoverImagePath = `https://archive.org/services/get-item-image.php?identifier=${bookCoverImagePath}`;
         // console.log(bookCoverImagePath);
         bookCoverURL.push(bookCoverImagePath);
       });
-      // }
+      setBookCovers(bookCoverURL)
     }
-  });
+  },[data.books]);
 
   const windowWidth = Dimensions.get("window").width;
   const windowHeight = Dimensions.get("window").height;
@@ -66,13 +64,13 @@ function Audiobooks(props) {
       <View style={styles.ImageContainer}>
         {/*<ListItem.Title>{item.title}</ListItem.Title>*/}
         <Avatar
-          source={{ uri: bookCoverURL[index] }}
+          source={{ uri: bookCovers[index] }}
           style={{ width: windowWidth / 2 - 42, height: windowHeight / 5 }}
           onPress={() =>
             navigation.navigate("Audio", [
               item.url_rss,
               item.id,
-              bookCoverURL[index],
+              bookCovers[index],
             ])
           }
         />
@@ -85,7 +83,7 @@ function Audiobooks(props) {
 
   if (!loadingAudioBooks) {
     // console.log(data.books[1].url_zip_file)
-    console.log(data.books);
+    // console.log(data.books);
     return (
       <View>
         <View></View>
