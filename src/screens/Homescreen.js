@@ -1,6 +1,6 @@
 import React from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
-import Search from "../components/SearchBar";
+import Explore from "../components/Explore";
 import ButtonPanel from "../components/ButtonPanel";
 import Audiobooks from "../components/Audiobooks";
 
@@ -8,7 +8,7 @@ function App() {
   return (
     <View style={styles.container}>
       <View>
-        <Search />
+        <Explore />
       </View>
     </View>
   );
