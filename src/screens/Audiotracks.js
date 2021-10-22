@@ -438,7 +438,7 @@ function Audiotracks(props) {
             <TouchableOpacity onPress={() => HandlePrev()}>
               <MaterialIcons
                 name="skip-previous"
-                size={40}
+                size={50}
                 color="black"
                 style={styles.control}
               />
@@ -450,27 +450,27 @@ function Audiotracks(props) {
               <TouchableOpacity
                 onPress={() => LoadAudio(currentAudioTrackIndex.current)}
               >
-                <Ionicons
-                  name="md-reload-sharp"
-                  size={30}
+                <MaterialIcons
+                  name="not-started"
+                  size={50}
                   color="black"
                   style={styles.control}
                 />
               </TouchableOpacity>
             ) : Playing ? (
               <TouchableOpacity onPress={() => PauseAudio()}>
-                <Entypo
-                  name="controller-paus"
-                  size={40}
+                <MaterialIcons
+                  name="pause"
+                  size={50}
                   color="black"
                   style={styles.control}
                 />
               </TouchableOpacity>
             ) : (
               <TouchableOpacity>
-                <Entypo
-                  name="controller-play"
-                  size={40}
+                <MaterialIcons
+                  name="play-arrow"
+                  size={50}
                   color="black"
                   style={styles.control}
                   onPress={() => PlayAudio()}
@@ -480,7 +480,7 @@ function Audiotracks(props) {
             <TouchableOpacity onPress={() => HandleNext()}>
               <MaterialIcons
                 name="skip-next"
-                size={40}
+                size={50}
                 color="black"
                 style={styles.control}
               />
@@ -579,6 +579,7 @@ const styles = StyleSheet.create({
   },
   control: {
     backgroundColor: "blue",
+    borderRadius:25,
     color: "purple",
     margin: 30,
   },
