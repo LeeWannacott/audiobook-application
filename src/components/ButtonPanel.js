@@ -52,7 +52,7 @@ function ButtonPanel() {
         containerStyle={{
           height: 71,
           width: 340,
-          top: 24,
+          top: 5,
           left: -10,
           borderRadius: 0,
         }}

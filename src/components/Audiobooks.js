@@ -80,8 +80,7 @@ function Audiobooks(props) {
     );
   } else {
     return (
-      <View>
-        <View></View>
+      <View style={styles.ActivityIndicatorStyle}>
         <ActivityIndicator size="large" color="#00ff00" />
       </View>
     );
@@ -97,6 +96,9 @@ const styles = StyleSheet.create({
     borderStyle: "solid",
     borderWidth: 1,
     borderRadius: 2,
+  },
+  ActivityIndicatorStyle: {
+    top:20,
   },
   AudioBookListView: {
     flexDirection: "row",

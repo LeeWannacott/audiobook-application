@@ -21,14 +21,13 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "column",
     padding: 10,
-    backgroundColor: "blue",
+    backgroundColor: "darkgreen",
   },
   searchBarStyle: {
     backgroundColor: "darkgreen",
   },
   scrollStyle: {
-    top: 30,
-    height: 610,
+    height: 590,
     backgroundColor: "lightblue",
   },
   buttonStyle: {

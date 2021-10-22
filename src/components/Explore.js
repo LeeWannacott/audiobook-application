@@ -29,26 +29,14 @@ function Search(props) {
 
 export default Search;
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    flexDirection: "column",
-    padding: 10,
-    backgroundColor: "blue",
-  },
   searchStyle: {
     top: 30,
     backgroundColor: "darkgreen",
   },
   scrollStyle: {
     top: 30,
-    height: 580,
-    bottom: 100,
+    height: 590,
+    paddingBottom:20,
     backgroundColor: "lightblue",
-  },
-  buttonStyle: {
-    display: "flex",
-    alignItems: "center",
-    color: "green",
-    backgroundColor: "green",
   },
 });
