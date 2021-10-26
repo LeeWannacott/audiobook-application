@@ -578,6 +578,7 @@ const styles = StyleSheet.create({
     height: 250,
   },
   control: {
+    height:50,
     backgroundColor: "blue",
     borderRadius:25,
     color: "purple",
