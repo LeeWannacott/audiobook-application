@@ -9,10 +9,68 @@ import { ListItem, Avatar } from "react-native-elements";
 import { useNavigation } from "@react-navigation/native";
 import React, { useState, useEffect } from "react";
 
-function Audiobooks(props) {
+import * as SQLite from "expo-sqlite";
+import * as FileSystem from "expo-file-system";
+
+function openDatabase() {
+  if (Platform.OS === "web") {
+    return {
+      transaction: () => {
+        return {
+          executeSql: () => {},
+        };
+      },
+    };
+  }
+
+  const db = SQLite.openDatabase("db.db");
+  return db;
+}
+
+const db = openDatabase();
+
+export default function Audiobooks(props) {
   const [loadingAudioBooks, setLoadingAudioBooks] = useState(true);
   const [data, setData] = useState([]);
   const [bookCovers, setBookCovers] = useState([]);
+  const [forceUpdate, forceUpdateId] = useForceUpdate();
+
+  React.useEffect(() => {
+    db.transaction((tx) => {
+      tx.executeSql(
+        "create table if not exists test1 (id integer primary key not null, done int, value text, value2 text, value3 text);"
+      );
+    });
+  }, []);
+
+  const add = (text, text2, text3) => {
+    // is text empty?
+    if (text === null || text === "") {
+      return false;
+    }
+
+    if (text2 === null || text2 === "") {
+      return false;
+    }
+
+    if (text2 === null || text3 === "") {
+      return false;
+    }
+
+    db.transaction(
+      (tx) => {
+        tx.executeSql(
+          "insert into test1 (done, value, value2,value3) values (0, ?,?,?)",
+          [text, text2, text3]
+        );
+        tx.executeSql("select * from test1", [], (_, { rows }) =>
+          console.log(JSON.stringify(rows))
+        );
+      },
+      null,
+      forceUpdate
+    );
+  };
 
   const bookCoverURL = [];
   useEffect(() => {
@@ -53,13 +111,20 @@ function Audiobooks(props) {
         <Avatar
           source={{ uri: bookCovers[index] }}
           style={{ width: windowWidth / 2 - 42, height: windowHeight / 5 }}
-          onPress={() =>
+          onPress={() => {
+            console.log(item.url_rss, item.id, bookCovers[index]);
+            console.log(
+              typeof item.url_rss,
+              typeof item.id,
+              typeof bookCovers[index]
+            );
+            add(item.url_rss, item.id, bookCovers[index]);
             navigation.navigate("Audio", [
               item.url_rss,
               item.id,
               bookCovers[index],
-            ])
-          }
+            ]);
+          }}
         />
       </View>
     </ListItem>
@@ -88,6 +153,12 @@ function Audiobooks(props) {
 }
 
 const windowWidth = Dimensions.get("window").width;
+
+function useForceUpdate() {
+  const [value, setValue] = useState(0);
+  return [() => setValue(value + 1), value];
+}
+
 const styles = StyleSheet.create({
   ImageContainer: {
     flexDirection: "column",
@@ -98,12 +169,10 @@ const styles = StyleSheet.create({
     borderRadius: 2,
   },
   ActivityIndicatorStyle: {
-    top:20,
+    top: 20,
   },
   AudioBookListView: {
     flexDirection: "row",
     backgroundColor: "green",
   },
 });
-
-export default Audiobooks;
