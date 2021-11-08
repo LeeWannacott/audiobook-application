@@ -3,17 +3,23 @@ import { ButtonGroup } from "react-native-elements";
 import Icon from "react-native-vector-icons/FontAwesome";
 import MaterialIcon from "react-native-vector-icons/MaterialIcons.js";
 import MaterialIconCommunity from "react-native-vector-icons/MaterialCommunityIcons.js";
-
+import { useNavigation } from "@react-navigation/native";
 
 
 function ButtonPanel() {
   const [selectedIndex, updateIndex] = useState(0);
 
+  const navigation = useNavigation();
   const Explore = () => (
     <MaterialIconCommunity
       name="book-search"
       size={50}
       color={selectedIndex === 0 ? "white" : "#000"}
+          onPress={() => {
+            console.log("test");
+            navigation.navigate("Home", [
+            ]);
+          }}
     />
   );
 
@@ -37,6 +43,11 @@ function ButtonPanel() {
       name="history"
       size={50}
       color={selectedIndex === 3 ? "white" : "#000"}
+          onPress={() => {
+            console.log("test");
+            navigation.navigate("History", [
+            ]);
+          }}
     />
   );
 

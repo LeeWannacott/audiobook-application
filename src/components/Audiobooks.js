@@ -88,6 +88,7 @@ export default function Audiobooks(props) {
   }, [props.searchBarInput]);
 
   useEffect(() => {
+    console.log(data.books)
     if (data.books != null || data.books != undefined) {
       const dataKeys = Object.values(data.books);
       var bookCoverImagePath;
