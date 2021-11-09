@@ -57,7 +57,7 @@ function History() {
   const windowHeight = Dimensions.get("window").height;
   const navigation = useNavigation();
   const renderItem = ({ item, index }) => (
-    <ListItem topDivider>
+    <ListItem topDivider style={styles.AudioBookListView}>
       <View style={styles.ImageContainer}>
         <Avatar
           source={{ uri: item.value3 }}
@@ -84,18 +84,18 @@ function History() {
     console.log(audiobookHistory["_array"]);
     return (
       <View>
-        <View>
-          <Text>hello world {}</Text>
+        <View style={styles.test}>
+          <FlatList
+            data={audiobookHistory["_array"]}
+            keyExtractor={keyExtractor}
+            renderItem={renderItem}
+            numColumns={2}
+            backgroundColor="black"
+            containerStyle={styles.test}
+          />
+          <ButtonPanel buttonPressedIndex={3}/>
         </View>
-        <FlatList
-          data={audiobookHistory["_array"]}
-          keyExtractor={keyExtractor}
-          renderItem={renderItem}
-          numColumns={2}
-          backgroundColor="black"
-        />
-        <View>
-          <ButtonPanel styles={styles.buttonStyle} />
+        <View styles={styles.buttonStyle}>
         </View>
       </View>
     );
@@ -110,21 +110,29 @@ function History() {
 
 export default History;
 
+const windowWidth = Dimensions.get("window").width;
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
+  ImageContainer: {
     flexDirection: "column",
+    backgroundColor: "red",
+    width: windowWidth / 2 - 40,
+    borderStyle: "solid",
+    borderWidth: 1,
+    borderRadius: 2,
+  },
+  test: {
     padding: 10,
-    backgroundColor: "darkgreen",
-  },
-  searchBarStyle: {
-    backgroundColor: "darkgreen",
-  },
-  scrollStyle: {
-    height: 590,
-    backgroundColor: "lightblue",
+    paddingTop: 50,
+    paddingBottom:0,
+    marginTop: 150,
+    bottom: 162,
+    color: "blue",
+    backgroundColor: "green",
   },
   buttonStyle: {
-    backgroundColor: "black",
+    paddingTop:0,
   },
+  ActivityIndicatorStyle:{
+    top:100,
+  }
 });

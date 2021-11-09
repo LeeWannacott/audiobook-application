@@ -128,10 +128,11 @@ function Audiotracks(props) {
           currentAudiotrackPosition
         );
 
-        let newArray = [...linearProgessBar]
-        newArray[currentAudioTrackIndex.current] = linearProgessBar[currentAudioTrackIndex.current] =
-            data.positionMillis / data.durationMillis
-        setlinearProgressBar(newArray)
+        let newArray = [...linearProgessBar];
+        newArray[currentAudioTrackIndex.current] = linearProgessBar[
+          currentAudioTrackIndex.current
+        ] = data.positionMillis / data.durationMillis;
+        setlinearProgressBar(newArray);
 
         return setCurrentAudiotrackPosition(
           ((data.positionMillis / data.durationMillis) * 100).toFixed(2)
@@ -303,6 +304,7 @@ function Audiotracks(props) {
   };
 
   const keyExtractor = (item, index) => index.toString();
+  // TODO: error handle if null/undefined i.e no reader listed/read by.
   const renderItem = ({ item, index }) => (
     <View>
       <ListItem bottomDivider>
@@ -312,7 +314,8 @@ function Audiotracks(props) {
           </ListItem.Title>
           <ListItem.Subtitle>{item.genres}</ListItem.Subtitle>
           <ListItem.Subtitle>
-            Read by: {item.readers[0].display_name}
+            Read by:{" "}
+            {item.readers[0]["display_name"]}
           </ListItem.Subtitle>
           <ListItem.Subtitle>Playtime: {item.playtime}</ListItem.Subtitle>
           <LinearProgress
@@ -578,9 +581,9 @@ const styles = StyleSheet.create({
     height: 250,
   },
   control: {
-    height:50,
+    height: 50,
     backgroundColor: "blue",
-    borderRadius:25,
+    borderRadius: 25,
     color: "purple",
     margin: 30,
   },

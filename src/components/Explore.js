@@ -21,7 +21,7 @@ function Search(props) {
         <AudioBooks searchBarInput={search} />
       </View>
       <View>
-        <ButtonPanel styles={styles.buttonStyle} />
+        <ButtonPanel buttonPressedIndex={0} />
       </View>
     </View>
   );
@@ -30,13 +30,12 @@ function Search(props) {
 export default Search;
 const styles = StyleSheet.create({
   searchStyle: {
-    top: 30,
+    top: 20,
     backgroundColor: "darkgreen",
   },
   scrollStyle: {
-    top: 30,
-    height: 590,
-    paddingBottom:20,
+    top: 20,
+    height: 600,
     backgroundColor: "lightblue",
   },
 });
