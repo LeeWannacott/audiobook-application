@@ -33,7 +33,7 @@ function History() {
 
   useEffect(() => {
     db.transaction((tx) => {
-      tx.executeSql("select * from test1", [], (_, { rows }) => {
+      tx.executeSql("select * from test2", [], (_, { rows }) => {
         // console.log(JSON.stringify(rows));
         // console.log(typeof JSON.stringify(rows));
         // console.log(typeof rows);
@@ -60,19 +60,23 @@ function History() {
     <ListItem topDivider style={styles.AudioBookListView}>
       <View style={styles.ImageContainer}>
         <Avatar
-          source={{ uri: item.value3 }}
+          source={{ uri: item.audiobook_image }}
           style={{ width: windowWidth / 2 - 42, height: windowHeight / 5 }}
           onPress={() => {
-            console.log(item.value, item.value2, item.value3);
             console.log(
-              typeof item.value,
-              typeof item.value2,
-              typeof item.value3
+              item.audiobook_rss_url,
+              item.audiobook_id,
+              item.audiobook_image
+            );
+            console.log(
+              typeof item.audiobook_rss_url,
+              typeof item.audiobook_id,
+              typeof item.audiobook_image
             );
             navigation.navigate("Audio", [
-              item.value,
-              item.value2,
-              item.value3,
+              item.audiobook_rss_url,
+              item.audiobook_id,
+              item.audiobook_image,
             ]);
           }}
         />
@@ -91,11 +95,11 @@ function History() {
             renderItem={renderItem}
             numColumns={2}
             backgroundColor="black"
-            containerStyle={styles.test}
+      containerStyle={{bottom:10}}
           />
-          <ButtonPanel buttonPressedIndex={3}/>
-        </View>
-        <View styles={styles.buttonStyle}>
+          <View styles={styles.buttonStyle}>
+            <ButtonPanel buttonPressedIndex={3} />
+          </View>
         </View>
       </View>
     );
@@ -122,17 +126,17 @@ const styles = StyleSheet.create({
   },
   test: {
     padding: 10,
-    paddingTop: 50,
-    paddingBottom:0,
-    marginTop: 150,
-    bottom: 162,
+    paddingTop: 40,
+    paddingBottom: 0,
+    // bottom: 162,
+    height: 750,
     color: "blue",
     backgroundColor: "green",
   },
   buttonStyle: {
-    paddingTop:0,
+    paddingTop: 0,
   },
-  ActivityIndicatorStyle:{
-    top:100,
-  }
+  ActivityIndicatorStyle: {
+    top: 150,
+  },
 });

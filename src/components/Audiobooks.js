@@ -38,38 +38,38 @@ export default function Audiobooks(props) {
   React.useEffect(() => {
     db.transaction((tx) => {
       tx.executeSql(
-        "create table if not exists test1 (id integer primary key not null, done int, value text, value2 text, value3 text);"
+        "create table if not exists test2 (id integer primary key not null, audiobook_rss_url text, audiobook_id text, audiobook_image text);"
       );
     });
   }, []);
 
-  const add = (text, text2, text3) => {
+  const add = (audiobook_rss_url, audiobook_id, audiobook_image) => {
     // is text empty?
-    if (text === null || text === "") {
+    if (audiobook_rss_url === null || audiobook_rss_url === "") {
       return false;
     }
 
-    if (text2 === null || text2 === "") {
+    if (audiobook_id === null || audiobook_id === "") {
       return false;
     }
 
-    if (text2 === null || text3 === "") {
+    if (audiobook_image === null || audiobook_image === "") {
       return false;
     }
 
-    db.transaction(
-      (tx) => {
-        tx.executeSql(
-          "insert into test1 (done, value, value2,value3) values (0, ?,?,?)",
-          [text, text2, text3]
-        );
-        tx.executeSql("select * from test1", [], (_, { rows }) =>
-          console.log(JSON.stringify(rows))
-        );
-      },
-      null,
-      forceUpdate
-    );
+      db.transaction(
+        (tx) => {
+          tx.executeSql(
+            "insert into test2 (audiobook_rss_url, audiobook_id, audiobook_image) values (?,?,?)",
+            [audiobook_rss_url, audiobook_id, audiobook_image]
+          );
+          tx.executeSql("select * from test2", [], (_, { rows }) =>
+            console.log(JSON.stringify(rows))
+          );
+        },
+        null,
+        forceUpdate
+      );
   };
 
   const bookCoverURL = [];
@@ -88,12 +88,12 @@ export default function Audiobooks(props) {
   }, [props.searchBarInput]);
 
   useEffect(() => {
-    console.log(data.books)
+    console.log(data.books);
     if (data.books != null || data.books != undefined) {
       const dataKeys = Object.values(data.books);
       var bookCoverImagePath;
-      dataKeys.forEach((value) => {
-        bookCoverImagePath = value.url_zip_file.split("/");
+      dataKeys.forEach((bookCoverURLPath) => {
+        bookCoverImagePath = bookCoverURLPath.url_zip_file.split("/");
         bookCoverImagePath = bookCoverImagePath[bookCoverImagePath.length - 2];
         bookCoverImagePath = `https://archive.org/services/get-item-image.php?identifier=${bookCoverImagePath}`;
         bookCoverURL.push(bookCoverImagePath);

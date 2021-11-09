@@ -77,6 +77,7 @@ function ButtonPanel(props) {
           left: -10,
           borderRadius: 0,
           top: 0,
+          padding:0,
         }}
       />
     </>
