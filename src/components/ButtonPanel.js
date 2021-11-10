@@ -26,6 +26,9 @@ function ButtonPanel(props) {
       name="bookshelf"
       size={50}
       color={selectedIndex === 1 ? "white" : "#000"}
+      onPress={() => {
+      navigation.navigate("Bookshelf", []);
+      }}
     />
   );
 

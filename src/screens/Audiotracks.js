@@ -25,6 +25,26 @@ import {
   Text,
   View,
 } from "react-native";
+import MaterialIconCommunity from "react-native-vector-icons/MaterialCommunityIcons.js";
+
+import * as SQLite from "expo-sqlite";
+
+function openDatabase() {
+  if (Platform.OS === "web") {
+    return {
+      transaction: () => {
+        return {
+          executeSql: () => {},
+        };
+      },
+    };
+  }
+
+  const db = SQLite.openDatabase("db.db");
+  return db;
+}
+
+const db = openDatabase();
 
 function Audiotracks(props) {
   const [AudioBookData, setAudioBookData] = useState([]);
@@ -48,9 +68,46 @@ function Audiotracks(props) {
 
   const [lengthOfSections, setLengthOfSections] = useState(0);
   const [linearProgessBar, setlinearProgressBar] = useState([]);
+  const [bookIconColor, setBookIconColor] = useState(true);
 
   const [AudioBooksRSSLinkToAudioTracks, AudioBookId, bookCoverImage] =
     props.route.params;
+
+  React.useEffect(() => {
+    db.transaction((tx) => {
+      tx.executeSql(
+        "create table if not exists bookshelf (id integer primary key not null, audiobook_rss_url text, audiobook_id text, audiobook_image text);"
+      );
+    });
+  }, []);
+
+  const add = (audiobook_rss_url, audiobook_id, audiobook_image) => {
+    // is text empty?
+    if (audiobook_rss_url === null || audiobook_rss_url === "") {
+      return false;
+    }
+
+    if (audiobook_id === null || audiobook_id === "") {
+      return false;
+    }
+
+    if (audiobook_image === null || audiobook_image === "") {
+      return false;
+    }
+
+    db.transaction(
+      (tx) => {
+        tx.executeSql(
+          "insert into bookshelf (audiobook_rss_url, audiobook_id, audiobook_image) values (?,?,?)",
+          [audiobook_rss_url, audiobook_id, audiobook_image]
+        );
+        tx.executeSql("select * from bookshelf", [], (_, { rows }) =>
+          console.log(JSON.stringify(rows))
+        );
+      },
+      null,
+    );
+  };
 
   useEffect(() => {
     async function setAudioMode() {
@@ -314,8 +371,7 @@ function Audiotracks(props) {
           </ListItem.Title>
           <ListItem.Subtitle>{item.genres}</ListItem.Subtitle>
           <ListItem.Subtitle>
-            Read by:{" "}
-            {item.readers[0]["display_name"]}
+            Read by: {item.readers[0]["display_name"]}
           </ListItem.Subtitle>
           <ListItem.Subtitle>Playtime: {item.playtime}</ListItem.Subtitle>
           <LinearProgress
@@ -326,13 +382,13 @@ function Audiotracks(props) {
           />
         </ListItem.Content>
         <ListItem.Chevron />
-        <Button
+        <MaterialIconCommunity
+          name="book-play"
           onPress={() => {
             PlayFromListenButton(index);
           }}
-          title="Listen"
+          size={40}
           color="#841584"
-          accessibilityLabel="purple button"
         />
       </ListItem>
     </View>
@@ -346,6 +402,10 @@ function Audiotracks(props) {
 
   function ratingCompleted(rating) {
     // console.log("Rating is: " + rating)
+  }
+
+  function changeBookPlusColor() {
+    setBookIconColor(!bookIconColor);
   }
 
   if (!loadingAudioListeningLinks && !loadingAudiobookData) {
@@ -381,6 +441,22 @@ function Audiotracks(props) {
               startingValue={0}
               onFinishRating={ratingCompleted}
               style={{ paddingVertical: 10 }}
+            />
+            <MaterialIconCommunity
+              name={bookIconColor ? "book-outline" : "book"}
+              size={50}
+              color={bookIconColor ? "black" : "black"}
+              onPress={() => {
+                changeBookPlusColor();
+                add(
+                  AudioBooksRSSLinkToAudioTracks,
+                  AudioBookId,
+                  bookCoverImage
+                );
+                console.log("test");
+
+                // navigation.navigate("Home", []);
+              }}
             />
             <Text> Total time: {AudioBookData[0].totaltime} </Text>
           </Card>

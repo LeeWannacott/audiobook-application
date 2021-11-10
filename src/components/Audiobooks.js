@@ -10,7 +10,6 @@ import { useNavigation } from "@react-navigation/native";
 import React, { useState, useEffect } from "react";
 
 import * as SQLite from "expo-sqlite";
-import * as FileSystem from "expo-file-system";
 
 function openDatabase() {
   if (Platform.OS === "web") {
