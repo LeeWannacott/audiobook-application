@@ -62,9 +62,9 @@ export default function Audiobooks(props) {
             "insert into test2 (audiobook_rss_url, audiobook_id, audiobook_image) values (?,?,?)",
             [audiobook_rss_url, audiobook_id, audiobook_image]
           );
-          tx.executeSql("select * from test2", [], (_, { rows }) =>
-            console.log(JSON.stringify(rows))
-          );
+          // tx.executeSql("select * from test2", [], (_, { rows }) =>
+            // console.log(JSON.stringify(rows))
+          // );
         },
         null,
         forceUpdate
@@ -87,7 +87,7 @@ export default function Audiobooks(props) {
   }, [props.searchBarInput]);
 
   useEffect(() => {
-    console.log(data.books);
+    // console.log(data.books);
     if (data.books != null || data.books != undefined) {
       const dataKeys = Object.values(data.books);
       var bookCoverImagePath;
@@ -112,12 +112,6 @@ export default function Audiobooks(props) {
           source={{ uri: bookCovers[index] }}
           style={{ width: windowWidth / 2 - 42, height: windowHeight / 5 }}
           onPress={() => {
-            console.log(item.url_rss, item.id, bookCovers[index]);
-            console.log(
-              typeof item.url_rss,
-              typeof item.id,
-              typeof bookCovers[index]
-            );
             add(item.url_rss, item.id, bookCovers[index]);
             navigation.navigate("Audio", [
               item.url_rss,

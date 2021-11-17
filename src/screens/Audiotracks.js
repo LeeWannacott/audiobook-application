@@ -95,18 +95,15 @@ function Audiotracks(props) {
       return false;
     }
 
-    db.transaction(
-      (tx) => {
-        tx.executeSql(
-          "insert into bookshelf (audiobook_rss_url, audiobook_id, audiobook_image) values (?,?,?)",
-          [audiobook_rss_url, audiobook_id, audiobook_image]
-        );
-        tx.executeSql("select * from bookshelf", [], (_, { rows }) =>
-          console.log(JSON.stringify(rows))
-        );
-      },
-      null,
-    );
+    db.transaction((tx) => {
+      tx.executeSql(
+        "insert into bookshelf (audiobook_rss_url, audiobook_id, audiobook_image) values (?,?,?)",
+        [audiobook_rss_url, audiobook_id, audiobook_image]
+      );
+      tx.executeSql("select * from bookshelf", [], (_, { rows }) =>
+        console.log(JSON.stringify(rows))
+      );
+    }, null);
   };
 
   useEffect(() => {
@@ -185,11 +182,11 @@ function Audiotracks(props) {
           currentAudiotrackPosition
         );
 
-        let newArray = [...linearProgessBar];
-        newArray[currentAudioTrackIndex.current] = linearProgessBar[
+        let updatedLinearProgessBarPositions = [...linearProgessBar];
+        updatedLinearProgessBarPositions[currentAudioTrackIndex.current] = linearProgessBar[
           currentAudioTrackIndex.current
         ] = data.positionMillis / data.durationMillis;
-        setlinearProgressBar(newArray);
+        setlinearProgressBar(updatedLinearProgessBarPositions);
 
         return setCurrentAudiotrackPosition(
           ((data.positionMillis / data.durationMillis) * 100).toFixed(2)
@@ -217,7 +214,6 @@ function Audiotracks(props) {
     try {
       const checkLoading = await sound.current.getStatusAsync();
       if (checkLoading.isLoaded === true) {
-        setCurrentAudiotrackPosition(0);
         SetPlaying(false);
         await sound.current.setPositionAsync(0);
         await sound.current.stopAsync();
@@ -317,6 +313,7 @@ function Audiotracks(props) {
       const unloadSound = await sound.current.unloadAsync();
       if (unloadSound.isLoaded === false) {
         currentAudioTrackIndex.current += 1;
+        setCurrentAudiotrackPosition(0);
         ResetPlayer();
         return LoadAudio(currentAudioTrackIndex.current);
       }
@@ -324,6 +321,7 @@ function Audiotracks(props) {
       const unloadSound = await sound.current.unloadAsync();
       if (unloadSound.isLoaded === false) {
         currentAudioTrackIndex.current = 0;
+        setCurrentAudiotrackPosition(0);
         ResetPlayer();
         return LoadAudio(currentAudioTrackIndex.current);
       }
@@ -352,6 +350,7 @@ function Audiotracks(props) {
     try {
       const unloadSound = await sound.current.unloadAsync();
       if (unloadSound.isLoaded === false) {
+        setCurrentAudiotrackPosition(0)
         ResetPlayer();
         return LoadAudio(index);
       }
