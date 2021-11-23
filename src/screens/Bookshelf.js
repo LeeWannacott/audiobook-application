@@ -8,22 +8,7 @@ import { useNavigation } from "@react-navigation/native";
 import { ListItem, Avatar } from "react-native-elements";
 import { FlatList, ActivityIndicator, Dimensions } from "react-native";
 
-import * as SQLite from "expo-sqlite";
-
-function openDatabase() {
-  if (Platform.OS === "web") {
-    return {
-      transaction: () => {
-        return {
-          executeSql: () => {},
-        };
-      },
-    };
-  }
-
-  const db = SQLite.openDatabase("db.db");
-  return db;
-}
+import {openDatabase} from "../utils"
 
 const db = openDatabase();
 
