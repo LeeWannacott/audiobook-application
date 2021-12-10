@@ -28,6 +28,7 @@
     "react-native-rss-parser": "^1.5.1",
     "react-native-safe-area-context": "3.3.2",
     "react-native-screens": "~3.8.0",
+    "react-native-settings-list": "^1.8.0",
     "react-native-sound": "^0.11.0",
     "react-native-track-player": "^1.2.7",
     "react-native-unimodules": "~0.15.0",

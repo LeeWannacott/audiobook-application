@@ -73,7 +73,7 @@ function History() {
     console.log(audiobookHistory["_array"]);
     return (
       <View>
-        <View style={styles.test}>
+        <View style={styles.flatListStyle}>
           <FlatList
             data={audiobookHistory["_array"]}
             keyExtractor={keyExtractor}
@@ -109,7 +109,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 2,
   },
-  test: {
+  flatListStyle: {
     padding: 10,
     paddingTop: 40,
     paddingBottom: 0,

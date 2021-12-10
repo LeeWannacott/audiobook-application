@@ -37,6 +37,10 @@ function ButtonPanel(props) {
       name="file-download"
       size={50}
       color={selectedIndex === 2 ? "white" : "#000"}
+      onPress={() => {
+        console.log("test");
+        navigation.navigate("Downloads", []);
+      }}
     />
   );
 
@@ -57,6 +61,9 @@ function ButtonPanel(props) {
       name="account-cog"
       size={50}
       color={selectedIndex === 4 ? "white" : "#000"}
+      onPress={() => {
+        navigation.navigate("Settings", []);
+      }}
     />
   );
 
@@ -79,6 +86,7 @@ function ButtonPanel(props) {
           width: 340,
           left: -10,
           borderRadius: 0,
+          borderWidth: 0,
           top: 0,
           padding:0,
         }}

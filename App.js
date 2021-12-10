@@ -2,6 +2,8 @@ import HomeScreen from "./src/screens/Homescreen";
 import AudioTracks from "./src/screens/Audiotracks";
 import History from "./src/screens/History";
 import Bookshelf from "./src/screens/Bookshelf";
+import Settings from "./src/screens/Settings";
+import Downloads from "./src/screens/Downloads";
 import * as React from "react";
 import { View, Text } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
@@ -18,6 +20,8 @@ function App() {
         <Stack.Screen name="Audio" component={AudioTracks} />
         <Stack.Screen name="History" component={History} />
         <Stack.Screen name="Bookshelf" component={Bookshelf} />
+        <Stack.Screen name="Settings" component={Settings} />
+        <Stack.Screen name="Downloads" component={Downloads} />
       </Stack.Navigator>
     <StatusBar style="light" backgroundColor="" translucent= {true}  />
     </NavigationContainer>
