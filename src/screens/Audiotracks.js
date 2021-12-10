@@ -61,7 +61,7 @@ function Audiotracks(props) {
   React.useEffect(() => {
     db.transaction((tx) => {
       tx.executeSql(
-        "create table if not exists bookshelf (id integer primary key not null, audiobook_rss_url text, audiobook_id text, audiobook_image text);"
+        "create table if not exists test14 (id integer primary key not null, audiobook_rss_url text not null unique, audiobook_id text not null unique, audiobook_image text);"
       );
     });
   }, []);
@@ -82,10 +82,10 @@ function Audiotracks(props) {
 
     db.transaction((tx) => {
       tx.executeSql(
-        "insert into bookshelf (audiobook_rss_url, audiobook_id, audiobook_image) values (?,?,?)",
+        "insert into test14 (audiobook_rss_url, audiobook_id, audiobook_image) values (?,?,?)",
         [audiobook_rss_url, audiobook_id, audiobook_image]
       );
-      tx.executeSql("select * from bookshelf", [], (_, { rows }) =>
+      tx.executeSql("select * from test14", [], (_, { rows }) =>
         console.log(JSON.stringify(rows))
       );
     }, null);
