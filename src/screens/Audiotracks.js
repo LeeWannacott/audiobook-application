@@ -27,7 +27,7 @@ import {
 } from "react-native";
 import MaterialIconCommunity from "react-native-vector-icons/MaterialCommunityIcons.js";
 
-import {openDatabase} from "../utils"
+import { openDatabase } from "../utils";
 
 const db = openDatabase();
 
@@ -54,6 +54,7 @@ function Audiotracks(props) {
   const [lengthOfSections, setLengthOfSections] = useState(0);
   const [linearProgessBar, setlinearProgressBar] = useState([]);
   const [bookIconColor, setBookIconColor] = useState(true);
+  const [databaseInfo, setDatabaseInfo] = useState([]);
 
   const [AudioBooksRSSLinkToAudioTracks, AudioBookId, bookCoverImage] =
     props.route.params;
@@ -64,7 +65,61 @@ function Audiotracks(props) {
         "create table if not exists test14 (id integer primary key not null, audiobook_rss_url text not null unique, audiobook_id text not null unique, audiobook_image text);"
       );
     });
+    db.transaction((tx) => {
+      tx.executeSql(
+        "create table if not exists testaudio4 (id integer primary key not null, audiobook_id text not null unique, audiotrack_positions text);"
+      );
+    });
   }, []);
+
+  const updateAudioBookPosition = (audiobook_id, audiobook_positions) => {
+    console.log("updating audiobook position");
+    audiobook_positions = JSON.stringify(audiobook_positions);
+    db.transaction((tx) => {
+      tx.executeSql(
+        `update testaudio4 set audiotrack_positions=? where audiobook_id=?;`,
+        [audiobook_positions, audiobook_id]
+      );
+    });
+
+    db.transaction((tx) => {
+      tx.executeSql("select * from testaudio4", [], (_, { rows }) => {
+        // console.log(JSON.stringify(rows));
+      });
+    }, null);
+  };
+
+  const storeAudioBookPositions = (audiobook_id, audiobook_positions) => {
+    audiobook_positions = JSON.stringify(audiobook_positions);
+    db.transaction(
+      (tx) => {
+        tx.executeSql(
+          "insert into testaudio4(audiobook_id, audiotrack_positions) values(?,?)",
+          [audiobook_id, audiobook_positions],
+        );
+      },
+
+      // db.transaction((tx) => {
+        // tx.executeSql("select * from testaudio4", [], (_, { rows }) => {
+          // console.log("testingdb2");
+          // console.log(JSON.stringify(rows));
+        // });
+      // }, null)
+    );
+
+    db.transaction((tx) => {
+      tx.executeSql("select * from testaudio4", [], (_, { rows }) => {
+        console.log(JSON.stringify(rows));
+        rows["_array"].forEach((element) => {
+          console.log(element.audiobook_id);
+          if(audiobook_id == element.audiobook_id){
+            let audiobook_positions_temp = JSON.parse(element.audiotrack_positions)
+            setlinearProgressBar(audiobook_positions_temp);
+          }
+        });
+      });
+    }, null);
+  };
 
   const add = (audiobook_rss_url, audiobook_id, audiobook_image) => {
     // is text empty?
@@ -85,9 +140,10 @@ function Audiotracks(props) {
         "insert into test14 (audiobook_rss_url, audiobook_id, audiobook_image) values (?,?,?)",
         [audiobook_rss_url, audiobook_id, audiobook_image]
       );
-      tx.executeSql("select * from test14", [], (_, { rows }) =>
-        console.log(JSON.stringify(rows))
-      );
+      tx.executeSql("select * from test14", [], (_, { rows }) => {
+        console.log(JSON.stringify(rows));
+        console.log(rows);
+      });
     }, null);
   };
 
@@ -142,7 +198,10 @@ function Audiotracks(props) {
 
   useEffect(() => {
     let AudiotracksProgressBars = new Array(lengthOfSections).fill(0);
+    // will only happen if no entry in db already.
+    storeAudioBookPositions(AudioBookId, AudiotracksProgressBars);
     setlinearProgressBar(AudiotracksProgressBars);
+
     console.log("useEffect");
   }, []);
 
@@ -168,10 +227,11 @@ function Audiotracks(props) {
         );
 
         let updatedLinearProgessBarPositions = [...linearProgessBar];
-        updatedLinearProgessBarPositions[currentAudioTrackIndex.current] = linearProgessBar[
-          currentAudioTrackIndex.current
-        ] = data.positionMillis / data.durationMillis;
+        updatedLinearProgessBarPositions[currentAudioTrackIndex.current] =
+          linearProgessBar[currentAudioTrackIndex.current] =
+            data.positionMillis / data.durationMillis;
         setlinearProgressBar(updatedLinearProgessBarPositions);
+        updateAudioBookPosition(AudioBookId, linearProgessBar);
 
         return setCurrentAudiotrackPosition(
           ((data.positionMillis / data.durationMillis) * 100).toFixed(2)
@@ -335,7 +395,7 @@ function Audiotracks(props) {
     try {
       const unloadSound = await sound.current.unloadAsync();
       if (unloadSound.isLoaded === false) {
-        setCurrentAudiotrackPosition(0)
+        setCurrentAudiotrackPosition(0);
         ResetPlayer();
         return LoadAudio(index);
       }

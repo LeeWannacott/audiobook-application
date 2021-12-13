@@ -51,18 +51,7 @@ const userSettings = () => {
         <SettingsList>
           <SettingsList.Header
             headerText="Audiobook settings"
-            headerStyle={{ color: "black" }}
-          />
-          <SettingsList.Item
-            hasNavArrow={false}
-            title="Wireless & networks"
-            titleStyle={{
-              color: "#009688",
-              marginBottom: 10,
-              fontWeight: "500",
-            }}
-            itemWidth={50}
-            borderHide={"Both"}
+            headerStyle={{ color: "#009688", marginTop: 20 }}
           />
           <SettingsList.Item
             icon={
@@ -99,7 +88,7 @@ const userSettings = () => {
           <SettingsList.Item hasNavArrow={false} title="Switch Example" />
           <SettingsList.Header
             headerText="About"
-            headerStyle={{ color: "#009688", marginTop: 50 }}
+            headerStyle={{ color: "#009688", marginTop: 20 }}
           />
           <SettingsList.Item
             icon={
