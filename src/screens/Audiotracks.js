@@ -245,6 +245,9 @@ function Audiotracks(props) {
           data.durationMillis,
           currentSliderPosition
         );
+        let sliderPositionCalculate =
+          (data.positionMillis / data.durationMillis) * 100;
+        setCurrentSliderPosition(sliderPositionCalculate);
 
         let updatedLinearProgessBarPositions = [...linearProgessBars];
         updatedLinearProgessBarPositions[currentAudioTrackIndex.current] =
@@ -264,9 +267,6 @@ function Audiotracks(props) {
           AudioBookId,
           linearProgessBars,
           currentAudiotrackPositionsMs
-        );
-        setCurrentSliderPosition(
-          ((data.positionMillis / data.durationMillis) * 100).toFixed(2)
         );
       }
     } catch (error) {
@@ -438,7 +438,7 @@ function Audiotracks(props) {
       if (unloadSound.isLoaded === false) {
         setCurrentSliderPosition(0);
         ResetPlayer();
-        return LoadAudio(index, currentAudiotrackPositionsMs[currentAudioTrackIndex]);
+        return LoadAudio(index, currentAudiotrackPositionsMs[index]);
       }
     } catch (e) {
       console.log(e);
