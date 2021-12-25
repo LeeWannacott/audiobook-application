@@ -4,6 +4,7 @@ import {
   SafeAreaView,
   TouchableOpacity,
   Dimensions,
+  InteractionManager,
 } from "react-native";
 import {
   ListItem,
@@ -54,8 +55,7 @@ function Audiotracks(props) {
   const [linearProgessBars, setlinearProgressBars] = useState([]);
   const [currentAudiotrackPositionsMs, setCurrentAudiotrackPositionsMs] =
     useState([]);
-  const [bookIconColor, setBookIconColor] = useState(true);
-  const [databaseInfo, setDatabaseInfo] = useState([]);
+  const [shelveIconToggle, setShelveIconToggle] = useState(0);
 
   const [AudioBooksRSSLinkToAudioTracks, AudioBookId, bookCoverImage] =
     props.route.params;
@@ -63,12 +63,12 @@ function Audiotracks(props) {
   React.useEffect(() => {
     db.transaction((tx) => {
       tx.executeSql(
-        "create table if not exists test14 (id integer primary key not null, audiobook_rss_url text not null unique, audiobook_id text not null unique, audiobook_image text);"
+        "create table if not exists testShelve15 (id integer primary key not null, audiobook_rss_url text not null unique, audiobook_id text not null unique, audiobook_image text);"
       );
     });
     db.transaction((tx) => {
       tx.executeSql(
-        "create table if not exists testaudio5 (id integer primary key not null, audiobook_id text not null unique, audiotrack_progress_bars text, current_audiotrack_positions text);"
+        "create table if not exists testaudio13 (id integer primary key not null, audiobook_id text not null unique, audiotrack_progress_bars text, current_audiotrack_positions text, audiobook_shelved int);"
       );
     });
   }, []);
@@ -83,14 +83,27 @@ function Audiotracks(props) {
     current_audiotrack_positions = JSON.stringify(current_audiotrack_positions);
     db.transaction((tx) => {
       tx.executeSql(
-        `update testaudio5 set audiotrack_progress_bars=?,current_audiotrack_positions=? where audiobook_id=?;`,
+        `update testaudio13 set audiotrack_progress_bars=?,current_audiotrack_positions=? where audiobook_id=?;`,
         [audiotrack_progress_bars, current_audiotrack_positions, audiobook_id]
       );
     });
+  };
 
+  const updateBookShelevedDB = (
+    audiobook_id,
+    audiobook_shelved
+  ) => {
+    console.log("updating audiobook position",audiobook_shelved);
+    console.log("audiobook shelve value",audiobook_shelved);
     db.transaction((tx) => {
-      tx.executeSql("select * from testaudio5", [], (_, { rows }) => {
-        console.log("updating", JSON.stringify(rows));
+      tx.executeSql(
+        `update testaudio13 set audiobook_shelved=? where audiobook_id=?;`,
+        [audiobook_shelved, audiobook_id]
+      );
+    });
+    db.transaction((tx) => {
+      tx.executeSql("select * from testaudio13", [], (_, { rows }) => {
+        console.log("updating shelve", JSON.stringify(rows));
       });
     }, null);
   };
@@ -98,46 +111,57 @@ function Audiotracks(props) {
   const storeAudioBookPositions = (
     audiobook_id,
     audiotrack_progress_bars,
-    current_audiotrack_positions
+    current_audiotrack_positions,
+    audiobook_shelved
+
   ) => {
     audiotrack_progress_bars = JSON.stringify(audiotrack_progress_bars);
     current_audiotrack_positions = JSON.stringify(current_audiotrack_positions);
+    console.log("store",audiobook_shelved)
     db.transaction((tx) => {
       tx.executeSql(
-        "insert into testaudio5(audiobook_id, audiotrack_progress_bars, current_audiotrack_positions) values(?,?,?)",
-        [audiobook_id, audiotrack_progress_bars, current_audiotrack_positions]
+        "insert into testaudio13(audiobook_id, audiotrack_progress_bars, current_audiotrack_positions,audiobook_shelved) values(?,?,?,?)",
+        [audiobook_id, audiotrack_progress_bars, current_audiotrack_positions, audiobook_shelved]
       );
     });
 
     db.transaction((tx) => {
-      tx.executeSql("select * from testaudio5", [], (_, { rows }) => {
+      tx.executeSql("select * from testaudio13", [], (_, { rows }) => {
         console.log("testingdb2");
-        console.log(JSON.stringify(rows));
+        // console.log(JSON.stringify(rows));
       });
     });
 
     db.transaction((tx) => {
-      tx.executeSql("select * from testaudio5", [], (_, { rows }) => {
-        console.log(JSON.stringify(rows));
+      tx.executeSql("select * from testaudio13", [], (_, { rows }) => {
+        // console.log(JSON.stringify(rows));
         rows["_array"].forEach((element) => {
           console.log(element.audiobook_id);
           if (audiobook_id == element.audiobook_id) {
-            console.log(element);
+            // console.log(element);
             let audiobook_positions_temp = JSON.parse(
               element.audiotrack_progress_bars
             );
             let audiotrack_positionsMS = JSON.parse(
               element.current_audiotrack_positions
             );
+            let audiobookShelved = parseInt(element.audiobook_shelved)
+            console.log("yoyo bannana",element.audiobook_shelved,audiobookShelved)
+            console.log(typeof audiobookShelved)
             setlinearProgressBars(audiobook_positions_temp);
             setCurrentAudiotrackPositionsMs(audiotrack_positionsMS);
+            setShelveIconToggle(element.audiobook_shelved)
           }
         });
       });
     }, null);
   };
 
-  const add = (audiobook_rss_url, audiobook_id, audiobook_image) => {
+  const shelveAudiobookDB = (
+    audiobook_rss_url,
+    audiobook_id,
+    audiobook_image
+  ) => {
     // is text empty?
     if (audiobook_rss_url === null || audiobook_rss_url === "") {
       return false;
@@ -153,12 +177,28 @@ function Audiotracks(props) {
 
     db.transaction((tx) => {
       tx.executeSql(
-        "insert into test14 (audiobook_rss_url, audiobook_id, audiobook_image) values (?,?,?)",
+        "insert into testShelve15 (audiobook_rss_url, audiobook_id, audiobook_image) values (?,?,?)",
         [audiobook_rss_url, audiobook_id, audiobook_image]
       );
-      tx.executeSql("select * from test14", [], (_, { rows }) => {
+      tx.executeSql("select * from testShelve15", [], (_, { rows }) => {
         console.log(JSON.stringify(rows));
         console.log(rows);
+      });
+    }, null);
+  };
+
+  const unShelveAudioBook = (audiobook_id) => {
+    if (audiobook_id === null || audiobook_id === "") {
+      return false;
+    }
+
+    db.transaction((tx) => {
+      tx.executeSql("delete from testShelve15 where audiobook_id=?", [
+        audiobook_id,
+      ]);
+      tx.executeSql("select * from testShelve15", [], (_, { rows }) => {
+        // console.log(JSON.stringify(rows));
+        // console.log(rows);
       });
     }, null);
   };
@@ -213,14 +253,15 @@ function Audiotracks(props) {
   }, []);
 
   useEffect(() => {
-    let initialAudiBookSections = new Array(lengthOfSections).fill(0);
-    setlinearProgressBars(initialAudiBookSections);
-    setCurrentAudiotrackPositionsMs(initialAudiBookSections);
+    let initialAudioBookSections = new Array(lengthOfSections).fill(0);
+    setlinearProgressBars(initialAudioBookSections);
+    setCurrentAudiotrackPositionsMs(initialAudioBookSections);
     // will only happen if no entry in db already.
     storeAudioBookPositions(
       AudioBookId,
-      initialAudiBookSections,
-      initialAudiBookSections
+      initialAudioBookSections,
+      initialAudioBookSections,
+      shelveIconToggle
     );
     console.log("useEffect");
   }, []);
@@ -337,7 +378,10 @@ function Audiotracks(props) {
           setAudioTrackReader(
             AudioBookData[0].sections[index].readers[0]["display_name"]
           );
-          sound.current.setOnPlaybackStatusUpdate(UpdateStatus);
+          InteractionManager.runAfterInteractions(() => {
+            // ...long-running synchronous task...
+            sound.current.setOnPlaybackStatusUpdate(UpdateStatus);
+          });
           setLoadingCurrentAudiotrack(false);
           setLoadedCurrentAudiotrack(true);
           SetDuration(result.durationMillis);
@@ -489,8 +533,24 @@ function Audiotracks(props) {
     // console.log("Rating is: " + rating)
   }
 
-  function changeBookPlusColor() {
-    setBookIconColor(!bookIconColor);
+  function pressedToShelveBook(
+    audiobook_rss_url,
+    audiobook_id,
+    audiobook_image
+  ) {
+    switch (shelveIconToggle) {
+      case 0:
+        setShelveIconToggle(1);
+        shelveAudiobookDB(audiobook_rss_url, audiobook_id, audiobook_image);
+        updateBookShelevedDB(audiobook_id, !shelveIconToggle)
+        break;
+      case 1:
+        // remove from db
+        setShelveIconToggle(0);
+        updateBookShelevedDB(audiobook_id, !shelveIconToggle)
+        unShelveAudioBook(audiobook_id);
+        break;
+    }
   }
 
   if (!loadingAudioListeningLinks && !loadingAudiobookData) {
@@ -528,12 +588,11 @@ function Audiotracks(props) {
               style={{ paddingVertical: 10 }}
             />
             <MaterialIconCommunity
-              name={bookIconColor ? "book-outline" : "book"}
+              name={shelveIconToggle ? "book" : "book-outline"}
               size={50}
-              color={bookIconColor ? "black" : "black"}
+              color={shelveIconToggle ? "black" : "black"}
               onPress={() => {
-                changeBookPlusColor();
-                add(
+                pressedToShelveBook(
                   AudioBooksRSSLinkToAudioTracks,
                   AudioBookId,
                   bookCoverImage
@@ -610,12 +669,7 @@ function Audiotracks(props) {
               <ActivityIndicator size={"large"} color={"dodgerblue"} />
             ) : loadedCurrentAudiotrack === false ? (
               <TouchableOpacity
-                onPress={() =>
-                  LoadAudio(
-                    currentAudioTrackIndex.current,
-                    currentAudiotrackPositionsMs[currentAudioTrackIndex.current]
-                  )
-                }
+                onPress={() => LoadAudio(currentAudioTrackIndex.current)}
               >
                 <MaterialIcons
                   name="not-started"

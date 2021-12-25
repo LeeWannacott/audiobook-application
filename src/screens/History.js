@@ -18,7 +18,7 @@ function History() {
 
   useEffect(() => {
     db.transaction((tx) => {
-      tx.executeSql("select * from test13", [], (_, { rows }) => {
+      tx.executeSql("select * from testHistory13", [], (_, { rows }) => {
         // console.log(JSON.stringify(rows));
         // console.log(typeof JSON.stringify(rows));
         // console.log(typeof rows);
