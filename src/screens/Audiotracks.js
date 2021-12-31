@@ -9,7 +9,6 @@ import {
 import {
   ListItem,
   Image,
-  Tile,
   LinearProgress,
   Card,
   Rating,
@@ -17,11 +16,9 @@ import {
 import * as rssParser from "react-native-rss-parser";
 import { Audio } from "expo-av";
 import Slider from "@react-native-community/slider";
-import { Ionicons, MaterialIcons, Entypo } from "@expo/vector-icons";
+import {  MaterialIcons } from "@expo/vector-icons";
 import {
   FlatList,
-  Button,
-  ScrollView,
   StyleSheet,
   Text,
   View,
@@ -45,10 +42,9 @@ function Audiotracks(props) {
     useState(false);
   const [loadedCurrentAudiotrack, setLoadedCurrentAudiotrack] = useState(false);
   const [volume, setVolume] = useState(1.0);
-  const [audioTrackLength, setAudioTrackLength] = useState(0);
   const [Playing, SetPlaying] = useState(false);
   const [Duration, SetDuration] = useState(0);
-  const [audioTrackPlayingTitle, setAudioTrackPlayingTitle] = useState("");
+  const [audioTrackChapterPlayingTitle, setAudioTrackChapterPlayingTitle] = useState("");
   const [audioTrackReader, setAudioTrackReader] = useState("");
   const [currentSliderPosition, setCurrentSliderPosition] = React.useState(0);
 
@@ -94,7 +90,6 @@ function Audiotracks(props) {
   ) => {
     audiotrack_progress_bars = JSON.stringify(audiotrack_progress_bars);
     current_audiotrack_positions = JSON.stringify(current_audiotrack_positions);
-    console.log("store",audiobook_shelved)
     initialAudioBookStoreDB(db,audiobook_id,audiotrack_progress_bars,current_audiotrack_positions,audiobook_shelved)
 
     // initial load of audiotrack data from DB.
@@ -190,7 +185,6 @@ function Audiotracks(props) {
       initialAudioBookSections,
       shelveIconToggle
     );
-    console.log("useEffect");
   }, []);
 
   React.useEffect(() => {
@@ -245,7 +239,6 @@ function Audiotracks(props) {
   const SeekUpdate = async (data) => {
     try {
       const result = await sound.current.getStatusAsync();
-      console.log("seek update");
       if (result.isLoaded == true) {
         const result = (data / 100) * Duration;
         return await sound.current.setPositionAsync(Math.round(result));
@@ -297,7 +290,7 @@ function Audiotracks(props) {
           setLoadingCurrentAudiotrack(false);
           setLoadedCurrentAudiotrack(false);
         } else {
-          setAudioTrackPlayingTitle(
+          setAudioTrackChapterPlayingTitle(
             AudioBookData[0].sections[index].section_number +
               ". " +
               AudioBookData[0].sections[index].title
@@ -571,13 +564,14 @@ function Audiotracks(props) {
             <Image
               source={{ uri: bookCoverImage }}
               style={{
-                width: 40,
-                height: 40,
+                width: 50,
+                height: 50,
+                marginRight:5,
               }}
             />
             <View>
-              <Text> {audioTrackPlayingTitle} </Text>
-              <Text> {audioTrackReader} </Text>
+      <Text numberOfLines={2} ellipsizeMode="tail" style={{}}> {audioTrackChapterPlayingTitle} </Text>
+              <Text numberOfLines={1} ellipsizeMode="tail" > {audioTrackReader} </Text>
             </View>
           </View>
         </View>
@@ -650,6 +644,7 @@ function Audiotracks(props) {
   }
 }
 
+const windowWidth = Dimensions.get("window").width;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -673,26 +668,24 @@ const styles = StyleSheet.create({
   },
   AudiobookTime: {
     display: "flex",
-    backgroundColor: "purple",
+    backgroundColor: "white",
     flexDirection: "row",
     justifyContent: "space-between",
     // top: -200,
     // padding: 10,
-    flex: 1,
+    minHeight:20,
   },
   SliderStyle: {
-    backgroundColor: "purple",
+    backgroundColor: "white",
     // top: -200,
     // padding: 10,
-    flex: 1,
+    // flex: 1,
   },
   SliderContainer: {
-    backgroundColor: "orange",
-    display: "flex",
+    backgroundColor: "white",
     flexDirection: "row",
-    flexWrap: "nowrap",
-    // top: -200,
-    // padding: 10,
+    paddingLeft:5,
+    maxWidth: windowWidth-70, 
   },
   listItemHeaderStyle: {
     fontSize: 20,
@@ -727,7 +720,7 @@ const styles = StyleSheet.create({
   },
   control: {
     height: 50,
-    backgroundColor: "blue",
+    backgroundColor: "black",
     borderRadius: 25,
     color: "purple",
     margin: 30,

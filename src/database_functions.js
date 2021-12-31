@@ -92,7 +92,6 @@ export function initialAudioBookStoreDB(
 
   db.transaction((tx) => {
     tx.executeSql("select * from testaudio13", [], (_, { rows }) => {
-      console.log("testingdb2");
     });
   });
 }
