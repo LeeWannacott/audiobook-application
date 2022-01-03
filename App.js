@@ -5,7 +5,6 @@ import Bookshelf from "./src/screens/Bookshelf";
 import Settings from "./src/screens/Settings";
 import Downloads from "./src/screens/Downloads";
 import * as React from "react";
-import { View, Text } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { StatusBar } from "expo-status-bar";

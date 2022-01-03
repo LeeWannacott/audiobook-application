@@ -1,8 +1,6 @@
 import React from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import Explore from "../components/Explore";
-import ButtonPanel from "../components/ButtonPanel";
-import Audiobooks from "../components/Audiobooks";
 
 function App() {
   return (

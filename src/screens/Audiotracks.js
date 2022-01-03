@@ -422,7 +422,7 @@ function Audiotracks(props) {
           <ListItem.Subtitle>
             Read by: {item.readers[0]["display_name"]}
           </ListItem.Subtitle>
-          <ListItem.Subtitle>Playtime: {item.playtime}</ListItem.Subtitle>
+          <ListItem.Subtitle>Playtime: {GetDurationFormat(item.playtime)}</ListItem.Subtitle>
           <LinearProgress
             color="primary"
             value={linearProgessBars[index]}
@@ -522,7 +522,7 @@ function Audiotracks(props) {
                 // navigation.navigate("Home", []);
               }}
             />
-            <Text> Total time: {AudioBookData[0].totaltime} </Text>
+            <Text> Total playtime: {AudioBookData[0].totaltime} </Text>
           </Card>
         </View>
       );

@@ -5,7 +5,7 @@ import { View } from "react-native";
 import { StyleSheet } from "react-native";
 import ButtonPanel from "../components/ButtonPanel";
 
-function Search(props) {
+function Search() {
   const [search, updateSearch] = useState("");
 
   return (
@@ -20,7 +20,7 @@ function Search(props) {
       <View style={styles.scrollStyle}>
         <AudioBooks searchBarInput={search} />
       </View>
-      <View>
+      <View style={styles.buttonStyle}>
         <ButtonPanel buttonPressedIndex={0} />
       </View>
     </View>
@@ -33,9 +33,12 @@ const styles = StyleSheet.create({
     top: 20,
     backgroundColor: "darkgreen",
   },
+  buttonStyle: {
+    paddingTop: 0,
+  },
   scrollStyle: {
     top: 20,
     height: 600,
-    backgroundColor: "lightblue",
+    backgroundColor: "black",
   },
 });

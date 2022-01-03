@@ -7,15 +7,16 @@ import { useNavigation } from "@react-navigation/native";
 
 function ButtonPanel(props) {
   const [selectedIndex, updateIndex] = useState(props.buttonPressedIndex);
+  const [buttonColor, setButtonColor] = useState("#F0F6FC");
+  const [colorButtonPressed, setColorButtonPressed] = useState("#58A6FF");
 
   const navigation = useNavigation();
   const Explore = () => (
     <MaterialIconCommunity
       name="book-search"
       size={50}
-      color={selectedIndex === 0 ? "white" : "#000"}
+      color={selectedIndex === 0 ? colorButtonPressed : "white"}
       onPress={() => {
-        console.log("test");
         navigation.navigate("Home", []);
       }}
     />
@@ -25,7 +26,7 @@ function ButtonPanel(props) {
     <MaterialIconCommunity
       name="bookshelf"
       size={50}
-      color={selectedIndex === 1 ? "white" : "#000"}
+      color={selectedIndex === 1 ? colorButtonPressed : buttonColor}
       onPress={() => {
       navigation.navigate("Bookshelf", []);
       }}
@@ -36,9 +37,8 @@ function ButtonPanel(props) {
     <MaterialIcon
       name="file-download"
       size={50}
-      color={selectedIndex === 2 ? "white" : "#000"}
+      color={selectedIndex === 2 ? colorButtonPressed : buttonColor}
       onPress={() => {
-        console.log("test");
         navigation.navigate("Downloads", []);
       }}
     />
@@ -48,9 +48,8 @@ function ButtonPanel(props) {
     <MaterialIcon
       name="history"
       size={50}
-      color={selectedIndex === 3 ? "white" : "#000"}
+      color={selectedIndex === 3 ? colorButtonPressed : buttonColor}
       onPress={() => {
-        console.log("test");
         navigation.navigate("History", []);
       }}
     />
@@ -60,7 +59,7 @@ function ButtonPanel(props) {
     <MaterialIconCommunity
       name="account-cog"
       size={50}
-      color={selectedIndex === 4 ? "white" : "#000"}
+      color={selectedIndex === 4 ? colorButtonPressed : buttonColor}
       onPress={() => {
         navigation.navigate("Settings", []);
       }}
@@ -80,9 +79,16 @@ function ButtonPanel(props) {
       <ButtonGroup
         onPress={updateIndex}
         selectedIndex={selectedIndex}
+        // underlayColor={"red"}
+        innerBorderStyle={{color:"#161B22"}}
+        // setOpacityTo={1}
+        // activeOpacity={1}
         buttons={buttons}
+        // buttonStyle={{backgroundColor:"red"}}
+        selectedButtonStyle={{backgroundColor:"#161B22"}}
         containerStyle={{
           height: 71,
+          backgroundColor:"#161B22",
           width: 340,
           left: -10,
           borderRadius: 0,
