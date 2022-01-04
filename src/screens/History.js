@@ -100,6 +100,8 @@ function History() {
 export default History;
 
 const windowWidth = Dimensions.get("window").width;
+const windowHeight = Dimensions.get("window").height;
+
 const styles = StyleSheet.create({
   ImageContainer: {
     flexDirection: "column",
@@ -116,12 +118,13 @@ const styles = StyleSheet.create({
     // bottom: 162,
     height: 750,
     color: "blue",
-    backgroundColor: "green",
+    backgroundColor: "#331800",
   },
   buttonStyle: {
     paddingTop: 0,
   },
   ActivityIndicatorStyle: {
-    top: 150,
+    top: windowHeight / 2,
+    color: "green",
   },
 });

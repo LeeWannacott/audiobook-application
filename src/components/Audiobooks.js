@@ -10,7 +10,11 @@ import { useNavigation } from "@react-navigation/native";
 import React, { useState, useEffect } from "react";
 
 import * as SQLite from "expo-sqlite";
-import {openDatabase} from "../utils"
+import { openDatabase } from "../utils";
+import {
+  createHistoryTableDB,
+  addAudiobookToHistoryDB,
+} from "../database_functions";
 
 const db = openDatabase();
 
@@ -18,43 +22,17 @@ export default function Audiobooks(props) {
   const [loadingAudioBooks, setLoadingAudioBooks] = useState(true);
   const [data, setData] = useState([]);
   const [bookCovers, setBookCovers] = useState([]);
-  const [forceUpdate, forceUpdateId] = useForceUpdate();
 
   React.useEffect(() => {
-    db.transaction((tx) => {
-      tx.executeSql(
-        "create table if not exists testHistory13 (id integer primary key not null, audiobook_rss_url text not null unique, audiobook_id text not null unique, audiobook_image text);"
-      );
-    });
+    createHistoryTableDB(db);
   }, []);
 
-  const add = (audiobook_rss_url, audiobook_id, audiobook_image) => {
-    // is text empty?
-    if (audiobook_rss_url === null || audiobook_rss_url === "") {
-      return false;
-    }
-
-    if (audiobook_id === null || audiobook_id === "") {
-      return false;
-    }
-
-    if (audiobook_image === null || audiobook_image === "") {
-      return false;
-    }
-
-      db.transaction(
-        (tx) => {
-          tx.executeSql(
-            "insert into testHistory13 (audiobook_rss_url, audiobook_id, audiobook_image) values (?,?,?)",
-            [audiobook_rss_url, audiobook_id, audiobook_image]
-          );
-          // tx.executeSql("select * from test3", [], (_, { rows }) =>
-            // console.log(JSON.stringify(rows))
-          // );
-        },
-        null,
-        forceUpdate
-      );
+  const addAudiobookToHistory  = (
+    audiobook_rss_url,
+    audiobook_id,
+    audiobook_image
+  ) => {
+    addAudiobookToHistoryDB(db, audiobook_rss_url, audiobook_id, audiobook_image);
   };
 
   const bookCoverURL = [];
@@ -98,7 +76,7 @@ export default function Audiobooks(props) {
           source={{ uri: bookCovers[index] }}
           style={{ width: windowWidth / 2 - 42, height: windowHeight / 5 }}
           onPress={() => {
-            add(item.url_rss, item.id, bookCovers[index]);
+            addAudiobookToHistory(item.url_rss, item.id, bookCovers[index]);
             navigation.navigate("Audio", [
               item.url_rss,
               item.id,
@@ -133,11 +111,7 @@ export default function Audiobooks(props) {
 }
 
 const windowWidth = Dimensions.get("window").width;
-
-function useForceUpdate() {
-  const [value, setValue] = useState(0);
-  return [() => setValue(value + 1), value];
-}
+const windowHeight = Dimensions.get("window").height;
 
 const styles = StyleSheet.create({
   ImageContainer: {
@@ -149,7 +123,8 @@ const styles = StyleSheet.create({
     borderRadius: 2,
   },
   ActivityIndicatorStyle: {
-    top: 20,
+    top: windowHeight / 2,
+    color: "green",
   },
   AudioBookListView: {
     flexDirection: "row",

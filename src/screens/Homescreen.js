@@ -19,7 +19,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "column",
     padding: 10,
-    backgroundColor: "darkgreen",
+    backgroundColor: "#331800",
   },
   searchBarStyle: {
     backgroundColor: "darkgreen",

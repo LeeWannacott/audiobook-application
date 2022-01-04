@@ -1,4 +1,3 @@
-
 import React from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { useState, useEffect } from "react";
@@ -8,7 +7,7 @@ import { useNavigation } from "@react-navigation/native";
 import { ListItem, Avatar } from "react-native-elements";
 import { FlatList, ActivityIndicator, Dimensions } from "react-native";
 
-import {openDatabase} from "../utils"
+import { openDatabase } from "../utils";
 
 const db = openDatabase();
 
@@ -81,7 +80,7 @@ function History() {
             renderItem={renderItem}
             numColumns={2}
             backgroundColor="black"
-      containerStyle={{bottom:10}}
+            containerStyle={{ bottom: 10 }}
           />
           <View styles={styles.buttonStyle}>
             <ButtonPanel buttonPressedIndex={1} />
@@ -91,9 +90,9 @@ function History() {
     );
   } else {
     return (
-      <View style={styles.ActivityIndicatorStyle}>
-        <ActivityIndicator size="large" color="#00ff00" />
-      </View>
+        <View style={styles.ActivityIndicatorStyle}>
+          <ActivityIndicator size="large" color="#00ff00" />
+        </View>
     );
   }
 }
@@ -101,6 +100,7 @@ function History() {
 export default History;
 
 const windowWidth = Dimensions.get("window").width;
+const windowHeight = Dimensions.get("window").height;
 const styles = StyleSheet.create({
   ImageContainer: {
     flexDirection: "column",
@@ -117,12 +117,13 @@ const styles = StyleSheet.create({
     // bottom: 162,
     height: 750,
     color: "blue",
-    backgroundColor: "green",
+    backgroundColor: "#331800",
   },
   buttonStyle: {
     paddingTop: 0,
   },
   ActivityIndicatorStyle: {
-    top: 150,
+    top: windowHeight / 2,
+    color: "green",
   },
 });

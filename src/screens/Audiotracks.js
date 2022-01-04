@@ -16,19 +16,22 @@ import {
 import * as rssParser from "react-native-rss-parser";
 import { Audio } from "expo-av";
 import Slider from "@react-native-community/slider";
-import {  MaterialIcons } from "@expo/vector-icons";
-import {
-  FlatList,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { MaterialIcons } from "@expo/vector-icons";
+import { FlatList, StyleSheet, Text, View } from "react-native";
 import MaterialIconCommunity from "react-native-vector-icons/MaterialCommunityIcons.js";
 
 import { openDatabase } from "../utils";
 
 const db = openDatabase();
-import { createTablesDB,updateAudioTrackPositionsDB, shelveAudiobookDB ,updateBookShelveDB,initialAudioBookStoreDB,removeShelvedAudiobookDB} from "../database_functions"
+import {
+  createTablesDB,
+  updateAudioTrackPositionsDB,
+  shelveAudiobookDB,
+  updateBookShelveDB,
+  initialAudioBookStoreDB,
+  removeShelvedAudiobookDB,
+  updateAudiobookRatingDB,
+} from "../database_functions";
 
 function Audiotracks(props) {
   const [AudioBookData, setAudioBookData] = useState([]);
@@ -44,7 +47,8 @@ function Audiotracks(props) {
   const [volume, setVolume] = useState(1.0);
   const [Playing, SetPlaying] = useState(false);
   const [Duration, SetDuration] = useState(0);
-  const [audioTrackChapterPlayingTitle, setAudioTrackChapterPlayingTitle] = useState("");
+  const [audioTrackChapterPlayingTitle, setAudioTrackChapterPlayingTitle] =
+    useState("");
   const [audioTrackReader, setAudioTrackReader] = useState("");
   const [currentSliderPosition, setCurrentSliderPosition] = React.useState(0);
 
@@ -53,12 +57,13 @@ function Audiotracks(props) {
   const [currentAudiotrackPositionsMs, setCurrentAudiotrackPositionsMs] =
     useState([]);
   const [shelveIconToggle, setShelveIconToggle] = useState(0);
+  const [audiobookRating, setAudiobookRating] = useState(0);
 
   const [AudioBooksRSSLinkToAudioTracks, AudioBookId, bookCoverImage] =
     props.route.params;
 
   React.useEffect(() => {
-    createTablesDB(db)
+    createTablesDB(db);
   }, []);
 
   const updateAudioBookPosition = (
@@ -69,32 +74,41 @@ function Audiotracks(props) {
     console.log("updating audiobook position");
     audiotrack_progress_bars = JSON.stringify(audiotrack_progress_bars);
     current_audiotrack_positions = JSON.stringify(current_audiotrack_positions);
-    updateAudioTrackPositionsDB(db,audiotrack_progress_bars,current_audiotrack_positions,audiobook_id)
+    updateAudioTrackPositionsDB(
+      db,
+      audiotrack_progress_bars,
+      current_audiotrack_positions,
+      audiobook_id
+    );
   };
 
-  const updateBookShelve = (
-    audiobook_id,
-    audiobook_shelved
-  ) => {
-    console.log("updating audiobook position",audiobook_shelved);
-    console.log("audiobook shelve value",audiobook_shelved);
-    updateBookShelveDB(db, audiobook_id,audiobook_shelved)
+  const updateBookShelve = (audiobook_id, audiobook_shelved) => {
+    console.log("updating audiobook position", audiobook_shelved);
+    console.log("audiobook shelve value", audiobook_shelved);
+    updateBookShelveDB(db, audiobook_id, audiobook_shelved);
   };
 
   const initialAudioBookStore = (
     audiobook_id,
     audiotrack_progress_bars,
     current_audiotrack_positions,
-    audiobook_shelved
-
+    audiobook_shelved,
+    audiotrack_rating
   ) => {
     audiotrack_progress_bars = JSON.stringify(audiotrack_progress_bars);
     current_audiotrack_positions = JSON.stringify(current_audiotrack_positions);
-    initialAudioBookStoreDB(db,audiobook_id,audiotrack_progress_bars,current_audiotrack_positions,audiobook_shelved)
+    initialAudioBookStoreDB(
+      db,
+      audiobook_id,
+      audiotrack_progress_bars,
+      current_audiotrack_positions,
+      audiobook_shelved,
+      audiotrack_rating
+    );
 
     // initial load of audiotrack data from DB.
     db.transaction((tx) => {
-      tx.executeSql("select * from testaudio13", [], (_, { rows }) => {
+      tx.executeSql("select * from testaudio14", [], (_, { rows }) => {
         rows["_array"].forEach((element) => {
           if (audiobook_id == element.audiobook_id) {
             let audiobook_positions_temp = JSON.parse(
@@ -105,12 +119,12 @@ function Audiotracks(props) {
             );
             setlinearProgressBars(audiobook_positions_temp);
             setCurrentAudiotrackPositionsMs(audiotrack_positionsMS);
-            setShelveIconToggle(element.audiobook_shelved)
+            setShelveIconToggle(element.audiobook_shelved);
+            setAudiobookRating(element.audiobook_rating);
           }
         });
       });
     }, null);
-
   };
 
   const shelveAudiobook = (
@@ -118,11 +132,11 @@ function Audiotracks(props) {
     audiobook_id,
     audiobook_image
   ) => {
-    shelveAudiobookDB(db,audiobook_rss_url,audiobook_id,audiobook_image)
+    shelveAudiobookDB(db, audiobook_rss_url, audiobook_id, audiobook_image);
   };
 
   const removeShelvedAudiobook = (audiobook_id) => {
-    removeShelvedAudiobookDB(db,audiobook_id)
+    removeShelvedAudiobookDB(db, audiobook_id);
   };
 
   useEffect(() => {
@@ -183,7 +197,8 @@ function Audiotracks(props) {
       AudioBookId,
       initialAudioBookSections,
       initialAudioBookSections,
-      shelveIconToggle
+      shelveIconToggle,
+      audiobookRating
     );
   }, []);
 
@@ -422,7 +437,9 @@ function Audiotracks(props) {
           <ListItem.Subtitle>
             Read by: {item.readers[0]["display_name"]}
           </ListItem.Subtitle>
-          <ListItem.Subtitle>Playtime: {GetDurationFormat(item.playtime)}</ListItem.Subtitle>
+          <ListItem.Subtitle>
+            Playtime: {GetDurationFormat(item.playtime)}
+          </ListItem.Subtitle>
           <LinearProgress
             color="primary"
             value={linearProgessBars[index]}
@@ -449,8 +466,10 @@ function Audiotracks(props) {
     listRSSURLS.push(value.enclosures[0].url);
   });
 
+
+
   function ratingCompleted(rating) {
-    // console.log("Rating is: " + rating)
+    updateAudiobookRatingDB(db,AudioBookId,rating)
   }
 
   function pressedToShelveBook(
@@ -462,12 +481,12 @@ function Audiotracks(props) {
       case 0:
         setShelveIconToggle(1);
         shelveAudiobook(audiobook_rss_url, audiobook_id, audiobook_image);
-        updateBookShelve(audiobook_id, !shelveIconToggle)
+        updateBookShelve(audiobook_id, !shelveIconToggle);
         break;
       case 1:
         // remove from db
         setShelveIconToggle(0);
-        updateBookShelve(audiobook_id, !shelveIconToggle)
+        updateBookShelve(audiobook_id, !shelveIconToggle);
         removeShelvedAudiobook(audiobook_id);
         break;
     }
@@ -503,7 +522,7 @@ function Audiotracks(props) {
             <Rating
               showRating
               ratingCount={5}
-              startingValue={0}
+              startingValue={audiobookRating}
               onFinishRating={ratingCompleted}
               style={{ paddingVertical: 10 }}
             />
@@ -566,12 +585,18 @@ function Audiotracks(props) {
               style={{
                 width: 50,
                 height: 50,
-                marginRight:5,
+                marginRight: 5,
               }}
             />
             <View>
-      <Text numberOfLines={2} ellipsizeMode="tail" style={{}}> {audioTrackChapterPlayingTitle} </Text>
-              <Text numberOfLines={1} ellipsizeMode="tail" > {audioTrackReader} </Text>
+              <Text numberOfLines={2} ellipsizeMode="tail" style={{}}>
+                {" "}
+                {audioTrackChapterPlayingTitle}{" "}
+              </Text>
+              <Text numberOfLines={1} ellipsizeMode="tail">
+                {" "}
+                {audioTrackReader}{" "}
+              </Text>
             </View>
           </View>
         </View>
@@ -645,6 +670,7 @@ function Audiotracks(props) {
 }
 
 const windowWidth = Dimensions.get("window").width;
+const windowHeight = Dimensions.get("window").height;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -673,7 +699,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     // top: -200,
     // padding: 10,
-    minHeight:20,
+    minHeight: 20,
   },
   SliderStyle: {
     backgroundColor: "white",
@@ -684,8 +710,8 @@ const styles = StyleSheet.create({
   SliderContainer: {
     backgroundColor: "white",
     flexDirection: "row",
-    paddingLeft:5,
-    maxWidth: windowWidth-70, 
+    paddingLeft: 5,
+    maxWidth: windowWidth - 70,
   },
   listItemHeaderStyle: {
     fontSize: 20,
@@ -693,8 +719,8 @@ const styles = StyleSheet.create({
     backgroundColor: "black",
   },
   ActivityIndicatorStyle: {
-    top: 100,
-    // top:100,
+    top: windowHeight / 2,
+    color: "green",
   },
   bookTitle: {
     // top:100,
