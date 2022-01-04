@@ -202,6 +202,7 @@ function Audiotracks(props) {
     );
   }, []);
 
+
   React.useEffect(() => {
     return sound
       ? () => {
@@ -438,7 +439,7 @@ function Audiotracks(props) {
             Read by: {item.readers[0]["display_name"]}
           </ListItem.Subtitle>
           <ListItem.Subtitle>
-            Playtime: {GetDurationFormat(item.playtime)}
+            Playtime: {chapterDurations[index]}
           </ListItem.Subtitle>
           <LinearProgress
             color="primary"
@@ -460,16 +461,16 @@ function Audiotracks(props) {
     </View>
   );
 
-  const listRSSURLS = [];
   const rssURLS = Object.entries(dataRSS);
-  rssURLS.forEach(([key, value]) => {
-    listRSSURLS.push(value.enclosures[0].url);
+  const listRSSURLS = rssURLS.map(([key, value]) => {
+    return value.enclosures[0].url;
   });
 
-
+  const chapterDurations = dataRSS.map(item => item["itunes"].duration)
+  console.log(chapterDurations)
 
   function ratingCompleted(rating) {
-    updateAudiobookRatingDB(db,AudioBookId,rating)
+    updateAudiobookRatingDB(db, AudioBookId, rating);
   }
 
   function pressedToShelveBook(
