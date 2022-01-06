@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import {
   ActivityIndicator,
-  SafeAreaView,
   TouchableOpacity,
   Dimensions,
   InteractionManager,
@@ -201,7 +200,6 @@ function Audiotracks(props) {
       audiobookRating
     );
   }, []);
-
 
   React.useEffect(() => {
     return sound
@@ -438,15 +436,15 @@ function Audiotracks(props) {
           <ListItem.Subtitle>
             Read by: {item.readers[0]["display_name"]}
           </ListItem.Subtitle>
-          <ListItem.Subtitle>
-            Playtime: {chapterDurations[index]}
-          </ListItem.Subtitle>
           <LinearProgress
             color="primary"
             value={linearProgessBars[index]}
             variant="determinate"
             trackColor="lightblue"
           />
+          <ListItem.Subtitle>
+            Playtime: {chapterDurations[index]}
+          </ListItem.Subtitle>
         </ListItem.Content>
         <ListItem.Chevron />
         <MaterialIconCommunity
@@ -466,8 +464,8 @@ function Audiotracks(props) {
     return value.enclosures[0].url;
   });
 
-  const chapterDurations = dataRSS.map(item => item["itunes"].duration)
-  console.log(chapterDurations)
+  const chapterDurations = dataRSS.map((item) => item["itunes"].duration);
+  console.log(chapterDurations);
 
   function ratingCompleted(rating) {
     updateAudiobookRatingDB(db, AudioBookId, rating);
