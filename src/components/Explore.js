@@ -10,7 +10,8 @@ import MaterialIconCommunity from "react-native-vector-icons/MaterialCommunityIc
 function Search() {
   const [search, updateSearch] = useState("");
   const [userInputEntered, setUserInputEntered] = useState("");
-  const [requestAudiobookAmount, setRequestAudiobookAmount] = useState(76);
+  const [requestAudiobookAmount, setRequestAudiobookAmount] = useState(26);
+  const [authorLastName, setAuthorLastName] = useState("dickens");
   // const [search, setRequestAudiobookAmount] = useState("*")
   const [checkboxChecked, setCheckboxChecked] = useState(false);
 
@@ -69,6 +70,7 @@ function Search() {
         <AudioBooks
           searchBarInput={userInputEntered}
           requestAudiobookAmount={requestAudiobookAmount}
+          authorLastName={authorLastName}
         />
       </View>
       <View style={styles.buttonStyle}>

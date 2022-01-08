@@ -37,11 +37,13 @@ export default function Audiobooks(props) {
 
   const bookCoverURL = [];
   useEffect(() => {
+    setLoadingAudioBooks(true);
     let searchQuery = props.searchBarInput;
     searchQuery = searchQuery.replace(/\s/g, "%20");
-    const amountOfAudiobooks = props.requestAudiobookAmount
+    let amountOfAudiobooks = props.requestAudiobookAmount
+    // let authorLastName = props.authorLastName
     fetch(
-      `https://librivox.org/api/feed/audiobooks/?&title=^${searchQuery}&extended=1&format=json&limit=${amountOfAudiobooks}`
+      `https://librivox.org/api/feed/audiobooks/?&title=^${searchQuery}&extended=1&format=json&limit=${amountOfAudiobooks}&offset=0`
     )
       .then((response) => response.json())
       .then((json) => setData(json))
@@ -49,7 +51,7 @@ export default function Audiobooks(props) {
       .finally(() => {
         setLoadingAudioBooks(false);
       });
-  }, [props.searchBarInput]);
+  }, [props.searchBarInput, props.requestAudiobookAmount]);
 
   useEffect(() => {
     // console.log(data.books);
