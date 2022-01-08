@@ -39,8 +39,9 @@ export default function Audiobooks(props) {
   useEffect(() => {
     let searchQuery = props.searchBarInput;
     searchQuery = searchQuery.replace(/\s/g, "%20");
+    const amountOfAudiobooks = props.requestAudiobookAmount
     fetch(
-      `https://librivox.org/api/feed/audiobooks/?&title=^${searchQuery}&extended=1&format=json`
+      `https://librivox.org/api/feed/audiobooks/?&title=^${searchQuery}&extended=1&format=json&limit=${amountOfAudiobooks}`
     )
       .then((response) => response.json())
       .then((json) => setData(json))
