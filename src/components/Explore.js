@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { SearchBar, Overlay, CheckBox, Slider } from "react-native-elements";
 import AudioBooks from "../components/Audiobooks";
-import { View, Dimensions, Text } from "react-native";
+import { Switch, View, Dimensions, Text } from "react-native";
 import { StyleSheet } from "react-native";
 import ButtonPanel from "../components/ButtonPanel";
 import { MaterialIcons } from "@expo/vector-icons";
@@ -16,6 +16,10 @@ function Search() {
   const [checkboxChecked, setCheckboxChecked] = useState(false);
 
   const [visible, setVisible] = useState(false);
+  const [searchByTitleOrAuthor, setSearchByTitleOrAuthor] = useState(false);
+  const toggleSwitch = () =>
+    setSearchByTitleOrAuthor((previousState) => !previousState);
+  const [titleOrAuthorString, setTitleOrAuthorString] = useState("Title");
   const toggleOverlay = () => {
     setVisible(!visible);
   };
@@ -29,8 +33,10 @@ function Search() {
         <View style={styles.searchStyle}>
           <SearchBar
             placeholder="Search for AudioBook.."
-            onChangeText={(val) => {updateSearch(val)}}
-            onSubmitEditing={()=> setUserInputEntered(search)}
+            onChangeText={(val) => {
+              updateSearch(val);
+            }}
+            onSubmitEditing={() => setUserInputEntered(search)}
             value={search}
             inputContainerStyle={{ marginRight: -7 }}
           />
@@ -47,30 +53,54 @@ function Search() {
           onBackdropPress={toggleOverlay}
           fullScreen={false}
         >
+          <View style={styles.titleOrAuthorStringFlexbox}>
+            <Switch
+              trackColor={{ false: "#767577", true: "#81b0ff" }}
+              thumbColor={searchByTitleOrAuthor ? "#f5dd4b" : "#f4f3f4"}
+              ios_backgroundColor="#3e3e3e"
+              onValueChange={(value) => {
+                toggleSwitch(value),
+                  searchByTitleOrAuthor
+                    ? setTitleOrAuthorString("Title")
+                    : setTitleOrAuthorString("Authors last name.");
+              }}
+              value={searchByTitleOrAuthor}
+            />
+            <Text>{`Search by: ${titleOrAuthorString}`}</Text>
+          </View>
           <View style={styles.checkboxRow}>
-            <Text>Audiobooks requested per search: {requestAudiobookAmount}.</Text>
+            <Text>
+              Audiobooks requested per search: {requestAudiobookAmount}.
+            </Text>
           </View>
 
-            <Slider
-              value={requestAudiobookAmount}
-              maximumValue={1000}
-              minimumValue={1}
-              onSlidingComplete={apiFunction}
-              step={1}
-    trackStyle={{ height: 10, width:windowWidth -50, backgroundColor: "transparent" }}
-              thumbStyle={{
-                height: 12,
-                width: 12,
-                backgroundColor: "black",
-              }}
-            />
+          <Slider
+            value={requestAudiobookAmount}
+            maximumValue={1000}
+            minimumValue={1}
+            onSlidingComplete={apiFunction}
+            step={1}
+            trackStyle={{
+              height: 10,
+              width: windowWidth - 50,
+              backgroundColor: "transparent",
+            }}
+            thumbStyle={{
+              height: 12,
+              width: 12,
+              backgroundColor: "black",
+            }}
+          />
         </Overlay>
       </View>
       <View style={styles.scrollStyle}>
         <AudioBooks
-          searchBarInput={userInputEntered}
+          searchBarInputSubmitted={userInputEntered}
+          searchBarCurrentText={search}
           requestAudiobookAmount={requestAudiobookAmount}
           authorLastName={authorLastName}
+          searchByTitleOrAuthor={searchByTitleOrAuthor}
+          
         />
       </View>
       <View style={styles.buttonStyle}>
@@ -114,6 +144,11 @@ const styles = StyleSheet.create({
   },
   buttonStyle: {
     paddingTop: 0,
+  },
+  titleOrAuthorStringFlexbox: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
   },
   scrollStyle: {
     top: 20,

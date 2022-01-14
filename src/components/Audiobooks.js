@@ -22,28 +22,38 @@ export default function Audiobooks(props) {
   const [loadingAudioBooks, setLoadingAudioBooks] = useState(true);
   const [data, setData] = useState([]);
   const [bookCovers, setBookCovers] = useState([]);
+  const [queryTitleOrAuthor, setQueryTitleOrAuthor] = useState([]);
 
   React.useEffect(() => {
     createHistoryTableDB(db);
   }, []);
 
-  const addAudiobookToHistory  = (
+  const addAudiobookToHistory = (
     audiobook_rss_url,
     audiobook_id,
     audiobook_image
   ) => {
-    addAudiobookToHistoryDB(db, audiobook_rss_url, audiobook_id, audiobook_image);
+    addAudiobookToHistoryDB(
+      db,
+      audiobook_rss_url,
+      audiobook_id,
+      audiobook_image
+    );
   };
 
   const bookCoverURL = [];
   useEffect(() => {
     setLoadingAudioBooks(true);
-    let searchQuery = props.searchBarInput;
+    let searchQuery = props.searchBarCurrentText;
     searchQuery = searchQuery.replace(/\s/g, "%20");
-    let amountOfAudiobooks = props.requestAudiobookAmount
-    // let authorLastName = props.authorLastName
+    let amountOfAudiobooks = props.requestAudiobookAmount;
+    let titleOrAuthorString = "title";
+    props.searchByTitleOrAuthor
+      ? (titleOrAuthorString = "author")
+      : (titleOrAuthorString = "title");
+
     fetch(
-      `https://librivox.org/api/feed/audiobooks/?&title=^${searchQuery}&extended=1&format=json&limit=${amountOfAudiobooks}&offset=0`
+      `https://librivox.org/api/feed/audiobooks/?${titleOrAuthorString}=${searchQuery}&extended=1&format=json&limit=${amountOfAudiobooks}`
     )
       .then((response) => response.json())
       .then((json) => setData(json))
@@ -51,7 +61,11 @@ export default function Audiobooks(props) {
       .finally(() => {
         setLoadingAudioBooks(false);
       });
-  }, [props.searchBarInput, props.requestAudiobookAmount]);
+  }, [
+    props.searchBarInputSubmitted,
+    props.requestAudiobookAmount,
+    props.searchByTitleOrAuthor,
+  ]);
 
   useEffect(() => {
     // console.log(data.books);
@@ -93,8 +107,7 @@ export default function Audiobooks(props) {
 
   if (!loadingAudioBooks) {
     return (
-      <View>
-        <View></View>
+      <View style={styles.audiobookContainer}>
         <FlatList
           data={data.books}
           keyExtractor={keyExtractor}
@@ -106,8 +119,12 @@ export default function Audiobooks(props) {
     );
   } else {
     return (
-      <View style={styles.ActivityIndicatorStyle}>
-        <ActivityIndicator size="large" color="#00ff00" />
+      <View>
+        <ActivityIndicator
+          size="large"
+          color="#00ff00"
+          style={styles.ActivityIndicatorStyle}
+        />
       </View>
     );
   }
@@ -125,8 +142,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 2,
   },
+  audiobookContainer:{
+    paddingBottom:15,
+  },
   ActivityIndicatorStyle: {
-    top: windowHeight / 2,
+    top: windowHeight / 2 -90,
     color: "green",
   },
   AudioBookListView: {
