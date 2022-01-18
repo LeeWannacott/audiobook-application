@@ -4,22 +4,22 @@ import AudioBooks from "../components/Audiobooks";
 import { Switch, View, Dimensions, Text } from "react-native";
 import { StyleSheet } from "react-native";
 import ButtonPanel from "../components/ButtonPanel";
-import { MaterialIcons } from "@expo/vector-icons";
+// import { MaterialIcons } from "@expo/vector-icons";
 import MaterialIconCommunity from "react-native-vector-icons/MaterialCommunityIcons.js";
 
 function Search() {
   const [search, updateSearch] = useState("");
   const [userInputEntered, setUserInputEntered] = useState("");
   const [requestAudiobookAmount, setRequestAudiobookAmount] = useState(26);
-  const [authorLastName, setAuthorLastName] = useState("dickens");
   // const [search, setRequestAudiobookAmount] = useState("*")
-  const [checkboxChecked, setCheckboxChecked] = useState(false);
 
   const [visible, setVisible] = useState(false);
   const [searchByTitleOrAuthor, setSearchByTitleOrAuthor] = useState(false);
   const toggleSwitch = () =>
     setSearchByTitleOrAuthor((previousState) => !previousState);
-  const [titleOrAuthorString, setTitleOrAuthorString] = useState("Title");
+  const [titleOrAuthorStringForToggle, setTitleOrAuthorStringForToggle] = useState("Title");
+  const [titleOrAuthorStringForSearchbar, setTitleOrAuthorStringForSearchbar] =
+    useState("Title");
   const toggleOverlay = () => {
     setVisible(!visible);
   };
@@ -32,7 +32,7 @@ function Search() {
       <View style={styles.searchBarAndSettingsIcon}>
         <View style={styles.searchStyle}>
           <SearchBar
-            placeholder="Search for AudioBook.."
+            placeholder={`Search by ${titleOrAuthorStringForSearchbar}...`}
             onChangeText={(val) => {
               updateSearch(val);
             }}
@@ -61,12 +61,14 @@ function Search() {
               onValueChange={(value) => {
                 toggleSwitch(value),
                   searchByTitleOrAuthor
-                    ? setTitleOrAuthorString("Title")
-                    : setTitleOrAuthorString("Authors last name.");
+                    ? (setTitleOrAuthorStringForToggle("Audiobooks Title"),
+                      setTitleOrAuthorStringForSearchbar("Title"))
+                    : (setTitleOrAuthorStringForToggle("Authors Last Name."),
+                      setTitleOrAuthorStringForSearchbar("Author"));
               }}
               value={searchByTitleOrAuthor}
             />
-            <Text>{`Search by: ${titleOrAuthorString}`}</Text>
+            <Text>{`Search by: ${titleOrAuthorStringForToggle}`}</Text>
           </View>
           <View style={styles.checkboxRow}>
             <Text>
@@ -98,9 +100,7 @@ function Search() {
           searchBarInputSubmitted={userInputEntered}
           searchBarCurrentText={search}
           requestAudiobookAmount={requestAudiobookAmount}
-          authorLastName={authorLastName}
-          searchByTitleOrAuthor={searchByTitleOrAuthor}
-          
+          searchByAuthor={searchByTitleOrAuthor}
         />
       </View>
       <View style={styles.buttonStyle}>
@@ -110,11 +110,9 @@ function Search() {
   );
 }
 
-{
-}
-
 const windowWidth = Dimensions.get("window").width;
 export default Search;
+
 const styles = StyleSheet.create({
   searchBarAndSettingsIcon: {
     display: "flex",
@@ -129,7 +127,7 @@ const styles = StyleSheet.create({
     backgroundColor: "darkgreen",
   },
   settingsIcon: {
-    backgroundColor: "red",
+    backgroundColor: "rgb(48, 54, 61)",
     marginLeft: "auto",
     marginRight: "auto",
     marginTop: "auto",

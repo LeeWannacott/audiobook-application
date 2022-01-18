@@ -46,14 +46,17 @@ export default function Audiobooks(props) {
     setLoadingAudioBooks(true);
     let searchQuery = props.searchBarCurrentText;
     searchQuery = searchQuery.replace(/\s/g, "%20");
-    let amountOfAudiobooks = props.requestAudiobookAmount;
-    let titleOrAuthorString = "title";
-    props.searchByTitleOrAuthor
-      ? (titleOrAuthorString = "author")
-      : (titleOrAuthorString = "title");
+    const amountOfAudiobooks = props.requestAudiobookAmount;
+
+    let titleOrAuthorString = "";
+    // carot "^": to anchor the beginning of the search term.
+    let carot = "";
+    props.searchByAuthor
+      ? ((titleOrAuthorString = "author"), (carot = ""))
+      : ((titleOrAuthorString = "title"), (carot = "^"));
 
     fetch(
-      `https://librivox.org/api/feed/audiobooks/?${titleOrAuthorString}=${searchQuery}&extended=1&format=json&limit=${amountOfAudiobooks}`
+      `https://librivox.org/api/feed/audiobooks/?${titleOrAuthorString}=${carot}${searchQuery}&extended=1&format=json&limit=${amountOfAudiobooks}`
     )
       .then((response) => response.json())
       .then((json) => setData(json))
@@ -64,7 +67,7 @@ export default function Audiobooks(props) {
   }, [
     props.searchBarInputSubmitted,
     props.requestAudiobookAmount,
-    props.searchByTitleOrAuthor,
+    props.searchByAuthor,
   ]);
 
   useEffect(() => {
@@ -142,11 +145,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 2,
   },
-  audiobookContainer:{
-    paddingBottom:15,
+  audiobookContainer: {
+    paddingBottom: 15,
   },
   ActivityIndicatorStyle: {
-    top: windowHeight / 2 -90,
+    top: windowHeight / 2 - 90,
     color: "green",
   },
   AudioBookListView: {
