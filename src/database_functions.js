@@ -33,6 +33,17 @@ export function addAudiobookToHistoryDB(
   }, null);
 }
 
+
+export function deleteAudiobookHistoryDB(
+  db,
+) {
+  db.transaction((tx) => {
+    tx.executeSql(
+      "delete from testHistory13",
+    );
+  }, null);
+}
+
 export function updateAudioTrackPositionsDB(
   db,
   audiotrack_progress_bars,
