@@ -25,7 +25,6 @@ const userSettings = () => {
   function onValueChange() {
     setColorToggle(!switchValue);
   }
-
   function onValueChange2() {
     setSwitchValue2(!switchValue2);
   }
@@ -33,45 +32,16 @@ const userSettings = () => {
     deleteAudiobookHistoryDB(db);
   };
 
-  const openURLLink = async ({ url }) => {
-    // Checking if the link is supported for links with custom URL scheme.
-    const supported = await Linking.canOpenURL(url);
-    if (supported) {
-      // Opening the link with some app, if the URL scheme is "http" the web link should be opened
-      // by some browser in the mobile
-      await Linking.openURL(url);
-    } else {
-      Alert.alert(`Don't know how to open this URL: ${url}`);
-    }
-  };
-
   return (
-    <View style={{ backgroundColor: "#f6f6f6", flex: 1 }}>
-      <View
-        style={{
-          borderBottomWidth: 1,
-          backgroundColor: "#263238",
-          borderColor: "#c8c7cc",
-        }}
-      >
-        <Text
-          style={{
-            color: "white",
-            marginTop: 35,
-            marginBottom: 15,
-            marginLeft: 15,
-            fontWeight: "bold",
-            fontSize: 25,
-          }}
-        >
-          Settings
-        </Text>
+    <View style={styles.container}>
+      <View style={styles.settingsStyleBlock}>
+        <Text style={styles.settingsTitleText}>Settings</Text>
       </View>
-      <View style={{ backgroundColor: "#f6f6f6", flex: 1 }}>
+      <View style={styles.sectionHeadings}>
         <SettingsList>
           <SettingsList.Header
             headerText="Audiobook settings"
-            headerStyle={{ color: "#009688", marginTop: 20 }}
+            headerStyle={styles.audiobookSettingsSubHeading}
           />
           <SettingsList.Item
             icon={
@@ -105,7 +75,7 @@ const userSettings = () => {
             icon={
               <MaterialIconCommunity name="history" size={50} color={"black"} />
             }
-            hasNavArrow={false}
+            hasNavArrow={true}
             title="Delete History"
             onPress={() =>
               Alert.alert(
@@ -127,7 +97,7 @@ const userSettings = () => {
           />
           <SettingsList.Header
             headerText="About"
-            headerStyle={{ color: "#009688", marginTop: 20 }}
+            headerStyle={styles.sectionHeadings}
           />
           <SettingsList.Item
             icon={
@@ -159,7 +129,9 @@ const userSettings = () => {
                   },
                   {
                     text: "github",
-                    onPress: () => {Linking.openURL("https://github.com/LeeWannacott")},
+                    onPress: () => {
+                      Linking.openURL("https://github.com/LeeWannacott");
+                    },
                   },
                 ]
               )
@@ -187,25 +159,29 @@ const userSettings = () => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingTop: StatusBar.currentHeight,
-    marginHorizontal: 16,
-  },
-  item: {
-    backgroundColor: "#f9c2ff",
-    padding: 20,
-    marginVertical: 8,
-  },
-  header: {
-    fontSize: 32,
-    backgroundColor: "#fff",
-  },
+  container: { backgroundColor: "red" ,flex:1},
   title: {
     fontSize: 24,
   },
+  sectionHeadings: { backgroundColor: "#f6f6f6" ,flex:1},
+  settingsTitleText: {
+    color: "white",
+    marginTop: 35,
+    marginBottom: 15,
+    marginLeft: 15,
+    fontWeight: "bold",
+    fontSize: 25,
+  },
+  audiobookSettingsSubHeading: { color: "#009688", marginTop: 20 },
+  settingsStyleBlock: {
+    borderBottomWidth: 1,
+    backgroundColor: "#263238",
+    borderColor: "red",
+  },
   buttonStyle: {
-    paddingTop: 0,
+    position:"absolute",
+    backgroundColor:"yellow",
+    height:200,
   },
 });
 
