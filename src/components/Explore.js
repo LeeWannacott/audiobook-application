@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import { SearchBar, Overlay, CheckBox, Slider } from "react-native-elements";
 import AudioBooks from "../components/Audiobooks";
-import { Switch, View, Dimensions, Text } from "react-native";
+import { Switch, View, Dimensions, Text, useRef } from "react-native";
 import { StyleSheet } from "react-native";
 import ButtonPanel from "../components/ButtonPanel";
 // import { MaterialIcons } from "@expo/vector-icons";
 import MaterialIconCommunity from "react-native-vector-icons/MaterialCommunityIcons.js";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 function Search() {
   const [search, updateSearch] = useState("");
@@ -14,12 +15,44 @@ function Search() {
   // const [search, setRequestAudiobookAmount] = useState("*")
 
   const [visible, setVisible] = useState(false);
+
+  const storeData = async (key, value) => {
+    try {
+      const jsonValue = JSON.stringify(value);
+      await AsyncStorage.setItem(key, jsonValue);
+    } catch (e) {
+      // saving error
+    }
+  };
+  const getData = async (key) => {
+    try {
+      const jsonValue = await AsyncStorage.getItem(key);
+      return jsonValue != null ? JSON.parse(jsonValue) : null;
+    } catch (e) {
+      // error reading value
+      console.log(e);
+    }
+  };
+
   const [searchByTitleOrAuthor, setSearchByTitleOrAuthor] = useState(false);
-  const toggleSwitch = () =>
-    setSearchByTitleOrAuthor((previousState) => !previousState);
-  const [titleOrAuthorStringForToggle, setTitleOrAuthorStringForToggle] = useState("Title");
+  const [titleOrAuthorStringForToggle, setTitleOrAuthorStringForToggle] =
+    useState("Title");
   const [titleOrAuthorStringForSearchbar, setTitleOrAuthorStringForSearchbar] =
     useState("Title");
+
+  const toggleSwitch = () => {
+    setSearchByTitleOrAuthor((previousState) => {
+      return !previousState;
+    });
+  };
+
+  getData("titleOrAuthorStringForToggle").then((jsonValue) => {
+    setSearchByTitleOrAuthor(jsonValue);
+  });
+  getData("titleOrAuthorStringForSearchbar").then((jsonValue) => {
+    setSearchByTitleOrAuthor(jsonValue);
+  });
+
   const toggleOverlay = () => {
     setVisible(!visible);
   };
@@ -27,6 +60,14 @@ function Search() {
     setRequestAudiobookAmount(value);
   }
 
+  getData("searchByTitleOrAuthor2").then((jsonValue) => {
+    console.log(jsonValue);
+    jsonValue != null
+      ? (setSearchByTitleOrAuthor(jsonValue[0]),
+        setTitleOrAuthorStringForToggle(jsonValue[1]),
+        setTitleOrAuthorStringForSearchbar(jsonValue[2]))
+      : console.log("error");
+  });
   return (
     <View>
       <View style={styles.searchBarAndSettingsIcon}>
@@ -65,6 +106,11 @@ function Search() {
                       setTitleOrAuthorStringForSearchbar("Title"))
                     : (setTitleOrAuthorStringForToggle("Authors Last Name."),
                       setTitleOrAuthorStringForSearchbar("Author"));
+                storeData("searchByTitleOrAuthor2", [
+                  searchByTitleOrAuthor,
+                  titleOrAuthorStringForToggle,
+                  titleOrAuthorStringForSearchbar,
+                ]);
               }}
               value={searchByTitleOrAuthor}
             />
