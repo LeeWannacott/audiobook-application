@@ -32,12 +32,14 @@ function Search() {
     }
   };
   getData("searchByAuthor").then((jsonValue) => {
-    console.log(jsonValue);
     jsonValue != null
       ? (setSearchByAuthor(jsonValue[0]),
         setTitleOrAuthorStringForToggle(jsonValue[1]),
         setTitleOrAuthorStringForSearchbar(jsonValue[2]))
-      : console.log("error");
+      : null 
+  });
+  getData("audiobookAmountRequested").then((amountOfAudiobooks) => {
+    amountOfAudiobooks != null ? setRequestAudiobookAmount(amountOfAudiobooks) : null;
   });
 
   const storeAsyncData = async (key, value) => {
@@ -45,7 +47,6 @@ function Search() {
       const jsonValue = JSON.stringify(value);
       await AsyncStorage.setItem(key, jsonValue);
     } catch (e) {
-      // saving error
       console.log(e);
     }
   };
@@ -72,11 +73,11 @@ function Search() {
         ]));
   };
 
-
   const toggleOverlay = () => {
     setVisible(!visible);
   };
-  function apiFunction(value) {
+  function changeAudiobookAmountRequested(value) {
+    storeAsyncData("audiobookAmountRequested", value);
     setRequestAudiobookAmount(value);
   }
 
@@ -129,7 +130,7 @@ function Search() {
             value={requestAudiobookAmount}
             maximumValue={1000}
             minimumValue={1}
-            onSlidingComplete={apiFunction}
+            onSlidingComplete={changeAudiobookAmountRequested}
             step={1}
             trackStyle={{
               height: 10,
