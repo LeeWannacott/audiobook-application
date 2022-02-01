@@ -16,14 +16,12 @@ function Search() {
 
   const [visible, setVisible] = useState(false);
 
-  const storeData = async (key, value) => {
-    try {
-      const jsonValue = JSON.stringify(value);
-      await AsyncStorage.setItem(key, jsonValue);
-    } catch (e) {
-      // saving error
-    }
-  };
+  const [searchByAuthor, setSearchByAuthor] = useState(false);
+  const [titleOrAuthorStringForToggle, setTitleOrAuthorStringForToggle] =
+    useState("Title");
+  const [titleOrAuthorStringForSearchbar, setTitleOrAuthorStringForSearchbar] =
+    useState("Title");
+
   const getData = async (key) => {
     try {
       const jsonValue = await AsyncStorage.getItem(key);
@@ -33,25 +31,47 @@ function Search() {
       console.log(e);
     }
   };
+  getData("searchByAuthor").then((jsonValue) => {
+    console.log(jsonValue);
+    jsonValue != null
+      ? (setSearchByAuthor(jsonValue[0]),
+        setTitleOrAuthorStringForToggle(jsonValue[1]),
+        setTitleOrAuthorStringForSearchbar(jsonValue[2]))
+      : console.log("error");
+  });
 
-  const [searchByTitleOrAuthor, setSearchByTitleOrAuthor] = useState(false);
-  const [titleOrAuthorStringForToggle, setTitleOrAuthorStringForToggle] =
-    useState("Title");
-  const [titleOrAuthorStringForSearchbar, setTitleOrAuthorStringForSearchbar] =
-    useState("Title");
-
-  const toggleSwitch = () => {
-    setSearchByTitleOrAuthor((previousState) => {
-      return !previousState;
-    });
+  const storeAsyncData = async (key, value) => {
+    try {
+      const jsonValue = JSON.stringify(value);
+      await AsyncStorage.setItem(key, jsonValue);
+    } catch (e) {
+      // saving error
+      console.log(e);
+    }
   };
 
-  getData("titleOrAuthorStringForToggle").then((jsonValue) => {
-    setSearchByTitleOrAuthor(jsonValue);
-  });
-  getData("titleOrAuthorStringForSearchbar").then((jsonValue) => {
-    setSearchByTitleOrAuthor(jsonValue);
-  });
+  const toggleSwitch = () => {
+    setSearchByAuthor((previousState) => !previousState);
+  };
+
+  const displayTitleOrAuthorString = () => {
+    return !searchByAuthor
+      ? (setTitleOrAuthorStringForToggle("Authors Last Name."),
+        setTitleOrAuthorStringForSearchbar("Author"),
+        storeAsyncData("searchByAuthor", [
+          !searchByAuthor,
+          "Authors Last Name.",
+          "Author",
+        ]))
+      : (setTitleOrAuthorStringForToggle("Audiobooks Title."),
+        setTitleOrAuthorStringForSearchbar("Title"),
+        storeAsyncData("searchByAuthor", [
+          !searchByAuthor,
+          "Audiobooks Title.",
+          "Title",
+        ]));
+  };
+
 
   const toggleOverlay = () => {
     setVisible(!visible);
@@ -60,14 +80,6 @@ function Search() {
     setRequestAudiobookAmount(value);
   }
 
-  getData("searchByTitleOrAuthor2").then((jsonValue) => {
-    console.log(jsonValue);
-    jsonValue != null
-      ? (setSearchByTitleOrAuthor(jsonValue[0]),
-        setTitleOrAuthorStringForToggle(jsonValue[1]),
-        setTitleOrAuthorStringForSearchbar(jsonValue[2]))
-      : console.log("error");
-  });
   return (
     <View>
       <View style={styles.searchBarAndSettingsIcon}>
@@ -97,22 +109,13 @@ function Search() {
           <View style={styles.titleOrAuthorStringFlexbox}>
             <Switch
               trackColor={{ false: "#767577", true: "#81b0ff" }}
-              thumbColor={searchByTitleOrAuthor ? "#f5dd4b" : "#f4f3f4"}
+              thumbColor={searchByAuthor ? "#f5dd4b" : "#f4f3f4"}
               ios_backgroundColor="#3e3e3e"
               onValueChange={(value) => {
-                toggleSwitch(value),
-                  searchByTitleOrAuthor
-                    ? (setTitleOrAuthorStringForToggle("Audiobooks Title"),
-                      setTitleOrAuthorStringForSearchbar("Title"))
-                    : (setTitleOrAuthorStringForToggle("Authors Last Name."),
-                      setTitleOrAuthorStringForSearchbar("Author"));
-                storeData("searchByTitleOrAuthor2", [
-                  searchByTitleOrAuthor,
-                  titleOrAuthorStringForToggle,
-                  titleOrAuthorStringForSearchbar,
-                ]);
+                toggleSwitch(value);
+                displayTitleOrAuthorString();
               }}
-              value={searchByTitleOrAuthor}
+              value={searchByAuthor}
             />
             <Text>{`Search by: ${titleOrAuthorStringForToggle}`}</Text>
           </View>
@@ -146,7 +149,7 @@ function Search() {
           searchBarInputSubmitted={userInputEntered}
           searchBarCurrentText={search}
           requestAudiobookAmount={requestAudiobookAmount}
-          searchByAuthor={searchByTitleOrAuthor}
+          searchByAuthor={searchByAuthor}
         />
       </View>
       <View style={styles.buttonStyle}>
