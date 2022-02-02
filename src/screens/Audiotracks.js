@@ -210,12 +210,7 @@ function Audiotracks(props) {
       : undefined;
   }, [sound.current]);
 
-  const UpdateStatus = async (data) => {
-    try {
-      if (data.didJustFinish) {
-        console.log("Finished!!!");
-        return HandleNext(currentAudioTrackIndex.current);
-      } else if (data.positionMillis && data.durationMillis) {
+  function updateAndStoreAudiobookPositions(data){
         console.log(
           data.positionMillis,
           data.durationMillis,
@@ -244,6 +239,16 @@ function Audiotracks(props) {
           linearProgessBars,
           currentAudiotrackPositionsMs
         );
+  }
+
+  const UpdateStatus = async (data) => {
+    try {
+      if (data.didJustFinish) {
+        console.log("Finished!!!");
+        updateAndStoreAudiobookPositions(data)
+        return HandleNext(currentAudioTrackIndex.current);
+      } else if (data.positionMillis && data.durationMillis) {
+        updateAndStoreAudiobookPositions(data)
       }
     } catch (error) {
       console.log("Error: ", error);
@@ -287,8 +292,6 @@ function Audiotracks(props) {
         const result = await sound.current.loadAsync(
           { uri: listRSSURLS[index] },
           {
-            // androidImplementation: 'MediaPlayer',
-            // downloadFirst: true,
             progressUpdateIntervalMillis: 5000,
             positionMillis: audiotrackPositions,
             shouldPlay: false,
