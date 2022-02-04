@@ -43,6 +43,7 @@ function Audiotracks(props) {
   const [loadingCurrentAudiotrack, setLoadingCurrentAudiotrack] =
     useState(false);
   const [loadedCurrentAudiotrack, setLoadedCurrentAudiotrack] = useState(false);
+  const [audioPaused, setAudioPaused] = useState(false);
   const [volume, setVolume] = useState(1.0);
   const [Playing, SetPlaying] = useState(false);
   const [Duration, SetDuration] = useState(0);
@@ -210,45 +211,43 @@ function Audiotracks(props) {
       : undefined;
   }, [sound.current]);
 
-  function updateAndStoreAudiobookPositions(data){
-        console.log(
-          data.positionMillis,
-          data.durationMillis,
-          currentSliderPosition
-        );
-        let sliderPositionCalculate =
-          (data.positionMillis / data.durationMillis) * 100;
-        setCurrentSliderPosition(sliderPositionCalculate);
+  function updateAndStoreAudiobookPositions(data) {
+    console.log(
+      data.positionMillis,
+      data.durationMillis,
+      currentSliderPosition
+    );
+    let sliderPositionCalculate =
+      (data.positionMillis / data.durationMillis) * 100;
+    setCurrentSliderPosition(sliderPositionCalculate);
 
-        let updatedLinearProgessBarPositions = [...linearProgessBars];
-        updatedLinearProgessBarPositions[currentAudioTrackIndex.current] =
-          linearProgessBars[currentAudioTrackIndex.current] =
-            data.positionMillis / data.durationMillis;
-        setlinearProgressBars(updatedLinearProgessBarPositions);
+    let updatedLinearProgessBarPositions = [...linearProgessBars];
+    updatedLinearProgessBarPositions[currentAudioTrackIndex.current] =
+      linearProgessBars[currentAudioTrackIndex.current] =
+        data.positionMillis / data.durationMillis;
+    setlinearProgressBars(updatedLinearProgessBarPositions);
 
-        let updatedCurrentAudiotrackPositions = [
-          ...currentAudiotrackPositionsMs,
-        ];
-        updatedCurrentAudiotrackPositions[currentAudioTrackIndex.current] =
-          currentAudiotrackPositionsMs[currentAudioTrackIndex.current] =
-            data.positionMillis;
-        setCurrentAudiotrackPositionsMs(updatedCurrentAudiotrackPositions);
+    let updatedCurrentAudiotrackPositions = [...currentAudiotrackPositionsMs];
+    updatedCurrentAudiotrackPositions[currentAudioTrackIndex.current] =
+      currentAudiotrackPositionsMs[currentAudioTrackIndex.current] =
+        data.positionMillis;
+    setCurrentAudiotrackPositionsMs(updatedCurrentAudiotrackPositions);
 
-        updateAudioBookPosition(
-          AudioBookId,
-          linearProgessBars,
-          currentAudiotrackPositionsMs
-        );
+    updateAudioBookPosition(
+      AudioBookId,
+      linearProgessBars,
+      currentAudiotrackPositionsMs
+    );
   }
 
   const UpdateStatus = async (data) => {
     try {
       if (data.didJustFinish) {
         console.log("Finished!!!");
-        updateAndStoreAudiobookPositions(data)
+        updateAndStoreAudiobookPositions(data);
         return HandleNext(currentAudioTrackIndex.current);
       } else if (data.positionMillis && data.durationMillis) {
-        updateAndStoreAudiobookPositions(data)
+        updateAndStoreAudiobookPositions(data);
       }
     } catch (error) {
       console.log("Error: ", error);
@@ -353,10 +352,12 @@ function Audiotracks(props) {
 
   const PauseAudio = async () => {
     try {
+      setAudioPaused(false);
       const result = await sound.current.getStatusAsync();
       if (result.isLoaded) {
         if (result.isPlaying === true) {
           sound.current.pauseAsync();
+          setAudioPaused(true);
           SetPlaying(false);
         }
       }
@@ -406,11 +407,24 @@ function Audiotracks(props) {
   };
 
   const GetDurationFormat = (duration) => {
-    const time = duration / 1000;
-    const minutes = Math.floor(time / 60);
-    const seconds = Math.floor(time - minutes * 60);
-    const secondsFormatted = seconds > 9 ? seconds : `0${seconds}`;
-    return `${minutes}:${secondsFormatted}`;
+    if (typeof duration === "number") {
+      const time = duration / 1000;
+      const minutes = Math.floor(time / 60);
+      const seconds = Math.floor(time - minutes * 60);
+      const secondsFormatted = seconds > 9 ? seconds : `0${seconds}`;
+      return `${minutes}:${secondsFormatted}`;
+    } else {
+      return `00:00`;
+    }
+  };
+
+  const FormatChapterDurations = (totalDurations) => {
+    console.log(typeof totalDurations);
+    if (totalDurations.slice(0, 2) === "00") {
+      return totalDurations.slice(3, totalDurations.length);
+    } else {
+      return totalDurations;
+    }
   };
 
   const PlayFromListenButton = async (index) => {
@@ -436,9 +450,11 @@ function Audiotracks(props) {
             {item.section_number}: {item.title}
           </ListItem.Title>
           <ListItem.Subtitle>{item.genres}</ListItem.Subtitle>
+
           <ListItem.Subtitle>
-            Read by: {item.readers[0]["display_name"]}
+            Reader: {item.readers[0]["display_name"]}
           </ListItem.Subtitle>
+
           <LinearProgress
             color="primary"
             value={linearProgessBars[index]}
@@ -446,7 +462,9 @@ function Audiotracks(props) {
             trackColor="lightblue"
           />
           <ListItem.Subtitle>
-            Playtime: {chapterDurations[index]}
+            {GetDurationFormat(currentAudiotrackPositionsMs[index])}
+            {"                                          "}
+            {FormatChapterDurations(chapterDurations[index])}
           </ListItem.Subtitle>
         </ListItem.Content>
         <ListItem.Chevron />
@@ -468,7 +486,7 @@ function Audiotracks(props) {
   });
 
   const chapterDurations = dataRSS.map((item) => item["itunes"].duration);
-  console.log(chapterDurations);
+  // console.log(chapterDurations);
 
   function ratingCompleted(rating) {
     updateAudiobookRatingDB(db, AudioBookId, rating);
@@ -635,6 +653,8 @@ function Audiotracks(props) {
                   style={styles.control}
                 />
               </TouchableOpacity>
+            ) : audioPaused == false ? (
+              <ActivityIndicator size={"large"} color={"dodgerblue"} />
             ) : (
               <TouchableOpacity>
                 <MaterialIcons
