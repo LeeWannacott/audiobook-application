@@ -1,5 +1,5 @@
 import React from "react";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import Explore from "../components/Explore";
 
 function App() {
@@ -20,15 +20,5 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     padding: 10,
     backgroundColor: "#331800",
-  },
-  searchBarStyle: {
-    backgroundColor: "darkgreen",
-  },
-  scrollStyle: {
-    height: 590,
-    backgroundColor: "lightblue",
-  },
-  buttonStyle: {
-    backgroundColor: "black",
   },
 });
