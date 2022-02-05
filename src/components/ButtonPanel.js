@@ -16,7 +16,7 @@ function ButtonPanel(props) {
     <MaterialIconCommunity
       name="book-search"
       size={50}
-      color={selectedIndex === 0 ? colorButtonPressed : "white"}
+      color={selectedIndex === 0 ? colorButtonPressed : buttonColor}
       onPress={() => {
         navigation.navigate("Home", []);
       }}

@@ -191,7 +191,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   buttonStyle: {
-    paddingTop: 0,
+    bottom:5,
   },
   titleOrAuthorStringFlexbox: {
     display: "flex",
@@ -201,6 +201,6 @@ const styles = StyleSheet.create({
   scrollStyle: {
     top: 20,
     height: 600,
-    backgroundColor: "black",
+    backgroundColor: "#331800",
   },
 });

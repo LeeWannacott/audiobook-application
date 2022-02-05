@@ -147,6 +147,8 @@ const styles = StyleSheet.create({
   },
   audiobookContainer: {
     paddingBottom: 15,
+    marginBottom:10,
+    marginTop:5,
   },
   ActivityIndicatorStyle: {
     top: windowHeight / 2 - 90,
