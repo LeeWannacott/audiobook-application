@@ -9,7 +9,6 @@ import { ListItem, Avatar } from "react-native-elements";
 import { useNavigation } from "@react-navigation/native";
 import React, { useState, useEffect } from "react";
 
-import * as SQLite from "expo-sqlite";
 import { openDatabase } from "../utils";
 import {
   createHistoryTableDB,
@@ -44,20 +43,34 @@ export default function Audiobooks(props) {
   const bookCoverURL = [];
   useEffect(() => {
     setLoadingAudioBooks(true);
-    let searchQuery = props.searchBarCurrentText;
-    searchQuery = searchQuery.replace(/\s/g, "%20");
+    const searchQuery = props.searchBarCurrentText.replace(/\s/g, "%20");;
+    const genre = props.audioBookGenre.replace(/\s/g, "%20");
     const amountOfAudiobooks = props.requestAudiobookAmount;
 
-    let titleOrAuthorString = "";
+    // let titleOrAuthorString = "";
     // carot "^": to anchor the beginning of the search term.
-    let carot = "";
-    props.searchByAuthor
-      ? ((titleOrAuthorString = "author"), (carot = ""))
-      : ((titleOrAuthorString = "title"), (carot = "^"));
+    // props.searchByAuthor
+      // ? ((titleOrAuthorString = "author"), (carot = ""))
+      // : ((titleOrAuthorString = "title"), (carot = "^"));
 
-    fetch(
-      `https://librivox.org/api/feed/audiobooks/?${titleOrAuthorString}=${carot}${searchQuery}&extended=1&format=json&limit=${amountOfAudiobooks}`
-    )
+    const carot = "^";
+    let apiFetchQuery;
+    console.log(props.searchByTitleOrAuthorOrGenre)
+    switch (props.searchByTitleOrAuthorOrGenre){
+      case "title":
+        apiFetchQuery = `https://librivox.org/api/feed/audiobooks/?title=${carot}${searchQuery}&extended=1&format=json&limit=${amountOfAudiobooks}`;
+        break
+      case "author":
+        apiFetchQuery = `https://librivox.org/api/feed/audiobooks/?author=${props.audiobookAuthor}&extended=1&format=json&limit=${amountOfAudiobooks}`;
+        break
+      case "genre":
+        apiFetchQuery = `https://librivox.org/api/feed/audiobooks/?genre=${genre}&extended=1&format=json&limit=${amountOfAudiobooks}`;
+        break
+      default:
+        break
+    }
+
+    fetch(apiFetchQuery)
       .then((response) => response.json())
       .then((json) => setData(json))
       .catch((error) => console.error(error))
@@ -67,7 +80,9 @@ export default function Audiobooks(props) {
   }, [
     props.searchBarInputSubmitted,
     props.requestAudiobookAmount,
-    props.searchByAuthor,
+    props.searchByTitleOrAuthorOrGenre,
+    props.audiobookAuthor,
+    props.audioBookGenre,
   ]);
 
   useEffect(() => {
@@ -147,8 +162,8 @@ const styles = StyleSheet.create({
   },
   audiobookContainer: {
     paddingBottom: 15,
-    marginBottom:10,
-    marginTop:5,
+    marginBottom: 10,
+    marginTop: 5,
   },
   ActivityIndicatorStyle: {
     top: windowHeight / 2 - 90,
