@@ -43,31 +43,28 @@ export default function Audiobooks(props) {
   const bookCoverURL = [];
   useEffect(() => {
     setLoadingAudioBooks(true);
-    const searchQuery = props.searchBarCurrentText.replace(/\s/g, "%20");;
-    const genre = props.audioBookGenre.replace(/\s/g, "%20");
-    const amountOfAudiobooks = props.requestAudiobookAmount;
-
-    // let titleOrAuthorString = "";
-    // carot "^": to anchor the beginning of the search term.
-    // props.searchByAuthor
-      // ? ((titleOrAuthorString = "author"), (carot = ""))
-      // : ((titleOrAuthorString = "title"), (carot = "^"));
-
+    const searchQuery = encodeURIComponent(props.searchBarCurrentText);
+    const genre = encodeURIComponent(props.audioBookGenre);
+    const author = encodeURIComponent(props.audiobookAuthor);
+    const amountOfAudiobooks = encodeURIComponent(props.requestAudiobookAmount);
     const carot = "^";
+
     let apiFetchQuery;
-    console.log(props.searchByTitleOrAuthorOrGenre)
-    switch (props.searchByTitleOrAuthorOrGenre){
+    console.log("test",props.searchByTitleOrAuthorOrGenre);
+    console.log(props.searchBarCurrentText,props.audioBookGenre,props.audiobookAuthor,props.requestAudiobookAmount);
+    switch (props.searchByTitleOrAuthorOrGenre) {
       case "title":
         apiFetchQuery = `https://librivox.org/api/feed/audiobooks/?title=${carot}${searchQuery}&extended=1&format=json&limit=${amountOfAudiobooks}`;
-        break
+        break;
       case "author":
-        apiFetchQuery = `https://librivox.org/api/feed/audiobooks/?author=${props.audiobookAuthor}&extended=1&format=json&limit=${amountOfAudiobooks}`;
-        break
+        apiFetchQuery = `https://librivox.org/api/feed/audiobooks/?author=${author}&extended=1&format=json&limit=${amountOfAudiobooks}`;
+        break;
       case "genre":
         apiFetchQuery = `https://librivox.org/api/feed/audiobooks/?genre=${genre}&extended=1&format=json&limit=${amountOfAudiobooks}`;
-        break
+        break;
       default:
-        break
+        console.log("default hit")
+        break;
     }
 
     fetch(apiFetchQuery)
@@ -80,9 +77,9 @@ export default function Audiobooks(props) {
   }, [
     props.searchBarInputSubmitted,
     props.requestAudiobookAmount,
-    props.searchByTitleOrAuthorOrGenre,
     props.audiobookAuthor,
     props.audioBookGenre,
+    props.searchByTitleOrAuthorOrGenre,
   ]);
 
   useEffect(() => {
