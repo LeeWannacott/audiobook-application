@@ -24,9 +24,19 @@ function Search() {
   const [searchByTitleOrAuthorOrGenre, setSearchByTitleOrAuthorOrGenre] =
     useState("title");
   const [enableGenreSelection, setEnableGenreSelection] = useState(false);
-  const [enableAuthorSelection, setEnableAuthorSelection] = useState(false);
 
-  console.log(authorsListJson["authors"].length);
+  const [apiSettings, setApiSettings] = useState({
+    searchByTitleOrAuthorOrGenre: "title",
+    audiobookGenre: "bob",
+    authorLastname: "",
+    audiobookAmountRequested: 26,
+  });
+
+  const [showAudioBookAmountRequestedWhileSliding, setShowAudioBookAmountRequestedWhileSliding] = useState(26)
+
+
+
+  const [enableAuthorSelection, setEnableAuthorSelection] = useState(false);
 
   const getData = async (key) => {
     try {
@@ -38,28 +48,31 @@ function Search() {
     }
   };
 
-  getData("audiobookAmountRequested").then((amountOfAudiobooks) => {
-  amountOfAudiobooks != null
-  ? setRequestAudiobookAmount(amountOfAudiobooks)
-  : null;
-  });
-  getData("audiobookAuthorLastNameSelected").then((audiobookLastName) => {
-  audiobookLastName != null
-  ? setAuthor(audiobookLastName)
-  : null;
-  });
-  getData("audiobookGenreSelected").then((audiobookGenre) => {
-  audiobookGenre != null
-  ? setGenre(audiobookGenre)
-  : null;
-  });
-  getData("searchByTitleOrAuthorOrGenre").then((jsonValue) => {
-  jsonValue != null
-  ? (setSearchByTitleOrAuthorOrGenre(jsonValue[0]),
-  setEnableAuthorSelection(jsonValue[1]),
-  setEnableGenreSelection(jsonValue[2]))
-  : null;
-  });
+  // getData("audiobookAmountRequested").then((amountOfAudiobooks) => {
+  // amountOfAudiobooks != null
+  // ? setRequestAudiobookAmount(amountOfAudiobooks)
+  // : null;
+  // });
+  // getData("audiobookAuthorLastNameSelected").then((audiobookLastName) => {
+  // audiobookLastName != null
+  // ? setAuthor(audiobookLastName)
+  // : null;
+  // });
+  // getData("audiobookGenreSelected").then((audiobookGenre) => {
+  // audiobookGenre != null
+  // ? setGenre(audiobookGenre)
+  // : null;
+  // });
+  // getData("searchByTitleOrAuthorOrGenre").then((jsonValue) => {
+  // jsonValue != null
+  // ? (setSearchByTitleOrAuthorOrGenre(jsonValue[0]),
+  // setEnableAuthorSelection(jsonValue[1]),
+  // setEnableGenreSelection(jsonValue[2]))
+  // : null;
+  // });
+
+  // var dict = {searchByTitleOrAuthorOrGenre:"title",audiobookGenre:"Any",authorLastname:"",audiobookAmountRequested:26}
+  // enableAuthorSelectionBool,enableGenreSelection
 
   const storeAsyncData = async (key, value) => {
     try {
@@ -70,23 +83,23 @@ function Search() {
     }
   };
 
-
-  const storeTitleOrGenreOrAuthorData = (titleOrGenreOrAuthor,authorSelectedBool,genreSelectedBool) => {
-        storeAsyncData("searchByTitleOrAuthorOrGenre", [
-          titleOrGenreOrAuthor,
-          authorSelectedBool,
-          genreSelectedBool,
-        ]);
-  }
+  const storeTitleOrGenreOrAuthorData = (
+    authorSelectedBool,
+    genreSelectedBool
+  ) => {
+    storeAsyncData("authorAndGenreSelectedBooleans", [
+      authorSelectedBool,
+      genreSelectedBool,
+    ]);
+  };
 
   const storeAuthor = (authorLastName) => {
-        storeAsyncData("audiobookAuthorLastNameSelected",authorLastName );
-  }
+    storeAsyncData("audiobookAuthorLastNameSelected", authorLastName);
+  };
 
   const storeGenre = (audioBookGenre) => {
-        storeAsyncData("audiobookGenreSelected", 
-          audioBookGenre);
-  }
+    storeAsyncData("audiobookGenreSelected", audioBookGenre);
+  };
 
   const toggleOverlay = () => {
     setVisible(!visible);
@@ -94,6 +107,10 @@ function Search() {
   function changeAudiobookAmountRequested(value) {
     storeAsyncData("audiobookAmountRequested", value);
     setRequestAudiobookAmount(value);
+    setApiSettings((prevState)=>({
+      ...prevState,
+      ["audiobookAmountRequested"]: value
+    }))
   }
 
   const authorsListRender = authorsListJson["authors"].map((author, i) => {
@@ -140,22 +157,35 @@ function Search() {
             onValueChange={(titleOrGenreOrAuthor, itemIndex) => {
               console.log(itemIndex);
               setSearchByTitleOrAuthorOrGenre(titleOrGenreOrAuthor);
+              setApiSettings((prevState) => ({
+                ...prevState,
+                ["setSearchByTitleOrAuthorOrGenre"]: titleOrGenreOrAuthor,
+              }));
               switch (titleOrGenreOrAuthor) {
                 case "title":
                   // senten(false)
                   setEnableAuthorSelection(false);
                   setEnableGenreSelection(false);
-                  storeTitleOrGenreOrAuthorData(titleOrGenreOrAuthor, false, false)
+                  storeTitleOrGenreOrAuthorData(
+                    false,
+                    false
+                  );
                   break;
                 case "genre":
                   setEnableAuthorSelection(false);
                   setEnableGenreSelection(true);
-                  storeTitleOrGenreOrAuthorData(titleOrGenreOrAuthor, false, true)
+                  storeTitleOrGenreOrAuthorData(
+                    false,
+                    true
+                  );
                   break;
                 case "author":
                   setEnableAuthorSelection(true);
                   setEnableGenreSelection(false);
-                  storeTitleOrGenreOrAuthorData(titleOrGenreOrAuthor, true, false)
+                  storeTitleOrGenreOrAuthorData(
+                    true,
+                    false
+                  );
                   break;
               }
             }}
@@ -172,12 +202,16 @@ function Search() {
             selectedValue={author}
             enabled={enableAuthorSelection}
             onValueChange={(authorLastName, itemIndex) => {
-              storeAuthor(authorLastName) 
+              storeAuthor(authorLastName);
               setAuthor(authorLastName);
+              setApiSettings((prevState) => ({
+                ...prevState,
+                ["authorLastName"]: authorLastName,
+              }));
+
             }}
           >
             {authorsListRender}
-
           </Picker>
 
           <View style={styles.titleOrAuthorStringFlexbox}>
@@ -185,11 +219,14 @@ function Search() {
           </View>
 
           <Picker
-            selectedValue={genre}
+            selectedValue={apiSettings["audiobookGenre"]}
             enabled={enableGenreSelection}
             onValueChange={(audiobookGenreSelected, itemIndex) => {
-              storeGenre(audiobookGenreSelected) 
-              setGenre(audiobookGenreSelected);
+              storeGenre(audiobookGenreSelected);
+              setApiSettings((prevState) => ({
+                ...prevState,
+                ["audiobookGenre"]: audiobookGenreSelected,
+              }));
             }}
           >
             <Picker.Item label="Any" value="" />
@@ -377,13 +414,13 @@ function Search() {
           </Picker>
           <View style={styles.checkboxRow}>
             <Text>
-              Audiobooks requested per search: {requestAudiobookAmount}.
+              Audiobooks requested per search: {apiSettings["audiobookAmountRequested"]}.
             </Text>
           </View>
 
           <Slider
-            value={requestAudiobookAmount}
-            maximumValue={1000}
+            value={apiSettings["audiobookAmountRequested"]}
+            maximumValue={420}
             minimumValue={1}
             onSlidingComplete={changeAudiobookAmountRequested}
             step={1}
