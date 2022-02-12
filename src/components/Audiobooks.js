@@ -43,10 +43,6 @@ export default function Audiobooks(props) {
   const bookCoverURL = [];
   useEffect(() => {
     setLoadingAudioBooks(true);
-    console.log(props.apiSettingsHaveBeenSet);
-    console.log(props.apiSettings["audiobookGenre"],props.apiSettings["authorLastName"]);
-    if (props.apiSettingsHaveBeenSet === true) {
-      console.log("set!!!!!!!!!!!!!!");
       const searchQuery = encodeURIComponent(props.searchBarCurrentText);
       const genre = encodeURIComponent(props.apiSettings["audiobookGenre"]);
       const author = encodeURIComponent(props.apiSettings["authorLastName"]);
@@ -56,29 +52,20 @@ export default function Audiobooks(props) {
       const carot = "^";
 
       let apiFetchQuery;
-      console.log("search:",props.apiSettings["searchBy"]);
-      console.log("genre:",props.apiSettings["audiobookGenre"],genre);
-      console.log("test", props.apiSettings);
-      console.log("test", props, props.apiSettings["searchBy"]);
-
       switch (props.apiSettings["searchBy"]) {
         case "title":
-          console.log("title hit");
           apiFetchQuery = `https://librivox.org/api/feed/audiobooks/?title=${carot}${searchQuery}&extended=1&format=json&limit=${amountOfAudiobooks}`;
           break;
         case "author":
-          console.log("authorhit");
           apiFetchQuery = `https://librivox.org/api/feed/audiobooks/?author=${author}&extended=1&format=json&limit=${amountOfAudiobooks}`;
           break;
         case "genre":
           apiFetchQuery = `https://librivox.org/api/feed/audiobooks/?genre=${genre}&extended=1&format=json&limit=${amountOfAudiobooks}`;
-        console.log("genrehit");
           break;
         default:
-          console.log("default hit");
           break;
       }
-
+      if(props.apiSettings["searchBy"]){
       fetch(apiFetchQuery)
         .then((response) => response.json())
         .then((json) => setData(json))
@@ -86,7 +73,7 @@ export default function Audiobooks(props) {
         .finally(() => {
           setLoadingAudioBooks(false);
         });
-    }
+      }
   }, [
     props.apiSettings,
     props.searchBarInputSubmitted,

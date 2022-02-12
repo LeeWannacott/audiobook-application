@@ -23,16 +23,14 @@ function Search() {
   // useState("title");
   const [enableGenreSelection, setEnableGenreSelection] = useState(false);
   const [enableAuthorSelection, setEnableAuthorSelection] = useState(false);
-  const [apiSettingsHaveBeenSet, setApiSettingsHaveBeenSet] = useState(false);
 
   const [apiSettings, setApiSettings] = useState({
-    searchBy: "title",
-    audiobookGenre: "*Non-fiction",
-    authorLastName: "Hoffmann",
-    audiobookAmountRequested: 26,
+    searchBy: "",
+    audiobookGenre: "",
+    authorLastName: "",
+    audiobookAmountRequested: 0,
   });
 
-  console.log("explore render");
 
   const getData = async (key) => {
     try {
@@ -46,8 +44,7 @@ function Search() {
 
   React.useState(() => {
     try {
-      getData("apiSettings5").then((apiSettingsFromStorage) => {
-        console.log("get api settings from storage");
+      getData("apiSettings").then((apiSettingsFromStorage) => {
         apiSettingsFromStorage
           ? setApiSettings({
               ["searchBy"]: apiSettingsFromStorage["searchBy"],
@@ -56,9 +53,20 @@ function Search() {
               ["audiobookAmountRequested"]:
                 apiSettingsFromStorage["audiobookAmountRequested"],
             })
-          : null;
+          : setApiSettings({
+              ["searchBy"]: "title",
+              ["audiobookGenre"]: "*Non-fiction",
+              ["authorLastName"]: "Hoffmann",
+              ["audiobookAmountRequested"]: 26,
+            });
       });
-      setApiSettingsHaveBeenSet(true);
+      getData("authorAndGenreSelectedBooleans1").then((authorAndGenre)=>{
+        authorAndGenre ? (
+        setEnableAuthorSelection(authorAndGenre[0]),
+        setEnableGenreSelection(authorAndGenre[1])):null
+
+      })
+
     } catch (err) {
       console.log(err);
     }
@@ -79,8 +87,7 @@ function Search() {
       authorLastName: author,
       audiobookAmountRequested: amount,
     };
-    console.log(tempApiSettings);
-    storeAsyncData("apiSettings5", tempApiSettings);
+    storeAsyncData("apiSettings", tempApiSettings);
   };
 
   // getData("authorAndGenreSelectedBooleans").then((enablePickers) => {
@@ -94,7 +101,7 @@ function Search() {
     authorSelectedBool,
     genreSelectedBool
   ) => {
-    storeAsyncData("authorAndGenreSelectedBooleans", [
+    storeAsyncData("authorAndGenreSelectedBooleans1", [
       authorSelectedBool,
       genreSelectedBool,
     ]);
@@ -126,7 +133,6 @@ function Search() {
       />
     );
   });
-  console.log(genreListRender);
 
   const authorsListRender = authorsListJson["authors"].map((author, i) => {
     return (
@@ -170,7 +176,6 @@ function Search() {
           <Picker
             selectedValue={apiSettings["searchBy"]}
             onValueChange={(titleOrGenreOrAuthor, itemIndex) => {
-              console.log(titleOrGenreOrAuthor, itemIndex);
               setApiSettings((prevState) => ({
                 ...prevState,
                 ["searchBy"]: titleOrGenreOrAuthor,
@@ -281,7 +286,6 @@ function Search() {
           searchBarInputSubmitted={userInputEntered}
           searchBarCurrentText={search}
           requestAudiobookAmount={requestAudiobookAmount}
-          apiSettingsHaveBeenSet={apiSettingsHaveBeenSet}
         />
       </View>
       <View style={styles.buttonStyle}>
