@@ -63,7 +63,9 @@ function Audiotracks(props) {
     props.route.params;
 
   React.useEffect(() => {
+    try{
     createTablesDB(db);
+    }catch(err){console.log(err)}
   }, []);
 
   const updateAudioBookPosition = (
@@ -72,14 +74,20 @@ function Audiotracks(props) {
     current_audiotrack_positions
   ) => {
     console.log("updating audiobook position");
-    audiotrack_progress_bars = JSON.stringify(audiotrack_progress_bars);
-    current_audiotrack_positions = JSON.stringify(current_audiotrack_positions);
-    updateAudioTrackPositionsDB(
-      db,
-      audiotrack_progress_bars,
-      current_audiotrack_positions,
-      audiobook_id
-    );
+    try {
+      audiotrack_progress_bars = JSON.stringify(audiotrack_progress_bars);
+      current_audiotrack_positions = JSON.stringify(
+        current_audiotrack_positions
+      );
+      updateAudioTrackPositionsDB(
+        db,
+        audiotrack_progress_bars,
+        current_audiotrack_positions,
+        audiobook_id
+      );
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   const updateBookShelve = (audiobook_id, audiobook_shelved) => {
@@ -105,25 +113,28 @@ function Audiotracks(props) {
       audiobook_shelved,
       audiotrack_rating
     );
-
     // initial load of audiotrack data from DB.
     db.transaction((tx) => {
-      tx.executeSql("select * from testaudio14", [], (_, { rows }) => {
-        rows["_array"].forEach((element) => {
-          if (audiobook_id == element.audiobook_id) {
-            let audiobook_positions_temp = JSON.parse(
-              element.audiotrack_progress_bars
-            );
-            let audiotrack_positionsMS = JSON.parse(
-              element.current_audiotrack_positions
-            );
-            setlinearProgressBars(audiobook_positions_temp);
-            setCurrentAudiotrackPositionsMs(audiotrack_positionsMS);
-            setShelveIconToggle(element.audiobook_shelved);
-            setAudiobookRating(element.audiobook_rating);
-          }
+      try {
+        tx.executeSql("select * from testaudio14", [], (_, { rows }) => {
+          rows["_array"].forEach((element) => {
+            if (audiobook_id == element.audiobook_id) {
+              let audiobook_positions_temp = JSON.parse(
+                element.audiotrack_progress_bars
+              );
+              let audiotrack_positionsMS = JSON.parse(
+                element.current_audiotrack_positions
+              );
+              setlinearProgressBars(audiobook_positions_temp);
+              setCurrentAudiotrackPositionsMs(audiotrack_positionsMS);
+              setShelveIconToggle(element.audiobook_shelved);
+              setAudiobookRating(element.audiobook_rating);
+            }
+          });
         });
-      });
+      } catch (err) {
+        console.log(err);
+      }
     }, null);
   };
 
@@ -134,7 +145,6 @@ function Audiotracks(props) {
   ) => {
     shelveAudiobookDB(db, audiobook_rss_url, audiobook_id, audiobook_image);
   };
-
   const removeShelvedAudiobook = (audiobook_id) => {
     removeShelvedAudiobookDB(db, audiobook_id);
   };
@@ -189,55 +199,67 @@ function Audiotracks(props) {
   }, []);
 
   useEffect(() => {
-    let initialAudioBookSections = new Array(lengthOfSections).fill(0);
-    setlinearProgressBars(initialAudioBookSections);
-    setCurrentAudiotrackPositionsMs(initialAudioBookSections);
-    // will only happen if no entry in db already.
-    initialAudioBookStore(
-      AudioBookId,
-      initialAudioBookSections,
-      initialAudioBookSections,
-      shelveIconToggle,
-      audiobookRating
-    );
+    try {
+      let initialAudioBookSections = new Array(lengthOfSections).fill(0);
+      setlinearProgressBars(initialAudioBookSections);
+      setCurrentAudiotrackPositionsMs(initialAudioBookSections);
+      // will only happen if no entry in db already.
+      initialAudioBookStore(
+        AudioBookId,
+        initialAudioBookSections,
+        initialAudioBookSections,
+        shelveIconToggle,
+        audiobookRating
+      );
+    } catch (err) {
+      console.log(err);
+    }
   }, []);
 
   React.useEffect(() => {
-    return sound
-      ? () => {
-          console.log("Unloading Sound");
-          sound.current.unloadAsync();
-        }
-      : undefined;
+    try {
+      return sound
+        ? () => {
+            console.log("Unloading Sound");
+            sound.current.unloadAsync();
+          }
+        : undefined;
+    } catch (err) {
+      console.log(err);
+    }
   }, [sound.current]);
 
   function updateAndStoreAudiobookPositions(data) {
-    console.log(
-      data.positionMillis,
-      data.durationMillis,
-      currentSliderPosition
-    );
-    let sliderPositionCalculate =
-      (data.positionMillis / data.durationMillis) * 100;
-    setCurrentSliderPosition(sliderPositionCalculate);
+    try {
+      console.log(
+        data.positionMillis,
+        data.durationMillis,
+        currentSliderPosition
+      );
+      let sliderPositionCalculate =
+        (data.positionMillis / data.durationMillis) * 100;
+      setCurrentSliderPosition(sliderPositionCalculate);
 
-    let updatedLinearProgessBarPositions = [...linearProgessBars];
-    updatedLinearProgessBarPositions[currentAudioTrackIndex.current] =
-      linearProgessBars[currentAudioTrackIndex.current] =
-        data.positionMillis / data.durationMillis;
-    setlinearProgressBars(updatedLinearProgessBarPositions);
+      let updatedLinearProgessBarPositions = [...linearProgessBars];
+      updatedLinearProgessBarPositions[currentAudioTrackIndex.current] =
+        linearProgessBars[currentAudioTrackIndex.current] =
+          data.positionMillis / data.durationMillis;
+      setlinearProgressBars(updatedLinearProgessBarPositions);
 
-    let updatedCurrentAudiotrackPositions = [...currentAudiotrackPositionsMs];
-    updatedCurrentAudiotrackPositions[currentAudioTrackIndex.current] =
-      currentAudiotrackPositionsMs[currentAudioTrackIndex.current] =
-        data.positionMillis;
-    setCurrentAudiotrackPositionsMs(updatedCurrentAudiotrackPositions);
+      let updatedCurrentAudiotrackPositions = [...currentAudiotrackPositionsMs];
+      updatedCurrentAudiotrackPositions[currentAudioTrackIndex.current] =
+        currentAudiotrackPositionsMs[currentAudioTrackIndex.current] =
+          data.positionMillis;
+      setCurrentAudiotrackPositionsMs(updatedCurrentAudiotrackPositions);
 
-    updateAudioBookPosition(
-      AudioBookId,
-      linearProgessBars,
-      currentAudiotrackPositionsMs
-    );
+      updateAudioBookPosition(
+        AudioBookId,
+        linearProgessBars,
+        currentAudiotrackPositionsMs
+      );
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   const UpdateStatus = async (data) => {
@@ -368,62 +390,79 @@ function Audiotracks(props) {
   };
 
   const HandleNext = async () => {
-    if (currentAudioTrackIndex.current < listRSSURLS.length - 1) {
-      const unloadSound = await sound.current.unloadAsync();
-      if (unloadSound.isLoaded === false) {
-        currentAudioTrackIndex.current += 1;
-        setCurrentSliderPosition(0);
-        // ResetPlayer();
-        return LoadAudio(
-          currentAudioTrackIndex.current,
-          currentAudiotrackPositionsMs[currentAudioTrackIndex.current]
-        );
+    try {
+      if (currentAudioTrackIndex.current < listRSSURLS.length - 1) {
+        const unloadSound = await sound.current.unloadAsync();
+        if (unloadSound.isLoaded === false) {
+          currentAudioTrackIndex.current += 1;
+          setCurrentSliderPosition(0);
+          // ResetPlayer();
+          return LoadAudio(
+            currentAudioTrackIndex.current,
+            currentAudiotrackPositionsMs[currentAudioTrackIndex.current]
+          );
+        }
+      } else if (currentAudioTrackIndex.current >= listRSSURLS.length - 1) {
+        const unloadSound = await sound.current.unloadAsync();
+        if (unloadSound.isLoaded === false) {
+          currentAudioTrackIndex.current = 0;
+          setCurrentSliderPosition(0);
+          ResetPlayer();
+          return LoadAudio(
+            currentAudioTrackIndex.current,
+            currentAudiotrackPositionsMs[currentAudioTrackIndex.current]
+          );
+        }
       }
-    } else if (currentAudioTrackIndex.current >= listRSSURLS.length - 1) {
-      const unloadSound = await sound.current.unloadAsync();
-      if (unloadSound.isLoaded === false) {
-        currentAudioTrackIndex.current = 0;
-        setCurrentSliderPosition(0);
-        ResetPlayer();
-        return LoadAudio(
-          currentAudioTrackIndex.current,
-          currentAudiotrackPositionsMs[currentAudioTrackIndex.current]
-        );
-      }
+    } catch (err) {
+      console.log(err);
     }
   };
 
   const HandlePrev = async () => {
-    if (currentAudioTrackIndex.current - 1 >= 0) {
-      const unloadSound = await sound.current.unloadAsync();
-      if (unloadSound.isLoaded === false) {
-        LoadAudio(
-          currentAudioTrackIndex.current - 1,
-          currentAudiotrackPositionsMs[currentAudioTrackIndex.current - 1]
-        );
-        currentAudioTrackIndex.current -= 1;
+    try {
+      if (currentAudioTrackIndex.current - 1 >= 0) {
+        const unloadSound = await sound.current.unloadAsync();
+        if (unloadSound.isLoaded === false) {
+          LoadAudio(
+            currentAudioTrackIndex.current - 1,
+            currentAudiotrackPositionsMs[currentAudioTrackIndex.current - 1]
+          );
+          currentAudioTrackIndex.current -= 1;
+        }
       }
+    } catch (err) {
+      console.log(err);
     }
   };
 
   const GetDurationFormat = (duration) => {
-    if (typeof duration === "number") {
-      const time = duration / 1000;
-      const minutes = Math.floor(time / 60);
-      const seconds = Math.floor(time - minutes * 60);
-      const secondsFormatted = seconds > 9 ? seconds : `0${seconds}`;
-      return `${minutes}:${secondsFormatted}`;
-    } else {
-      return `00:00`;
+    try {
+      if (typeof duration === "number") {
+        const time = duration / 1000;
+        const minutes = Math.floor(time / 60);
+        const seconds = Math.floor(time - minutes * 60);
+        const secondsFormatted = seconds > 9 ? seconds : `0${seconds}`;
+        return `${minutes}:${secondsFormatted}`;
+      } else {
+        return `00:00`;
+      }
+    } catch (err) {
+      console.log(err);
     }
   };
 
   const FormatChapterDurations = (totalDurations) => {
-    console.log(typeof totalDurations);
-    if (totalDurations.slice(0, 2) === "00") {
-      return totalDurations.slice(3, totalDurations.length);
-    } else {
-      return totalDurations;
+    try {
+      if(totalDurations){
+      if (totalDurations.slice(0, 2) === "00") {
+        return totalDurations.slice(3, totalDurations.length);
+      } else {
+        return totalDurations;
+      }
+      }
+    } catch (err) {
+      console.log(err);
     }
   };
 
@@ -452,7 +491,7 @@ function Audiotracks(props) {
           <ListItem.Subtitle>{item.genres}</ListItem.Subtitle>
 
           <ListItem.Subtitle>
-            Reader: {item.readers[0]["display_name"]}
+            Reader: {item.readers[0]["display_name"] ? item.readers[0]["display_name"]: "Not listed." }
           </ListItem.Subtitle>
 
           <LinearProgress

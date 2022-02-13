@@ -60,7 +60,7 @@ function Search() {
               ["audiobookAmountRequested"]: 26,
             });
       });
-      getData("authorAndGenreSelectedBooleans1").then((authorAndGenre)=>{
+      getData("authorAndGenreSelectedBooleans").then((authorAndGenre)=>{
         authorAndGenre ? (
         setEnableAuthorSelection(authorAndGenre[0]),
         setEnableGenreSelection(authorAndGenre[1])):null
@@ -101,7 +101,7 @@ function Search() {
     authorSelectedBool,
     genreSelectedBool
   ) => {
-    storeAsyncData("authorAndGenreSelectedBooleans1", [
+    storeAsyncData("authorAndGenreSelectedBooleans", [
       authorSelectedBool,
       genreSelectedBool,
     ]);
