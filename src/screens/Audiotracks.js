@@ -63,9 +63,11 @@ function Audiotracks(props) {
     props.route.params;
 
   React.useEffect(() => {
-    try{
-    createTablesDB(db);
-    }catch(err){console.log(err)}
+    try {
+      createTablesDB(db);
+    } catch (err) {
+      console.log(err);
+    }
   }, []);
 
   const updateAudioBookPosition = (
@@ -454,12 +456,12 @@ function Audiotracks(props) {
 
   const FormatChapterDurations = (totalDurations) => {
     try {
-      if(totalDurations){
-      if (totalDurations.slice(0, 2) === "00") {
-        return totalDurations.slice(3, totalDurations.length);
-      } else {
-        return totalDurations;
-      }
+      if (totalDurations) {
+        if (totalDurations.slice(0, 2) === "00") {
+          return totalDurations.slice(3, totalDurations.length);
+        } else {
+          return totalDurations;
+        }
       }
     } catch (err) {
       console.log(err);
@@ -488,12 +490,13 @@ function Audiotracks(props) {
           <ListItem.Title>
             {item.section_number}: {item.title}
           </ListItem.Title>
-          <ListItem.Subtitle>{item.genres}</ListItem.Subtitle>
-
           <ListItem.Subtitle>
-            Reader: {item.readers[0]["display_name"] ? item.readers[0]["display_name"]: "Not listed." }
+            <Text numberOfLines={1} ellipsizeMode="tail" style={{}}>
+              Playtime: {GetDurationFormat(currentAudiotrackPositionsMs[index])}
+              {" | "}
+              {FormatChapterDurations(chapterDurations[index])}
+            </Text>
           </ListItem.Subtitle>
-
           <LinearProgress
             color="primary"
             value={linearProgessBars[index]}
@@ -501,9 +504,12 @@ function Audiotracks(props) {
             trackColor="lightblue"
           />
           <ListItem.Subtitle>
-            {GetDurationFormat(currentAudiotrackPositionsMs[index])}
-            {"                                          "}
-            {FormatChapterDurations(chapterDurations[index])}
+            <Text numberOfLines={1} ellipsizeMode="tail" style={{}}>
+              Reader:{" "}
+              {item.readers[0]["display_name"]
+                ? item.readers[0]["display_name"]
+                : "Not listed."}
+            </Text>
           </ListItem.Subtitle>
         </ListItem.Content>
         <ListItem.Chevron />
