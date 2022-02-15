@@ -76,22 +76,24 @@ const userSettings = () => {
               <MaterialIconCommunity name="history" size={50} color={"black"} />
             }
             hasNavArrow={true}
-            title="Delete History"
+            title="Delete viewing history"
             onPress={() =>
               Alert.alert(
-                "Delete History",
+                "Delete history",
                 "Are you sure you want to delete audiobook viewing history?",
                 [
                   {
                     text: "Cancel",
                     onPress: () => console.log("Cancel Pressed"),
-                    style: "cancel",
                   },
                   {
                     text: "Delete History",
                     onPress: () => deleteAudiobookHistory(db),
                   },
-                ]
+                ],
+                {
+                  cancelable:true,
+                }
               )
             }
           />
@@ -159,7 +161,7 @@ const userSettings = () => {
 };
 
 const styles = StyleSheet.create({
-  container: { backgroundColor: "red" ,flex:1},
+  container: { backgroundColor: "#331800" ,flex:1},
   title: {
     fontSize: 24,
   },

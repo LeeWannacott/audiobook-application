@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { SearchBar, Overlay, Slider } from "react-native-elements";
 import AudioBooks from "../components/Audiobooks";
-import { Switch, View, Dimensions, Text } from "react-native";
+import { Switch, View, Dimensions, Text,TextInput } from "react-native";
 import { StyleSheet } from "react-native";
 import ButtonPanel from "../components/ButtonPanel";
 // import { MaterialIcons } from "@expo/vector-icons";
@@ -9,7 +9,7 @@ import MaterialIconCommunity from "react-native-vector-icons/MaterialCommunityIc
 import { Picker } from "@react-native-picker/picker";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import authorsListJson from "../resources/audiobookAuthorsList.json";
-import {genreList} from "../resources/audiobookGenreList.js";
+import { genreList } from "../resources/audiobookGenreList.js";
 // let authorsListJson = require("../resources/audiobookAuthorsList.json");
 
 function Search() {
@@ -30,7 +30,6 @@ function Search() {
     authorLastName: "",
     audiobookAmountRequested: 0,
   });
-
 
   const getData = async (key) => {
     try {
@@ -60,13 +59,12 @@ function Search() {
               ["audiobookAmountRequested"]: 26,
             });
       });
-      getData("authorAndGenreSelectedBooleans").then((authorAndGenre)=>{
-        authorAndGenre ? (
-        setEnableAuthorSelection(authorAndGenre[0]),
-        setEnableGenreSelection(authorAndGenre[1])):null
-
-      })
-
+      getData("authorAndGenreSelectedBooleans").then((authorAndGenre) => {
+        authorAndGenre
+          ? (setEnableAuthorSelection(authorAndGenre[0]),
+            setEnableGenreSelection(authorAndGenre[1]))
+          : null;
+      });
     } catch (err) {
       console.log(err);
     }
@@ -126,11 +124,7 @@ function Search() {
 
   const genreListRender = genreList.map((genre, i) => {
     return (
-      <Picker.Item
-        key={`${genre}`}
-        label={`${genre}`}
-        value={`${genre}`}
-      />
+      <Picker.Item key={`${genre}`} label={`${genre}`} value={`${genre}`} />
     );
   });
 
@@ -155,7 +149,8 @@ function Search() {
             }}
             onSubmitEditing={() => setUserInputEntered(search)}
             value={search}
-            inputContainerStyle={{ marginRight: -7 }}
+            inputContainerStyle={{ marginRight: -7 ,backgroundColor:"white"}}
+            containerStyle={{ backgroundColor:"black"}}
           />
         </View>
         <MaterialIconCommunity
@@ -215,6 +210,8 @@ function Search() {
 
           <Picker
             selectedValue={apiSettings["authorLastName"]}
+            prompt={ "Search by author:" }
+            // mode={"dropdown"}
             enabled={enableAuthorSelection}
             onValueChange={(author, itemIndex) => {
               setApiSettings((prevState) => ({
@@ -238,6 +235,7 @@ function Search() {
 
           <Picker
             selectedValue={apiSettings["audiobookGenre"]}
+            prompt={ "Search by genre:" }
             enabled={enableGenreSelection}
             onValueChange={(genre, itemIndex) => {
               setApiSettings((prevState) => ({
@@ -305,6 +303,9 @@ const styles = StyleSheet.create({
     width: windowWidth - 20,
     top: 20,
     backgroundColor: "rgb(57, 62, 66)",
+    borderTopLeftRadius: 4,
+    borderTopRightRadius: 4,
+    backgroundColor:"black"
   },
   searchStyle: {
     width: windowWidth - 80,
@@ -312,13 +313,13 @@ const styles = StyleSheet.create({
     backgroundColor: "darkgreen",
   },
   settingsIcon: {
-    backgroundColor: "rgb(48, 54, 61)",
+    backgroundColor: "black",
     marginLeft: "auto",
     marginRight: "auto",
     marginTop: "auto",
     marginBottom: "auto",
-    borderRadius: 3,
     borderWidth: 1,
+    borderRadius:2,
   },
   checkboxRow: {
     display: "flex",

@@ -4,7 +4,7 @@ import Icon from "react-native-vector-icons/FontAwesome";
 import MaterialIcon from "react-native-vector-icons/MaterialIcons.js";
 import MaterialIconCommunity from "react-native-vector-icons/MaterialCommunityIcons.js";
 import { useNavigation } from "@react-navigation/native";
-import {Dimensions} from "react-native"
+import { Dimensions } from "react-native";
 
 function ButtonPanel(props) {
   const [selectedIndex, updateIndex] = useState(props.buttonPressedIndex);
@@ -29,7 +29,7 @@ function ButtonPanel(props) {
       size={50}
       color={selectedIndex === 1 ? colorButtonPressed : buttonColor}
       onPress={() => {
-      navigation.navigate("Bookshelf", []);
+        navigation.navigate("Bookshelf", []);
       }}
     />
   );
@@ -75,31 +75,29 @@ function ButtonPanel(props) {
     { element: Settings },
   ];
 
-const windowWidth = Dimensions.get("window").width;
-const windowHeight = Dimensions.get("window").height;
+  const windowWidth = Dimensions.get("window").width;
+  const windowHeight = Dimensions.get("window").height;
   return (
     <>
       <ButtonGroup
         onPress={updateIndex}
         selectedIndex={selectedIndex}
-        // underlayColor={"red"}
-        innerBorderStyle={{color:"#161B22"}}
-        // setOpacityTo={1}
-        // activeOpacity={1}
+        innerBorderStyle={{ color: "#161B22" }}
         buttons={buttons}
-        // buttonStyle={{backgroundColor:"red"}}
-        selectedButtonStyle={{backgroundColor:"#161B22"}}
+        selectedButtonStyle={{ backgroundColor: "#161B22" }}
         containerStyle={{
-          height: windowHeight/10,
-          backgroundColor:"#161B22",
-          width: windowWidth-20,
-          borderRadius: 0,
+          height: windowHeight / 10,
+          backgroundColor: "#161B22",
+          width: windowWidth - 20,
           borderWidth: 0,
           top: 0,
-          padding:0,
-          marginLeft:"auto",
-          marginRight:"auto",
+          padding: 0,
+          marginLeft: "auto",
+          marginRight: "auto",
         }}
+        // underlayColor={"red"}
+        // setOpacityTo={1}
+        // activeOpacity={1}
       />
     </>
   );

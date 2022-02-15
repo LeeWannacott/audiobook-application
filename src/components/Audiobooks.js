@@ -43,29 +43,29 @@ export default function Audiobooks(props) {
   const bookCoverURL = [];
   useEffect(() => {
     setLoadingAudioBooks(true);
-      const searchQuery = encodeURIComponent(props.searchBarCurrentText);
-      const genre = encodeURIComponent(props.apiSettings["audiobookGenre"]);
-      const author = encodeURIComponent(props.apiSettings["authorLastName"]);
-      const amountOfAudiobooks = encodeURIComponent(
-        props.apiSettings["audiobookAmountRequested"]
-      );
-      const carot = "^";
+    const searchQuery = encodeURIComponent(props.searchBarCurrentText);
+    const genre = encodeURIComponent(props.apiSettings["audiobookGenre"]);
+    const author = encodeURIComponent(props.apiSettings["authorLastName"]);
+    const amountOfAudiobooks = encodeURIComponent(
+      props.apiSettings["audiobookAmountRequested"]
+    );
+    const carot = "^";
 
-      let apiFetchQuery;
-      switch (props.apiSettings["searchBy"]) {
-        case "title":
-          apiFetchQuery = `https://librivox.org/api/feed/audiobooks/?title=${carot}${searchQuery}&extended=1&format=json&limit=${amountOfAudiobooks}`;
-          break;
-        case "author":
-          apiFetchQuery = `https://librivox.org/api/feed/audiobooks/?author=${author}&extended=1&format=json&limit=${amountOfAudiobooks}`;
-          break;
-        case "genre":
-          apiFetchQuery = `https://librivox.org/api/feed/audiobooks/?genre=${genre}&extended=1&format=json&limit=${amountOfAudiobooks}`;
-          break;
-        default:
-          break;
-      }
-      if(props.apiSettings["searchBy"]){
+    let apiFetchQuery;
+    switch (props.apiSettings["searchBy"]) {
+      case "title":
+        apiFetchQuery = `https://librivox.org/api/feed/audiobooks/?title=${carot}${searchQuery}&extended=1&format=json&limit=${amountOfAudiobooks}`;
+        break;
+      case "author":
+        apiFetchQuery = `https://librivox.org/api/feed/audiobooks/?author=${author}&extended=1&format=json&limit=${amountOfAudiobooks}`;
+        break;
+      case "genre":
+        apiFetchQuery = `https://librivox.org/api/feed/audiobooks/?genre=${genre}&extended=1&format=json&limit=${amountOfAudiobooks}`;
+        break;
+      default:
+        break;
+    }
+    if (props.apiSettings["searchBy"]) {
       fetch(apiFetchQuery)
         .then((response) => response.json())
         .then((json) => setData(json))
@@ -73,7 +73,7 @@ export default function Audiobooks(props) {
         .finally(() => {
           setLoadingAudioBooks(false);
         });
-      }
+    }
   }, [
     props.apiSettings,
     props.searchBarInputSubmitted,
@@ -100,7 +100,7 @@ export default function Audiobooks(props) {
   const navigation = useNavigation();
   const keyExtractor = (item, index) => index.toString();
   const renderItem = ({ item, index }) => (
-    <ListItem topDivider style={styles.AudioBookListView}>
+    <ListItem topDivider containerStyle={styles.AudioBookListView}>
       <View style={styles.ImageContainer}>
         <Avatar
           source={{ uri: bookCovers[index] }}
@@ -126,7 +126,6 @@ export default function Audiobooks(props) {
           keyExtractor={keyExtractor}
           renderItem={renderItem}
           numColumns={2}
-          backgroundColor="black"
         />
       </View>
     );
@@ -149,7 +148,7 @@ const windowHeight = Dimensions.get("window").height;
 const styles = StyleSheet.create({
   ImageContainer: {
     flexDirection: "column",
-    backgroundColor: "red",
+    backgroundColor: "white",
     width: windowWidth / 2 - 40,
     borderStyle: "solid",
     borderWidth: 1,
@@ -159,13 +158,13 @@ const styles = StyleSheet.create({
     paddingBottom: 15,
     marginBottom: 10,
     marginTop: 5,
+    borderRadius:2,
   },
   ActivityIndicatorStyle: {
     top: windowHeight / 2 - 90,
     color: "green",
   },
   AudioBookListView: {
-    flexDirection: "row",
-    backgroundColor: "green",
+    backgroundColor: "#51361a",
   },
 });
