@@ -5,9 +5,10 @@ import {
   ActivityIndicator,
   Dimensions,
 } from "react-native";
-import { ListItem, Avatar } from "react-native-elements";
+import { ListItem, Avatar, Icon } from "react-native-elements";
 import { useNavigation } from "@react-navigation/native";
 import React, { useState, useEffect } from "react";
+import MaterialIconCommunity from "react-native-vector-icons/MaterialCommunityIcons.js";
 
 import { openDatabase } from "../utils";
 import {
@@ -22,6 +23,7 @@ export default function Audiobooks(props) {
   const [data, setData] = useState([]);
   const [bookCovers, setBookCovers] = useState([]);
   const [queryTitleOrAuthor, setQueryTitleOrAuthor] = useState([]);
+  const [isAccordianExpand, setIsAccordianExpand] = useState(false);
 
   React.useEffect(() => {
     createHistoryTableDB(db);
@@ -111,9 +113,53 @@ export default function Audiobooks(props) {
               item.url_rss,
               item.id,
               bookCovers[index],
+              item.num_sections,
+              item.url_text_source,
+              item.url_zip_file,
             ]);
           }}
         />
+        <ListItem.Accordion
+          content={
+            <>
+              <Icon name="info" size={20} />
+
+              <ListItem.Content>
+                <ListItem.Title> Info</ListItem.Title>
+              </ListItem.Content>
+            </>
+          }
+          key={item.id}
+          isExpanded={isAccordianExpand}
+          onPress={() => {
+            setIsAccordianExpand(!isAccordianExpand);
+          }}
+        >
+          <ListItem.Subtitle>
+            <MaterialIconCommunity
+              name="format-title"
+              size={15}
+            ></MaterialIconCommunity>
+            {": "}
+            {item.title}
+          </ListItem.Subtitle>
+          <ListItem.Subtitle>
+            <MaterialIconCommunity
+              name="feather"
+              size={15}
+            ></MaterialIconCommunity>
+            {": "}
+            {item.authors[0]["first_name"]} {item.authors[0]["last_name"]}
+          </ListItem.Subtitle>
+          <ListItem.Subtitle>
+            <MaterialIconCommunity
+              name="alpha-g-circle"
+              size={15}
+            ></MaterialIconCommunity>
+            {": "}
+            {item.genres[0].name}
+          </ListItem.Subtitle>
+        </ListItem.Accordion>
       </View>
     </ListItem>
   );
@@ -158,7 +204,7 @@ const styles = StyleSheet.create({
     paddingBottom: 15,
     marginBottom: 10,
     marginTop: 5,
-    borderRadius:2,
+    borderRadius: 2,
   },
   ActivityIndicatorStyle: {
     top: windowHeight / 2 - 90,

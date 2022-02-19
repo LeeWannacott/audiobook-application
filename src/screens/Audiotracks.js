@@ -59,8 +59,14 @@ function Audiotracks(props) {
   const [shelveIconToggle, setShelveIconToggle] = useState(0);
   const [audiobookRating, setAudiobookRating] = useState(0);
 
-  const [AudioBooksRSSLinkToAudioTracks, AudioBookId, bookCoverImage] =
-    props.route.params;
+  const [
+    AudioBooksRSSLinkToAudioTracks,
+    AudioBookId,
+    bookCoverImage,
+    numberBookSections,
+    ebookTextSource,
+    ListenUrlZip,
+  ] = props.route.params;
 
   React.useEffect(() => {
     try {
@@ -606,6 +612,7 @@ function Audiotracks(props) {
                 // navigation.navigate("Home", []);
               }}
             />
+            <Text> Chapters: {numberBookSections} </Text>
             <Text> Total playtime: {AudioBookData[0].totaltime} </Text>
           </Card>
         </View>
