@@ -23,7 +23,7 @@ export default function Audiobooks(props) {
   const [data, setData] = useState([]);
   const [bookCovers, setBookCovers] = useState([]);
   const [queryTitleOrAuthor, setQueryTitleOrAuthor] = useState([]);
-  const [isAccordianExpand, setIsAccordianExpand] = useState(false);
+  const [isAccordianExpand, setIsAccordianExpand] = useState([]);
 
   React.useEffect(() => {
     createHistoryTableDB(db);
@@ -82,9 +82,13 @@ export default function Audiobooks(props) {
     props.apiSettingsHaveBeenSet,
   ]);
 
+  let initialAudioBookSections;
   useEffect(() => {
     // console.log(data.books);
     if (data.books != null || data.books != undefined) {
+      let initialAudioBookSections = new Array(data.books.length).fill(false);
+      setIsAccordianExpand(initialAudioBookSections)
+
       const dataKeys = Object.values(data.books);
       var bookCoverImagePath;
       dataKeys.forEach((bookCoverURLPath) => {
@@ -130,9 +134,11 @@ export default function Audiobooks(props) {
             </>
           }
           key={item.id}
-          isExpanded={isAccordianExpand}
+          isExpanded={isAccordianExpand[index]}
           onPress={() => {
-            setIsAccordianExpand(!isAccordianExpand);
+            let updateList = [...isAccordianExpand]
+            updateList[index] = !isAccordianExpand[index]
+            setIsAccordianExpand(updateList)
           }}
         >
           <ListItem.Subtitle>

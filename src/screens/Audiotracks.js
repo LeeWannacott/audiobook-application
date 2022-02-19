@@ -607,8 +607,6 @@ function Audiotracks(props) {
                   AudioBookId,
                   bookCoverImage
                 );
-                console.log("test");
-
                 // navigation.navigate("Home", []);
               }}
             />
