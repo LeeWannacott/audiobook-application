@@ -10,6 +10,8 @@ import { useNavigation } from "@react-navigation/native";
 import React, { useState, useEffect } from "react";
 import MaterialIconCommunity from "react-native-vector-icons/MaterialCommunityIcons.js";
 
+import { List } from "react-native-paper";
+
 import { openDatabase } from "../utils";
 import {
   createHistoryTableDB,
@@ -24,6 +26,7 @@ export default function Audiobooks(props) {
   const [bookCovers, setBookCovers] = useState([]);
   const [queryTitleOrAuthor, setQueryTitleOrAuthor] = useState([]);
   const [isAccordianExpand, setIsAccordianExpand] = useState([]);
+  const [expanded, setExpanded] = React.useState(true);
 
   React.useEffect(() => {
     createHistoryTableDB(db);
@@ -82,12 +85,11 @@ export default function Audiobooks(props) {
     props.apiSettingsHaveBeenSet,
   ]);
 
-  let initialAudioBookSections;
   useEffect(() => {
     // console.log(data.books);
     if (data.books != null || data.books != undefined) {
       let initialAudioBookSections = new Array(data.books.length).fill(false);
-      setIsAccordianExpand(initialAudioBookSections)
+      setIsAccordianExpand(initialAudioBookSections);
 
       const dataKeys = Object.values(data.books);
       var bookCoverImagePath;
@@ -106,42 +108,39 @@ export default function Audiobooks(props) {
   const navigation = useNavigation();
   const keyExtractor = (item, index) => index.toString();
   const renderItem = ({ item, index }) => (
-    <ListItem topDivider containerStyle={styles.AudioBookListView}>
-      <View style={styles.ImageContainer}>
-        <Avatar
-          source={{ uri: bookCovers[index] }}
-          style={{ width: windowWidth / 2 - 42, height: windowHeight / 5 }}
-          onPress={() => {
-            addAudiobookToHistory(item.url_rss, item.id, bookCovers[index]);
-            navigation.navigate("Audio", [
-              item.url_rss,
-              item.id,
-              bookCovers[index],
-              item.num_sections,
-              item.url_text_source,
-              item.url_zip_file,
-            ]);
-          }}
-        />
-        <ListItem.Accordion
-          content={
-            <>
-              <Icon name="info" size={20} />
-
-              <ListItem.Content>
-                <ListItem.Title> Info</ListItem.Title>
-              </ListItem.Content>
-            </>
-          }
-          key={item.id}
-          isExpanded={isAccordianExpand[index]}
-          onPress={() => {
-            let updateList = [...isAccordianExpand]
-            updateList[index] = !isAccordianExpand[index]
-            setIsAccordianExpand(updateList)
-          }}
-        >
-          <ListItem.Subtitle>
+    <View>
+      <ListItem
+        topDivider
+        containerStyle={styles.AudioBookListView}
+        key={item.id}
+      >
+        <View style={styles.ImageContainer}>
+          <Avatar
+            source={{ uri: bookCovers[index] }}
+            style={{ width: windowWidth / 2 - 42, height: windowHeight / 5 }}
+            onPress={() => {
+              addAudiobookToHistory(item.url_rss, item.id, bookCovers[index]);
+              navigation.navigate("Audio", [
+                item.url_rss,
+                item.id,
+                bookCovers[index],
+                item.num_sections,
+                item.url_text_source,
+                item.url_zip_file,
+              ]);
+            }}
+          />
+          <View></View>
+        </View>
+      </ListItem>
+      <List.Accordion
+        titleStyle={styles.accordionTitleStyle}
+        style={styles.accordionStyle}
+        accessibilityLabel= {item.title}
+        theme={{colors: {text: "white"}}}
+      >
+        <List.Section style={styles.accordianItemsStyle}>
+          <ListItem.Subtitle style={styles.accordianItemsStyle}>
             <MaterialIconCommunity
               name="format-title"
               size={15}
@@ -149,7 +148,8 @@ export default function Audiobooks(props) {
             {": "}
             {item.title}
           </ListItem.Subtitle>
-          <ListItem.Subtitle>
+
+          <ListItem.Subtitle style={styles.accordianItemsStyle}>
             <MaterialIconCommunity
               name="feather"
               size={15}
@@ -157,7 +157,8 @@ export default function Audiobooks(props) {
             {": "}
             {item.authors[0]["first_name"]} {item.authors[0]["last_name"]}
           </ListItem.Subtitle>
-          <ListItem.Subtitle>
+
+          <ListItem.Subtitle style={styles.accordianItemsStyle}>
             <MaterialIconCommunity
               name="alpha-g-circle"
               size={15}
@@ -165,9 +166,9 @@ export default function Audiobooks(props) {
             {": "}
             {item.genres[0].name}
           </ListItem.Subtitle>
-        </ListItem.Accordion>
-      </View>
-    </ListItem>
+        </List.Section>
+      </List.Accordion>
+    </View>
   );
 
   if (!loadingAudioBooks) {
@@ -218,5 +219,25 @@ const styles = StyleSheet.create({
   },
   AudioBookListView: {
     backgroundColor: "#51361a",
+  },
+  accordionStyle: {
+    flex:1,
+    color: "white",
+    backgroundColor: "#331800",
+    width: (windowWidth / 2) - 8,
+    justifyContent:"center",
+    height:50,
+  },
+  accordionTitleStyle: {
+    color: "black",
+    backgroundColor: "#331800",
+    width: (windowWidth / 2) - 8,
+    flex:1,
+    height: 40,
+  },
+  accordianItemsStyle: {
+    color: "white",
+    backgroundColor: "#51361a",
+    width: (windowWidth / 2) - 15,
   },
 });
