@@ -10,7 +10,7 @@ import { useNavigation } from "@react-navigation/native";
 import React, { useState, useEffect } from "react";
 import MaterialIconCommunity from "react-native-vector-icons/MaterialCommunityIcons.js";
 
-import { List } from "react-native-paper";
+import { List, Divider } from "react-native-paper";
 
 import { openDatabase } from "../utils";
 import {
@@ -136,35 +136,59 @@ export default function Audiobooks(props) {
       <List.Accordion
         titleStyle={styles.accordionTitleStyle}
         style={styles.accordionStyle}
-        accessibilityLabel= {item.title}
-        theme={{colors: {text: "white"}}}
+        accessibilityLabel={item.title}
+        theme={{ colors: { text: "white" } }}
       >
         <List.Section style={styles.accordianItemsStyle}>
           <ListItem.Subtitle style={styles.accordianItemsStyle}>
             <MaterialIconCommunity
               name="format-title"
-              size={15}
+              size={20}
             ></MaterialIconCommunity>
             {": "}
             {item.title}
           </ListItem.Subtitle>
+          <Divider />
 
           <ListItem.Subtitle style={styles.accordianItemsStyle}>
             <MaterialIconCommunity
               name="feather"
-              size={15}
+              size={20}
             ></MaterialIconCommunity>
             {": "}
             {item.authors[0]["first_name"]} {item.authors[0]["last_name"]}
           </ListItem.Subtitle>
+          <Divider />
 
           <ListItem.Subtitle style={styles.accordianItemsStyle}>
             <MaterialIconCommunity
-              name="alpha-g-circle"
-              size={15}
+              name="timer-sand"
+              size={20}
             ></MaterialIconCommunity>
             {": "}
-            {item.genres[0].name}
+            {item.totaltime}
+          </ListItem.Subtitle>
+          <Divider />
+
+          <ListItem.Subtitle style={styles.accordianItemsStyle}>
+            <MaterialIconCommunity
+              name="copyright"
+              size={20}
+            ></MaterialIconCommunity>
+            {": "}
+            {item.copyright_year}
+          </ListItem.Subtitle>
+          <Divider />
+
+          <ListItem.Subtitle style={styles.accordianItemsStyle}>
+            <MaterialIconCommunity
+              name="guy-fawkes-mask"
+              size={20}
+            ></MaterialIconCommunity>
+            {": "}
+            {item.genres.map((genre) => {
+              return `${genre.name} `;
+            })}
           </ListItem.Subtitle>
         </List.Section>
       </List.Accordion>
@@ -221,23 +245,23 @@ const styles = StyleSheet.create({
     backgroundColor: "#51361a",
   },
   accordionStyle: {
-    flex:1,
+    flex: 1,
     color: "white",
     backgroundColor: "#331800",
-    width: (windowWidth / 2) - 8,
-    justifyContent:"center",
-    height:50,
+    width: windowWidth / 2 - 8,
+    justifyContent: "center",
+    height: 50,
   },
   accordionTitleStyle: {
     color: "black",
     backgroundColor: "#331800",
-    width: (windowWidth / 2) - 8,
-    flex:1,
+    width: windowWidth / 2 - 8,
+    flex: 1,
     height: 40,
   },
   accordianItemsStyle: {
     color: "white",
     backgroundColor: "#51361a",
-    width: (windowWidth / 2) - 15,
+    width: windowWidth / 2 - 15,
   },
 });
