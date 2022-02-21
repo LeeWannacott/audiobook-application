@@ -1,16 +1,16 @@
 import React, { useState } from "react";
 import { SearchBar, Overlay, Slider } from "react-native-elements";
 import AudioBooks from "../components/Audiobooks";
-import { Switch, View, Dimensions, Text,TextInput } from "react-native";
+import { Switch, View, Dimensions, Text, TextInput } from "react-native";
 import { StyleSheet } from "react-native";
 import ButtonPanel from "../components/ButtonPanel";
 // import { MaterialIcons } from "@expo/vector-icons";
 import MaterialIconCommunity from "react-native-vector-icons/MaterialCommunityIcons.js";
 import { Picker } from "@react-native-picker/picker";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import authorsListJson from "../resources/audiobookAuthorsList.json";
 import { genreList } from "../resources/audiobookGenreList.js";
 // let authorsListJson = require("../resources/audiobookAuthorsList.json");
+import { getAsyncData, storeAsyncData } from "../database_functions";
 
 function Search() {
   const [search, updateSearch] = useState("");
@@ -18,9 +18,6 @@ function Search() {
   const [requestAudiobookAmount, setRequestAudiobookAmount] = useState(26);
 
   const [visible, setVisible] = useState(false);
-
-  // const [searchByTitleOrAuthorOrGenre, setSearchByTitleOrAuthorOrGenre] =
-  // useState("title");
   const [enableGenreSelection, setEnableGenreSelection] = useState(false);
   const [enableAuthorSelection, setEnableAuthorSelection] = useState(false);
 
@@ -31,19 +28,9 @@ function Search() {
     audiobookAmountRequested: 0,
   });
 
-  const getData = async (key) => {
-    try {
-      const jsonValue = await AsyncStorage.getItem(key);
-      return jsonValue != null ? JSON.parse(jsonValue) : null;
-    } catch (e) {
-      // error reading value
-      console.log(e);
-    }
-  };
-
   React.useState(() => {
     try {
-      getData("apiSettings").then((apiSettingsFromStorage) => {
+      getAsyncData("apiSettings").then((apiSettingsFromStorage) => {
         apiSettingsFromStorage
           ? setApiSettings({
               ["searchBy"]: apiSettingsFromStorage["searchBy"],
@@ -59,7 +46,7 @@ function Search() {
               ["audiobookAmountRequested"]: 26,
             });
       });
-      getData("authorAndGenreSelectedBooleans").then((authorAndGenre) => {
+      getAsyncData("authorAndGenreSelectedBooleans").then((authorAndGenre) => {
         authorAndGenre
           ? (setEnableAuthorSelection(authorAndGenre[0]),
             setEnableGenreSelection(authorAndGenre[1]))
@@ -70,14 +57,6 @@ function Search() {
     }
   }, []);
 
-  const storeAsyncData = async (key, value) => {
-    try {
-      const jsonValue = JSON.stringify(value);
-      await AsyncStorage.setItem(key, jsonValue);
-    } catch (e) {
-      console.log(e);
-    }
-  };
   const storeApiSettings = (title, genre, author, amount) => {
     const tempApiSettings = {
       searchBy: title,
@@ -87,13 +66,6 @@ function Search() {
     };
     storeAsyncData("apiSettings", tempApiSettings);
   };
-
-  // getData("authorAndGenreSelectedBooleans").then((enablePickers) => {
-  // enablePickers != null
-  // ? (setEnableAuthorSelection(enablePickers[0]),
-  // setEnableGenreSelection(enablePickers[1]))
-  // : null;
-  // });
 
   const storeAuthorGenreEnablePickers = (
     authorSelectedBool,
@@ -149,8 +121,8 @@ function Search() {
             }}
             onSubmitEditing={() => setUserInputEntered(search)}
             value={search}
-            inputContainerStyle={{ marginRight: -7 ,backgroundColor:"white"}}
-            containerStyle={{ backgroundColor:"black"}}
+            inputContainerStyle={{ marginRight: -7, backgroundColor: "white" }}
+            containerStyle={{ backgroundColor: "black" }}
           />
         </View>
         <MaterialIconCommunity
@@ -210,7 +182,7 @@ function Search() {
 
           <Picker
             selectedValue={apiSettings["authorLastName"]}
-            prompt={ "Search by author:" }
+            prompt={"Search by author:"}
             // mode={"dropdown"}
             enabled={enableAuthorSelection}
             onValueChange={(author, itemIndex) => {
@@ -235,7 +207,7 @@ function Search() {
 
           <Picker
             selectedValue={apiSettings["audiobookGenre"]}
-            prompt={ "Search by genre:" }
+            prompt={"Search by genre:"}
             enabled={enableGenreSelection}
             onValueChange={(genre, itemIndex) => {
               setApiSettings((prevState) => ({
@@ -305,7 +277,7 @@ const styles = StyleSheet.create({
     backgroundColor: "rgb(57, 62, 66)",
     borderTopLeftRadius: 4,
     borderTopRightRadius: 4,
-    backgroundColor:"black"
+    backgroundColor: "black",
   },
   searchStyle: {
     width: windowWidth - 80,
@@ -319,7 +291,7 @@ const styles = StyleSheet.create({
     marginTop: "auto",
     marginBottom: "auto",
     borderWidth: 1,
-    borderRadius:2,
+    borderRadius: 2,
   },
   checkboxRow: {
     display: "flex",

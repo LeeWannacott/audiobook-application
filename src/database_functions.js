@@ -1,3 +1,5 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 export function createTablesDB(db) {
   db.transaction((tx) => {
     tx.executeSql(
@@ -175,3 +177,22 @@ export function removeShelvedAudiobookDB(db, audiobook_id) {
     ]);
   }, null);
 }
+
+export const storeAsyncData = async (key, value) => {
+  try {
+    const jsonValue = JSON.stringify(value);
+    await AsyncStorage.setItem(key, jsonValue);
+  } catch (e) {
+    console.log(e);
+  }
+};
+
+export const getAsyncData = async (key) => {
+  try {
+    const jsonValue = await AsyncStorage.getItem(key);
+    return jsonValue != null ? JSON.parse(jsonValue) : null;
+  } catch (e) {
+    // error reading value
+    console.log(e);
+  }
+};
