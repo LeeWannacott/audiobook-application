@@ -35,13 +35,26 @@ export default function Audiobooks(props) {
   const addAudiobookToHistory = (
     audiobook_rss_url,
     audiobook_id,
-    audiobook_image
+    audiobook_image,
+    audiobook_title,
+    audiobook_author_first_name,
+    audiobook_author_last_name,
+    audiobook_total_time,
+    audiobook_copyright_year,
+    audiobook_genres
   ) => {
+    audiobook_genres = JSON.stringify(audiobook_genres)
     addAudiobookToHistoryDB(
       db,
       audiobook_rss_url,
       audiobook_id,
-      audiobook_image
+      audiobook_image,
+      audiobook_title,
+      audiobook_author_first_name,
+      audiobook_author_last_name,
+      audiobook_total_time,
+      audiobook_copyright_year,
+      audiobook_genres
     );
   };
 
@@ -119,7 +132,17 @@ export default function Audiobooks(props) {
             source={{ uri: bookCovers[index] }}
             style={{ width: windowWidth / 2 - 42, height: windowHeight / 5 }}
             onPress={() => {
-              addAudiobookToHistory(item.url_rss, item.id, bookCovers[index]);
+              addAudiobookToHistory(
+                item.url_rss,
+                item.id,
+                bookCovers[index],
+                item.title,
+                item.authors[0]["first_name"],
+                item.authors[0]["last_name"],
+                item.totaltime,
+                item.copyright_year,
+                item.genres
+              );
               navigation.navigate("Audio", [
                 item.url_rss,
                 item.id,
@@ -127,6 +150,12 @@ export default function Audiobooks(props) {
                 item.num_sections,
                 item.url_text_source,
                 item.url_zip_file,
+                item.title,
+                item.authors[0]["first_name"],
+                item.authors[0]["last_name"],
+                item.totaltime,
+                item.copyright_year,
+                item.genres,
               ]);
             }}
           />

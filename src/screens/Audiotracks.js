@@ -66,7 +66,28 @@ function Audiotracks(props) {
     numberBookSections,
     ebookTextSource,
     ListenUrlZip,
+    audiobookTitle,
+    audiobookAuthorFirstName,
+    audiobookAuthorLastName,
+    audiobookTotalTime,
+    audiobookCopyrightYear,
+    audiobookGenres,
   ] = props.route.params;
+
+  console.log(
+    audiobookTitle,
+    audiobookAuthorFirstName,
+    audiobookAuthorLastName,
+    audiobookTotalTime,
+    audiobookCopyrightYear,
+    audiobookGenres,
+    typeof audiobookTitle,
+    typeof audiobookAuthorFirstName,
+    typeof audiobookAuthorLastName,
+    typeof audiobookTotalTime,
+    typeof audiobookCopyrightYear,
+    typeof audiobookGenres
+  );
 
   React.useEffect(() => {
     try {
@@ -149,9 +170,27 @@ function Audiotracks(props) {
   const shelveAudiobook = (
     audiobook_rss_url,
     audiobook_id,
-    audiobook_image
+    audiobook_image,
+    audiobook_title,
+    audiobook_author_first_name,
+    audiobook_author_last_name,
+    audiobook_total_time,
+    audiobook_copyright_year,
+    audiobook_genres
   ) => {
-    shelveAudiobookDB(db, audiobook_rss_url, audiobook_id, audiobook_image);
+    audiobook_genres = JSON.stringify(audiobook_genres);
+    shelveAudiobookDB(
+      db,
+      audiobook_rss_url,
+      audiobook_id,
+      audiobook_image,
+      audiobook_title,
+      audiobook_author_first_name,
+      audiobook_author_last_name,
+      audiobook_total_time,
+      audiobook_copyright_year,
+      audiobook_genres
+    );
   };
   const removeShelvedAudiobook = (audiobook_id) => {
     removeShelvedAudiobookDB(db, audiobook_id);
@@ -546,12 +585,28 @@ function Audiotracks(props) {
   function pressedToShelveBook(
     audiobook_rss_url,
     audiobook_id,
-    audiobook_image
+    audiobook_image,
+    audiobook_title,
+    audiobook_author_first_name,
+    audiobook_author_last_name,
+    audiobook_total_time,
+    audiobook_copyright_year,
+    audiobook_genres
   ) {
     switch (shelveIconToggle) {
       case 0:
         setShelveIconToggle(1);
-        shelveAudiobook(audiobook_rss_url, audiobook_id, audiobook_image);
+        shelveAudiobook(
+          audiobook_rss_url,
+          audiobook_id,
+          audiobook_image,
+          audiobook_title,
+          audiobook_author_first_name,
+          audiobook_author_last_name,
+          audiobook_total_time,
+          audiobook_copyright_year,
+          audiobook_genres
+        );
         updateBookShelve(audiobook_id, !shelveIconToggle);
         break;
       case 1:
@@ -605,7 +660,13 @@ function Audiotracks(props) {
                 pressedToShelveBook(
                   AudioBooksRSSLinkToAudioTracks,
                   AudioBookId,
-                  bookCoverImage
+                  bookCoverImage,
+                  audiobookTitle,
+                  audiobookAuthorFirstName,
+                  audiobookAuthorLastName,
+                  audiobookTotalTime,
+                  audiobookCopyrightYear,
+                  audiobookGenres
                 );
                 // navigation.navigate("Home", []);
               }}
