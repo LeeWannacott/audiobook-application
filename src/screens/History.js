@@ -8,6 +8,7 @@ import { ListItem, Avatar } from "react-native-elements";
 import { FlatList, ActivityIndicator, Dimensions } from "react-native";
 import { List, Divider } from "react-native-paper";
 import MaterialIconCommunity from "react-native-vector-icons/MaterialCommunityIcons.js";
+import AudiobookAccordionList from "../components/audiobookAccordionList.js"
 
 import { openDatabase } from "../utils";
 
@@ -60,66 +61,15 @@ function History() {
           />
         </View>
       </ListItem>
-      <List.Accordion
-        titleStyle={styles.accordionTitleStyle}
-        style={styles.accordionStyle}
-        accessibilityLabel={item.title}
-        theme={{ colors: { text: "white" } }}
-      >
-        <List.Section style={styles.accordianItemsStyle}>
-          <ListItem.Subtitle style={styles.accordianItemsStyle}>
-            <MaterialIconCommunity
-              name="format-title"
-              size={20}
-            ></MaterialIconCommunity>
-            {": "}
-            {item.audiobook_title}
-          </ListItem.Subtitle>
-          <Divider />
-
-          <ListItem.Subtitle style={styles.accordianItemsStyle}>
-            <MaterialIconCommunity
-              name="feather"
-              size={20}
-            ></MaterialIconCommunity>
-            {": "}
-            {item.audiobook_author_first_name} {item.audiobook_author_last_name}
-          </ListItem.Subtitle>
-          <Divider />
-
-          <ListItem.Subtitle style={styles.accordianItemsStyle}>
-            <MaterialIconCommunity
-              name="timer-sand"
-              size={20}
-            ></MaterialIconCommunity>
-            {": "}
-            {item.audiobook_total_time}
-          </ListItem.Subtitle>
-          <Divider />
-
-          <ListItem.Subtitle style={styles.accordianItemsStyle}>
-            <MaterialIconCommunity
-              name="copyright"
-              size={20}
-            ></MaterialIconCommunity>
-            {": "}
-            {item.audiobook_copyright_year}
-          </ListItem.Subtitle>
-          <Divider />
-          <ListItem.Subtitle style={styles.accordianItemsStyle}>
-            <MaterialIconCommunity
-              name="guy-fawkes-mask"
-              size={20}
-            ></MaterialIconCommunity>
-            {": "}
-            {JSON.parse(item.audiobook_genres).map((genre) => {
-              return `${genre.name} `;
-            })}
-          </ListItem.Subtitle>
-        </List.Section>
-      </List.Accordion>
+      <AudiobookAccordionList
+        audiobookTitle={item.audiobook_title}
+        audiobookAuthorFirstName={item.audiobook_author_first_name}
+        audiobookAuthorLastName={item.audiobook_author_last_name}
+        audiobookTotalTime={item.audiobook_total_time}
+        audiobookCopyrightYear={item.audiobook_copyright_year}
+        audiobookGenres={item.audiobook_genres}
+      />
     </View>
-
   );
 
   if (!loadingHistory) {
@@ -175,31 +125,11 @@ const styles = StyleSheet.create({
   buttonStyle: {
     paddingTop: 0,
   },
-  ActivityIndicatorStyle: {
-    top: windowHeight / 2,
-    color: "green",
-  },
-  accordionStyle: {
-    flex: 1,
-    color: "white",
-    backgroundColor: "#331800",
-    width: windowWidth / 2 - 8,
-    justifyContent: "center",
-    height: 50,
-  },
-  accordionTitleStyle: {
-    color: "black",
-    backgroundColor: "#331800",
-    width: windowWidth / 2 - 8,
-    flex: 1,
-    height: 40,
-  },
   AudioBookListView: {
     backgroundColor: "#51361a",
   },
-  accordianItemsStyle: {
-    color: "white",
-    backgroundColor: "#51361a",
-    width: windowWidth / 2 - 15,
+  ActivityIndicatorStyle: {
+    top: windowHeight / 2,
+    color: "green",
   },
 });
