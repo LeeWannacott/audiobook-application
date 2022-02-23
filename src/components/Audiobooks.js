@@ -8,9 +8,7 @@ import {
 import { ListItem, Avatar, Icon } from "react-native-elements";
 import { useNavigation } from "@react-navigation/native";
 import React, { useState, useEffect } from "react";
-import MaterialIconCommunity from "react-native-vector-icons/MaterialCommunityIcons.js";
-
-import { List, Divider } from "react-native-paper";
+import AudiobookAccordionList from "../components/audiobookAccordionList.js";
 
 import { openDatabase } from "../utils";
 import {
@@ -24,9 +22,6 @@ export default function Audiobooks(props) {
   const [loadingAudioBooks, setLoadingAudioBooks] = useState(true);
   const [data, setData] = useState([]);
   const [bookCovers, setBookCovers] = useState([]);
-  const [queryTitleOrAuthor, setQueryTitleOrAuthor] = useState([]);
-  const [isAccordianExpand, setIsAccordianExpand] = useState([]);
-  const [expanded, setExpanded] = React.useState(true);
 
   React.useEffect(() => {
     createHistoryTableDB(db);
@@ -43,7 +38,7 @@ export default function Audiobooks(props) {
     audiobook_copyright_year,
     audiobook_genres
   ) => {
-    audiobook_genres = JSON.stringify(audiobook_genres)
+    audiobook_genres = JSON.stringify(audiobook_genres);
     addAudiobookToHistoryDB(
       db,
       audiobook_rss_url,
@@ -101,9 +96,6 @@ export default function Audiobooks(props) {
   useEffect(() => {
     // console.log(data.books);
     if (data.books != null || data.books != undefined) {
-      let initialAudioBookSections = new Array(data.books.length).fill(false);
-      setIsAccordianExpand(initialAudioBookSections);
-
       const dataKeys = Object.values(data.books);
       var bookCoverImagePath;
       dataKeys.forEach((bookCoverURLPath) => {
@@ -162,65 +154,14 @@ export default function Audiobooks(props) {
           <View></View>
         </View>
       </ListItem>
-      <List.Accordion
-        titleStyle={styles.accordionTitleStyle}
-        style={styles.accordionStyle}
-        accessibilityLabel={item.title}
-        theme={{ colors: { text: "white" } }}
-      >
-        <List.Section style={styles.accordianItemsStyle}>
-          <ListItem.Subtitle style={styles.accordianItemsStyle}>
-            <MaterialIconCommunity
-              name="format-title"
-              size={20}
-            ></MaterialIconCommunity>
-            {": "}
-            {item.title}
-          </ListItem.Subtitle>
-          <Divider />
-
-          <ListItem.Subtitle style={styles.accordianItemsStyle}>
-            <MaterialIconCommunity
-              name="feather"
-              size={20}
-            ></MaterialIconCommunity>
-            {": "}
-            {item.authors[0]["first_name"]} {item.authors[0]["last_name"]}
-          </ListItem.Subtitle>
-          <Divider />
-
-          <ListItem.Subtitle style={styles.accordianItemsStyle}>
-            <MaterialIconCommunity
-              name="timer-sand"
-              size={20}
-            ></MaterialIconCommunity>
-            {": "}
-            {item.totaltime}
-          </ListItem.Subtitle>
-          <Divider />
-
-          <ListItem.Subtitle style={styles.accordianItemsStyle}>
-            <MaterialIconCommunity
-              name="copyright"
-              size={20}
-            ></MaterialIconCommunity>
-            {": "}
-            {item.copyright_year}
-          </ListItem.Subtitle>
-          <Divider />
-
-          <ListItem.Subtitle style={styles.accordianItemsStyle}>
-            <MaterialIconCommunity
-              name="guy-fawkes-mask"
-              size={20}
-            ></MaterialIconCommunity>
-            {": "}
-            {item.genres.map((genre) => {
-              return `${genre.name} `;
-            })}
-          </ListItem.Subtitle>
-        </List.Section>
-      </List.Accordion>
+      <AudiobookAccordionList
+        audiobookTitle={item.title}
+        audiobookAuthorFirstName={item.authors[0]["first_name"]}
+        audiobookAuthorLastName={item.authors[0]["last_name"]}
+        audiobookTotalTime={item.totaltime}
+        audiobookCopyrightYear={item.copyright_year}
+        audiobookGenres={JSON.stringify(item.genres)}
+      />
     </View>
   );
 
@@ -272,25 +213,5 @@ const styles = StyleSheet.create({
   },
   AudioBookListView: {
     backgroundColor: "#51361a",
-  },
-  accordionStyle: {
-    flex: 1,
-    color: "white",
-    backgroundColor: "#331800",
-    width: windowWidth / 2 - 8,
-    justifyContent: "center",
-    height: 50,
-  },
-  accordionTitleStyle: {
-    color: "black",
-    backgroundColor: "#331800",
-    width: windowWidth / 2 - 8,
-    flex: 1,
-    height: 40,
-  },
-  accordianItemsStyle: {
-    color: "white",
-    backgroundColor: "#51361a",
-    width: windowWidth / 2 - 15,
   },
 });
