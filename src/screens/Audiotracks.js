@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import {
   ActivityIndicator,
-  TouchableOpacity,
   Dimensions,
   InteractionManager,
 } from "react-native";
@@ -18,6 +17,8 @@ import Slider from "@react-native-community/slider";
 import { MaterialIcons } from "@expo/vector-icons";
 import { FlatList, StyleSheet, Text, View } from "react-native";
 import MaterialIconCommunity from "react-native-vector-icons/MaterialCommunityIcons.js";
+
+import { Button, List } from "react-native-paper";
 
 import { openDatabase } from "../utils";
 
@@ -73,21 +74,6 @@ function Audiotracks(props) {
     audiobookCopyrightYear,
     audiobookGenres,
   ] = props.route.params;
-
-  console.log(
-    audiobookTitle,
-    audiobookAuthorFirstName,
-    audiobookAuthorLastName,
-    audiobookTotalTime,
-    audiobookCopyrightYear,
-    audiobookGenres,
-    typeof audiobookTitle,
-    typeof audiobookAuthorFirstName,
-    typeof audiobookAuthorLastName,
-    typeof audiobookTotalTime,
-    typeof audiobookCopyrightYear,
-    typeof audiobookGenres
-  );
 
   React.useEffect(() => {
     try {
@@ -281,7 +267,10 @@ function Audiotracks(props) {
       console.log(
         data.positionMillis,
         data.durationMillis,
-        currentSliderPosition
+        currentSliderPosition,
+        data.playableDurationMillis,
+        data.progressUpdateIntervalMillis,
+        data.uri
       );
       let sliderPositionCalculate =
         (data.positionMillis / data.durationMillis) * 100;
@@ -312,7 +301,6 @@ function Audiotracks(props) {
   const UpdateStatus = async (data) => {
     try {
       if (data.didJustFinish) {
-        console.log("Finished!!!");
         updateAndStoreAudiobookPositions(data);
         return HandleNext(currentAudioTrackIndex.current);
       } else if (data.positionMillis && data.durationMillis) {
@@ -383,14 +371,12 @@ function Audiotracks(props) {
           setAudioTrackReader(
             AudioBookData[0].sections[index].readers[0]["display_name"]
           );
-          InteractionManager.runAfterInteractions(() => {
-            // ...long-running synchronous task...
-            sound.current.setOnPlaybackStatusUpdate(UpdateStatus);
-          });
+          // ...long-running synchronous task...
           setLoadingCurrentAudiotrack(false);
           setLoadedCurrentAudiotrack(true);
           SetDuration(result.durationMillis);
           PlayAudio();
+          sound.current.setOnPlaybackStatusUpdate(UpdateStatus);
         }
       } catch (error) {
         setLoadingCurrentAudiotrack(false);
@@ -526,10 +512,9 @@ function Audiotracks(props) {
     }
   };
 
-  const keyExtractor = (item, index) => index.toString();
-  // TODO: error handle if null/undefined i.e no reader listed/read by.
+  // TODO: error handle if null/undefined i.e no reader listed/read by/.
   const renderItem = ({ item, index }) => (
-    <View>
+  <View>
       <ListItem bottomDivider>
         <ListItem.Content>
           <ListItem.Title>
@@ -551,21 +536,21 @@ function Audiotracks(props) {
           <ListItem.Subtitle>
             <Text numberOfLines={1} ellipsizeMode="tail" style={{}}>
               Reader:{" "}
-              {item.readers[0]["display_name"]
+              {item.readers[0]["display_name"] !== undefined
                 ? item.readers[0]["display_name"]
                 : "Not listed."}
             </Text>
           </ListItem.Subtitle>
         </ListItem.Content>
         <ListItem.Chevron />
-        <MaterialIconCommunity
-          name="book-play"
+        <Button
+          mode="outlined"
           onPress={() => {
             PlayFromListenButton(index);
           }}
-          size={40}
-          color="#841584"
-        />
+        >
+          <MaterialIconCommunity name="book-play" size={40} color="#841584" />
+        </Button>
       </ListItem>
     </View>
   );
@@ -652,25 +637,33 @@ function Audiotracks(props) {
               onFinishRating={ratingCompleted}
               style={{ paddingVertical: 10 }}
             />
-            <MaterialIconCommunity
-              name={shelveIconToggle ? "book" : "book-outline"}
-              size={50}
-              color={shelveIconToggle ? "black" : "black"}
-              onPress={() => {
-                pressedToShelveBook(
-                  AudioBooksRSSLinkToAudioTracks,
-                  AudioBookId,
-                  bookCoverImage,
-                  audiobookTitle,
-                  audiobookAuthorFirstName,
-                  audiobookAuthorLastName,
-                  audiobookTotalTime,
-                  audiobookCopyrightYear,
-                  audiobookGenres
-                );
-                // navigation.navigate("Home", []);
-              }}
-            />
+            <View style={styles.shelveButtons}>
+              <Button
+                mode="outlined"
+                onPress={() =>
+                  pressedToShelveBook(
+                    AudioBooksRSSLinkToAudioTracks,
+                    AudioBookId,
+                    bookCoverImage,
+                    audiobookTitle,
+                    audiobookAuthorFirstName,
+                    audiobookAuthorLastName,
+                    audiobookTotalTime,
+                    audiobookCopyrightYear,
+                    audiobookGenres
+                  )
+                }
+              >
+                <MaterialIconCommunity
+                  name={shelveIconToggle ? "book" : "book-outline"}
+                  size={50}
+                  color={shelveIconToggle ? "black" : "black"}
+                  onPress={() => {
+                    // navigation.navigate("Home", []);
+                  }}
+                />
+              </Button>
+            </View>
             <Text> Chapters: {numberBookSections} </Text>
             <Text> Total playtime: {AudioBookData[0].totaltime} </Text>
           </Card>
@@ -678,13 +671,14 @@ function Audiotracks(props) {
       );
     };
 
+    {console.log(AudioBookData[0].sections)}
     return (
       <View style={styles.container}>
         <View style={styles.AudioTracksStyle}>
           <View style={styles.listItemHeaderStyle}>
             <FlatList
               data={AudioBookData[0].sections}
-              keyExtractor={keyExtractor}
+              keyExtractor={(item)=>item.id}
               renderItem={renderItem}
               ListHeaderComponent={getHeader()}
             />
@@ -733,19 +727,20 @@ function Audiotracks(props) {
         </View>
         <View style={styles.controlsVert}>
           <View style={styles.controls}>
-            <TouchableOpacity onPress={() => HandlePrev()}>
+            <Button mode="outlined" onPress={() => HandlePrev()}>
               <MaterialIcons
                 name="skip-previous"
                 size={50}
                 color="black"
                 style={styles.control}
               />
-            </TouchableOpacity>
+            </Button>
 
             {loadingCurrentAudiotrack ? (
               <ActivityIndicator size={"large"} color={"dodgerblue"} />
             ) : loadedCurrentAudiotrack === false ? (
-              <TouchableOpacity
+              <Button
+                mode="outlined"
                 onPress={() => LoadAudio(currentAudioTrackIndex.current)}
               >
                 <MaterialIcons
@@ -754,37 +749,36 @@ function Audiotracks(props) {
                   color="black"
                   style={styles.control}
                 />
-              </TouchableOpacity>
+              </Button>
             ) : Playing ? (
-              <TouchableOpacity onPress={() => PauseAudio()}>
+              <Button mode="outlined" onPress={() => PauseAudio()}>
                 <MaterialIcons
                   name="pause"
                   size={50}
                   color="black"
                   style={styles.control}
                 />
-              </TouchableOpacity>
+              </Button>
             ) : audioPaused == false ? (
               <ActivityIndicator size={"large"} color={"dodgerblue"} />
             ) : (
-              <TouchableOpacity>
+              <Button mode="outlined" onPress={() => PlayAudio()}>
                 <MaterialIcons
                   name="play-arrow"
                   size={50}
                   color="black"
                   style={styles.control}
-                  onPress={() => PlayAudio()}
                 />
-              </TouchableOpacity>
+              </Button>
             )}
-            <TouchableOpacity onPress={() => HandleNext()}>
+            <Button mode="outlined" onPress={() => HandleNext()}>
               <MaterialIcons
                 name="skip-next"
                 size={50}
                 color="black"
                 style={styles.control}
               />
-            </TouchableOpacity>
+            </Button>
           </View>
         </View>
       </View>
@@ -883,6 +877,11 @@ const styles = StyleSheet.create({
     borderRadius: 25,
     color: "purple",
     margin: 30,
+  },
+  shelveButtons: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "flex-start",
   },
 });
 
