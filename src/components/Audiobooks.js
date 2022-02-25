@@ -22,6 +22,7 @@ export default function Audiobooks(props) {
   const [loadingAudioBooks, setLoadingAudioBooks] = useState(true);
   const [data, setData] = useState([]);
   const [bookCovers, setBookCovers] = useState([]);
+  const [reviewsUrlList, setReviewsUrlList] = useState([]);
 
   React.useEffect(() => {
     createHistoryTableDB(db);
@@ -53,7 +54,6 @@ export default function Audiobooks(props) {
     );
   };
 
-  const bookCoverURL = [];
   useEffect(() => {
     setLoadingAudioBooks(true);
     const searchQuery = encodeURIComponent(props.searchBarCurrentText);
@@ -93,18 +93,23 @@ export default function Audiobooks(props) {
     props.apiSettingsHaveBeenSet,
   ]);
 
+  const bookCoverURL = [];
+  const reviewsURL = [];
   useEffect(() => {
     // console.log(data.books);
     if (data.books != null || data.books != undefined) {
       const dataKeys = Object.values(data.books);
-      var bookCoverImagePath;
+      let bookCoverImagePath;
       dataKeys.forEach((bookCoverURLPath) => {
         bookCoverImagePath = bookCoverURLPath.url_zip_file.split("/");
         bookCoverImagePath = bookCoverImagePath[bookCoverImagePath.length - 2];
+        const reviewUrl = `https://archive.org/metadata/${bookCoverImagePath}/reviews/`;
         bookCoverImagePath = `https://archive.org/services/get-item-image.php?identifier=${bookCoverImagePath}`;
         bookCoverURL.push(bookCoverImagePath);
+        reviewsURL.push(reviewUrl);
       });
       setBookCovers(bookCoverURL);
+      setReviewsUrlList(reviewsURL);
     }
   }, [data.books]);
 
@@ -148,6 +153,7 @@ export default function Audiobooks(props) {
                 item.totaltime,
                 item.copyright_year,
                 item.genres,
+                reviewsUrlList[index],
               ]);
             }}
           />

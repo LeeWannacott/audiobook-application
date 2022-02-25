@@ -35,9 +35,10 @@ import {
 
 function Audiotracks(props) {
   const [AudioBookData, setAudioBookData] = useState([]);
+  const [dataRSS, setData] = useState([]);
+  const [audiobookReviewData, setAudiobookReviewData] = useState([]);
   const [AudioBookDescription, setAudioBookDescription] = useState([]);
   const currentAudioTrackIndex = useRef(0);
-  const [dataRSS, setData] = useState([]);
   const [loadingAudiobookData, setLoadingAudioBookData] = useState(true);
   const [loadingAudioListeningLinks, setLoadingAudioListeningLinks] =
     useState(true);
@@ -73,6 +74,7 @@ function Audiotracks(props) {
     audiobookTotalTime,
     audiobookCopyrightYear,
     audiobookGenres,
+    audiobookReviewUrl,
   ] = props.route.params;
 
   React.useEffect(() => {
@@ -231,6 +233,18 @@ function Audiotracks(props) {
       .finally(() => setLoadingAudioBookData(false));
   }, []);
 
+  useEffect(() => {
+    fetch(audiobookReviewUrl)
+      .then((response) => response.json())
+      .then((json) => {
+        return setAudiobookReviewData(json);
+      })
+      .catch((error) => console.log("Error: ", error));
+  }, []);
+
+  {
+    console.log(audiobookReviewData);
+  }
   useEffect(() => {
     try {
       let initialAudioBookSections = new Array(lengthOfSections).fill(0);
@@ -514,7 +528,7 @@ function Audiotracks(props) {
 
   // TODO: error handle if null/undefined i.e no reader listed/read by/.
   const renderItem = ({ item, index }) => (
-  <View>
+    <View>
       <ListItem bottomDivider>
         <ListItem.Content>
           <ListItem.Title>
@@ -553,6 +567,33 @@ function Audiotracks(props) {
         </Button>
       </ListItem>
     </View>
+  );
+
+  const renderReviews = ({ item, index }) => (
+    <Card>
+      <ListItem.Title>{item.reviewtitle}</ListItem.Title>
+      <Card.Divider />
+      <Rating
+        showRating
+        imageSize={20}
+        ratingCount={5}
+        startingValue={item.stars}
+        showRating={false}
+        readonly={true}
+      />
+      <ListItem>
+        <ListItem.Subtitle>{item.reviewbody}</ListItem.Subtitle>
+      </ListItem>
+
+      <View style={styles.reviewFooter}>
+        <ListItem>
+          <ListItem.Subtitle>By: {item.reviewer}</ListItem.Subtitle>
+        </ListItem>
+        <ListItem>
+          <ListItem.Subtitle>{item.reviewdate}</ListItem.Subtitle>
+        </ListItem>
+      </View>
+    </Card>
   );
 
   const rssURLS = Object.entries(dataRSS);
@@ -671,16 +712,32 @@ function Audiotracks(props) {
       );
     };
 
-    {console.log(AudioBookData[0].sections)}
+    const getFooter = () => {
+      return (
+        <View>
+          <List.Accordion title="Reviews">
+            <FlatList
+              data={audiobookReviewData.result}
+              keyExtractor={(item) => item["reviewdate"]}
+              renderItem={renderReviews}
+              style={{ backgroundColor: "white" }}
+            />
+          </List.Accordion>
+        </View>
+      );
+    };
+
+    // {console.log(AudioBookData[0].sections)}
     return (
       <View style={styles.container}>
         <View style={styles.AudioTracksStyle}>
           <View style={styles.listItemHeaderStyle}>
             <FlatList
               data={AudioBookData[0].sections}
-              keyExtractor={(item)=>item.id}
+              keyExtractor={(item) => item.id}
               renderItem={renderItem}
               ListHeaderComponent={getHeader()}
+              ListFooterComponent={getFooter()}
             />
           </View>
         </View>
@@ -882,6 +939,11 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "row",
     justifyContent: "flex-start",
+  },
+  reviewFooter: {
+    display: "flex",
+    flexDirection: "row",
+    flexWrap: "wrap",
   },
 });
 
