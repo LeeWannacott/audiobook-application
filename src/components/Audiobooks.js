@@ -23,6 +23,7 @@ export default function Audiobooks(props) {
   const [data, setData] = useState([]);
   const [bookCovers, setBookCovers] = useState([]);
   const [reviewsUrlList, setReviewsUrlList] = useState([]);
+  const [avatarOnPressEnabled, setAvatarOnPressEnabled] = useState(true);
 
   React.useEffect(() => {
     createHistoryTableDB(db);
@@ -129,32 +130,38 @@ export default function Audiobooks(props) {
             source={{ uri: bookCovers[index] }}
             style={{ width: windowWidth / 2 - 42, height: windowHeight / 5 }}
             onPress={() => {
-              addAudiobookToHistory(
-                item.url_rss,
-                item.id,
-                bookCovers[index],
-                item.title,
-                item.authors[0]["first_name"],
-                item.authors[0]["last_name"],
-                item.totaltime,
-                item.copyright_year,
-                item.genres
-              );
-              navigation.navigate("Audio", [
-                item.url_rss,
-                item.id,
-                bookCovers[index],
-                item.num_sections,
-                item.url_text_source,
-                item.url_zip_file,
-                item.title,
-                item.authors[0]["first_name"],
-                item.authors[0]["last_name"],
-                item.totaltime,
-                item.copyright_year,
-                item.genres,
-                reviewsUrlList[index],
-              ]);
+              if (avatarOnPressEnabled) {
+                addAudiobookToHistory(
+                  item.url_rss,
+                  item.id,
+                  bookCovers[index],
+                  item.title,
+                  item.authors[0]["first_name"],
+                  item.authors[0]["last_name"],
+                  item.totaltime,
+                  item.copyright_year,
+                  item.genres
+                );
+                navigation.navigate("Audio", [
+                  item.url_rss,
+                  item.id,
+                  bookCovers[index],
+                  item.num_sections,
+                  item.url_text_source,
+                  item.url_zip_file,
+                  item.title,
+                  item.authors[0]["first_name"],
+                  item.authors[0]["last_name"],
+                  item.totaltime,
+                  item.copyright_year,
+                  item.genres,
+                  reviewsUrlList[index],
+                ]);
+              }
+              setAvatarOnPressEnabled(false);
+              setTimeout(() => {
+                setAvatarOnPressEnabled(true);
+              }, 2000);
             }}
           />
           <View></View>
