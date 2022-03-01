@@ -15,7 +15,7 @@ import * as rssParser from "react-native-rss-parser";
 import { Audio } from "expo-av";
 import Slider from "@react-native-community/slider";
 import { MaterialIcons } from "@expo/vector-icons";
-import { FlatList, StyleSheet, Text, View } from "react-native";
+import { FlatList, SectionList, StyleSheet, Text, View } from "react-native";
 import MaterialIconCommunity from "react-native-vector-icons/MaterialCommunityIcons.js";
 
 import { Button, List } from "react-native-paper";
@@ -527,46 +527,44 @@ function Audiotracks(props) {
   };
 
   // TODO: error handle if null/undefined i.e no reader listed/read by/.
-  const renderItem = ({ item, index }) => (
-    <View>
-      <ListItem bottomDivider>
-        <ListItem.Content>
-          <ListItem.Title>
-            {item.section_number}: {item.title}
-          </ListItem.Title>
-          <ListItem.Subtitle>
-            <Text numberOfLines={1} ellipsizeMode="tail" style={{}}>
-              Playtime: {GetDurationFormat(currentAudiotrackPositionsMs[index])}
-              {" | "}
-              {FormatChapterDurations(chapterDurations[index])}
-            </Text>
-          </ListItem.Subtitle>
-          <LinearProgress
-            color="primary"
-            value={linearProgessBars[index]}
-            variant="determinate"
-            trackColor="lightblue"
-          />
-          <ListItem.Subtitle>
-            <Text numberOfLines={1} ellipsizeMode="tail" style={{}}>
-              Reader:{" "}
-              {item.readers[0]["display_name"] !== undefined
-                ? item.readers[0]["display_name"]
-                : "Not listed."}
-            </Text>
-          </ListItem.Subtitle>
-        </ListItem.Content>
-        <ListItem.Chevron />
-        <Button
-          mode="outlined"
-          onPress={() => {
-            PlayFromListenButton(index);
-          }}
-        >
-          <MaterialIconCommunity name="book-play" size={40} color="#841584" />
-        </Button>
-      </ListItem>
-    </View>
+  const renderAudiotracks = ({ item, index }) => (
+    <ListItem bottomDivider>
+      <ListItem.Content>
+        <ListItem.Title>
+          {item.section_number}: {item.title}
+        </ListItem.Title>
+        <ListItem.Subtitle>
+          <Text numberOfLines={1} ellipsizeMode="tail" style={{}}>
+            Playtime: {GetDurationFormat(currentAudiotrackPositionsMs[index])}
+            {" | "}
+            {FormatChapterDurations(chapterDurations[index])}
+          </Text>
+        </ListItem.Subtitle>
+        <LinearProgress
+          color="primary"
+          value={linearProgessBars[index]}
+          variant="determinate"
+          trackColor="lightblue"
+        />
+        <ListItem.Subtitle>
+          <Text numberOfLines={1} ellipsizeMode="tail" style={{}}>
+            Reader:{" "}
+            {item.readers[0]["display_name"] !== undefined
+              ? item.readers[0]["display_name"]
+              : "Not listed."}
+          </Text>
+        </ListItem.Subtitle>
+      </ListItem.Content>
+      <ListItem.Chevron />
+      <Button
+        mode="outlined"
+        onPress={() => {
+          PlayFromListenButton(index);
+        }}
+      >
+        <MaterialIconCommunity name="book-play" size={40} color="#841584" />
+      </Button>
+    </ListItem>
   );
 
   const renderReviews = ({ item, index }) => (
@@ -712,32 +710,49 @@ function Audiotracks(props) {
       );
     };
 
-    const getFooter = () => {
-      return (
-        <View>
-          <List.Accordion title="Reviews">
-            <FlatList
-              data={audiobookReviewData.result}
-              keyExtractor={(item) => item["reviewdate"]}
-              renderItem={renderReviews}
-              style={{ backgroundColor: "white" }}
-            />
-          </List.Accordion>
-        </View>
-      );
+    const audiotracksKeyExtractor = (item) => {
+      return item.id;
+    };
+    const reviewsKeyExtractor = (item) => {
+      return item.createdate;
     };
 
+    const AudioTracksScreenData = [
+      {
+        title: "Audiotracks",
+        renderItem: renderAudiotracks,
+        data: AudioBookData[0].sections,
+        keyExtractor: audiotracksKeyExtractor,
+      },
+      {
+        title: "Reviews",
+        renderItem: renderReviews,
+        data: audiobookReviewData.result,
+        keyExtractor: reviewsKeyExtractor,
+      },
+    ];
     // {console.log(AudioBookData[0].sections)}
     return (
       <View style={styles.container}>
         <View style={styles.AudioTracksStyle}>
           <View style={styles.listItemHeaderStyle}>
-            <FlatList
-              data={AudioBookData[0].sections}
-              keyExtractor={(item) => item.id}
-              renderItem={renderItem}
+            <View style={styles.AudioTracksStyle}></View>
+            <SectionList
+              sections={AudioTracksScreenData}
+              keyExtractor={({ section: { keyExtractor } }) => {
+                keyExtractor;
+              }}
+              renderItem={({ section: { renderItem } }) => (
+                <View>
+                  <List.Accordion>{renderItem}</List.Accordion>
+                </View>
+              )}
               ListHeaderComponent={getHeader()}
-              ListFooterComponent={getFooter()}
+              renderSectionHeader={(section) => (
+                <Text style={{ color: "white", backgroundColor: "red" }}>
+                  section title: {section.title}
+                </Text>
+              )}
             />
           </View>
         </View>
