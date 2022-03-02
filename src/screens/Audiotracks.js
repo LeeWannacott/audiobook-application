@@ -242,9 +242,30 @@ function Audiotracks(props) {
       .catch((error) => console.log("Error: ", error));
   }, []);
 
-  {
-    console.log(audiobookReviewData);
-  }
+  useEffect(() => {
+    try {
+      if (audiobookReviewData["result"].length !== 0) {
+        const initialValue = 0;
+        let allReviewsStars = audiobookReviewData["result"].map((review) =>
+          Number(review.stars)
+        );
+        const summedReviewStars = allReviewsStars.reduce(
+          (previousValue, currentValue) => previousValue + currentValue,
+          initialValue
+        );
+        console.log(summedReviewStars);
+        console.log(summedReviewStars / allReviewsStars.length);
+        setAudiobookRating(summedReviewStars / allReviewsStars.length);
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  }, [audiobookReviewData]);
+
+  // audiobookReviewData["result"].map((review)=>{
+  // console.log("test",review)
+  // })
+
   useEffect(() => {
     try {
       let initialAudioBookSections = new Array(lengthOfSections).fill(0);
@@ -673,6 +694,8 @@ function Audiotracks(props) {
               showRating
               ratingCount={5}
               startingValue={audiobookRating}
+              fractions={1}
+              readonly={true}
               onFinishRating={ratingCompleted}
               style={{ paddingVertical: 10 }}
             />
@@ -743,16 +766,9 @@ function Audiotracks(props) {
                 keyExtractor;
               }}
               renderItem={({ section: { renderItem } }) => (
-                <View>
-                  <List.Accordion>{renderItem}</List.Accordion>
-                </View>
+                <List.Accordion>{renderItem}</List.Accordion>
               )}
               ListHeaderComponent={getHeader()}
-              renderSectionHeader={(section) => (
-                <Text style={{ color: "white", backgroundColor: "red" }}>
-                  section title: {section.title}
-                </Text>
-              )}
             />
           </View>
         </View>
