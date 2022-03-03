@@ -18,6 +18,8 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { FlatList, SectionList, StyleSheet, Text, View } from "react-native";
 import MaterialIconCommunity from "react-native-vector-icons/MaterialCommunityIcons.js";
 
+import AudiobookAccordionList from "../components/audiobookAccordionList.js";
+
 import { Button, List } from "react-native-paper";
 
 import { openDatabase } from "../utils";
@@ -164,7 +166,8 @@ function Audiotracks(props) {
     audiobook_author_last_name,
     audiobook_total_time,
     audiobook_copyright_year,
-    audiobook_genres
+    audiobook_genres,
+    audiobook_rating
   ) => {
     audiobook_genres = JSON.stringify(audiobook_genres);
     shelveAudiobookDB(
@@ -177,7 +180,8 @@ function Audiotracks(props) {
       audiobook_author_last_name,
       audiobook_total_time,
       audiobook_copyright_year,
-      audiobook_genres
+      audiobook_genres,
+      audiobook_rating
     );
   };
   const removeShelvedAudiobook = (audiobook_id) => {
@@ -623,10 +627,6 @@ function Audiotracks(props) {
   const chapterDurations = dataRSS.map((item) => item["itunes"].duration);
   // console.log(chapterDurations);
 
-  function ratingCompleted(rating) {
-    updateAudiobookRatingDB(db, AudioBookId, rating);
-  }
-
   function pressedToShelveBook(
     audiobook_rss_url,
     audiobook_id,
@@ -636,7 +636,8 @@ function Audiotracks(props) {
     audiobook_author_last_name,
     audiobook_total_time,
     audiobook_copyright_year,
-    audiobook_genres
+    audiobook_genres,
+    audiobook_rating
   ) {
     switch (shelveIconToggle) {
       case 0:
@@ -650,7 +651,8 @@ function Audiotracks(props) {
           audiobook_author_last_name,
           audiobook_total_time,
           audiobook_copyright_year,
-          audiobook_genres
+          audiobook_genres,
+          audiobook_rating
         );
         updateBookShelve(audiobook_id, !shelveIconToggle);
         break;
@@ -696,7 +698,6 @@ function Audiotracks(props) {
               startingValue={audiobookRating}
               fractions={1}
               readonly={true}
-              onFinishRating={ratingCompleted}
               style={{ paddingVertical: 10 }}
             />
             <View style={styles.shelveButtons}>
@@ -712,7 +713,8 @@ function Audiotracks(props) {
                     audiobookAuthorLastName,
                     audiobookTotalTime,
                     audiobookCopyrightYear,
-                    audiobookGenres
+                    audiobookGenres,
+                    audiobookRating
                   )
                 }
               >
@@ -726,8 +728,6 @@ function Audiotracks(props) {
                 />
               </Button>
             </View>
-            <Text> Chapters: {numberBookSections} </Text>
-            <Text> Total playtime: {AudioBookData[0].totaltime} </Text>
           </Card>
         </View>
       );
@@ -736,8 +736,8 @@ function Audiotracks(props) {
     const audiotracksKeyExtractor = (item) => {
       return item.id;
     };
-    const reviewsKeyExtractor = (item) => {
-      return item.createdate;
+    const reviewsKeyExtractor = (item, idx) => {
+      return item.reviewdate;
     };
 
     const AudioTracksScreenData = [
@@ -750,7 +750,7 @@ function Audiotracks(props) {
       {
         title: "Reviews",
         renderItem: renderReviews,
-        data: audiobookReviewData.result,
+        data: audiobookReviewData["result"],
         keyExtractor: reviewsKeyExtractor,
       },
     ];

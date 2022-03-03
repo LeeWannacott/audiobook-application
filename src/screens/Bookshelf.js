@@ -4,22 +4,22 @@ import { useState, useEffect } from "react";
 
 import ButtonPanel from "../components/ButtonPanel";
 import { useNavigation } from "@react-navigation/native";
-import { ListItem, Avatar } from "react-native-elements";
+import { ListItem, Avatar , Rating} from "react-native-elements";
 import { FlatList, ActivityIndicator, Dimensions } from "react-native";
-import AudiobookAccordionList from "../components/audiobookAccordionList.js"
+import AudiobookAccordionList from "../components/audiobookAccordionList.js";
 
 import { openDatabase } from "../utils";
 
 const db = openDatabase();
 
-function History() {
+function Bookshelf() {
   const [audiobookHistory, setAudiobookHistory] = useState("");
   const [audiobooksdata, setaudiobooksdata] = useState("");
   const [loadingHistory, setLoadingHistory] = useState(true);
 
   useEffect(() => {
     db.transaction((tx) => {
-      tx.executeSql("select * from testShelve22", [], (_, { rows }) => {
+      tx.executeSql("select * from testShelve23", [], (_, { rows }) => {
         setAudiobookHistory(rows);
         setLoadingHistory(false);
       });
@@ -38,7 +38,7 @@ function History() {
   const windowWidth = Dimensions.get("window").width;
   const windowHeight = Dimensions.get("window").height;
   const navigation = useNavigation();
-  const renderItem = ({ item, index }) => (
+  const renderBookshelve = ({ item, index }) => (
     <View>
       <ListItem topDivider containerStyle={styles.AudioBookListView}>
         <View style={styles.ImageContainer}>
@@ -61,6 +61,17 @@ function History() {
           />
         </View>
       </ListItem>
+          <Rating
+            showRating
+            imageSize={20}
+            ratingCount={5}
+            startingValue={item.audiobook_rating}
+            showRating={false}
+            readonly={true}
+            style={{ratingColor:"red"}}
+            tintColor={"black"}
+            ratingBackgroundColor={"purple"}
+          />
       <AudiobookAccordionList
         audiobookTitle={item.audiobook_title}
         audiobookAuthorFirstName={item.audiobook_author_first_name}
@@ -80,7 +91,7 @@ function History() {
           <FlatList
             data={audiobookHistory["_array"]}
             keyExtractor={keyExtractor}
-            renderItem={renderItem}
+            renderItem={renderBookshelve}
             numColumns={2}
             containerStyle={{ bottom: 10 }}
           />
@@ -99,7 +110,7 @@ function History() {
   }
 }
 
-export default History;
+export default Bookshelf;
 
 const windowWidth = Dimensions.get("window").width;
 const windowHeight = Dimensions.get("window").height;

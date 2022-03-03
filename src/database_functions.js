@@ -3,7 +3,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 export function createTablesDB(db) {
   db.transaction((tx) => {
     tx.executeSql(
-      "create table if not exists testShelve22 (id integer primary key not null, audiobook_rss_url text not null unique, audiobook_id text not null unique, audiobook_image text, audiobook_title text, audiobook_author_first_name text, audiobook_author_last_name text, audiobook_total_time text, audiobook_copyright_year text, audiobook_genres text);"
+      "create table if not exists testshelve23 (id integer primary key not null, audiobook_rss_url text not null unique, audiobook_id text not null unique, audiobook_image text, audiobook_title text, audiobook_author_first_name text, audiobook_author_last_name text, audiobook_total_time text, audiobook_copyright_year text, audiobook_genres text, audiobook_rating text);"
     );
   });
   db.transaction((tx) => {
@@ -67,7 +67,8 @@ export function shelveAudiobookDB(
   audiobook_author_last_name,
   audiobook_total_time,
   audiobook_copyright_year,
-  audiobook_genres
+  audiobook_genres,
+  audiobook_rating
 ) {
   // is text empty?
   if (audiobook_rss_url === null || audiobook_rss_url === "") {
@@ -84,7 +85,7 @@ export function shelveAudiobookDB(
 
   db.transaction((tx) => {
     tx.executeSql(
-      "insert into testShelve22 (audiobook_rss_url, audiobook_id, audiobook_image, audiobook_title, audiobook_author_first_name, audiobook_author_last_name, audiobook_total_time, audiobook_copyright_year, audiobook_genres) values (?,?,?,?,?,?,?,?,?)",
+      "insert into testshelve23 (audiobook_rss_url, audiobook_id, audiobook_image, audiobook_title, audiobook_author_first_name, audiobook_author_last_name, audiobook_total_time, audiobook_copyright_year, audiobook_genres, audiobook_rating) values (?,?,?,?,?,?,?,?,?,?)",
       [
         audiobook_rss_url,
         audiobook_id,
@@ -95,9 +96,10 @@ export function shelveAudiobookDB(
         audiobook_total_time,
         audiobook_copyright_year,
         audiobook_genres,
+        audiobook_rating,
       ]
     );
-    tx.executeSql("select * from testShelve22", [], (_, { rows }) => {
+    tx.executeSql("select * from testshelve23", [], (_, { rows }) => {
       console.log(JSON.stringify(rows));
       console.log(rows);
     });
@@ -172,7 +174,7 @@ export function removeShelvedAudiobookDB(db, audiobook_id) {
     return false;
   }
   db.transaction((tx) => {
-    tx.executeSql("delete from testShelve22 where audiobook_id=?", [
+    tx.executeSql("delete from testshelve23 where audiobook_id=?", [
       audiobook_id,
     ]);
   }, null);
