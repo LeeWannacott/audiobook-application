@@ -3,6 +3,7 @@ import {
   ActivityIndicator,
   Dimensions,
   InteractionManager,
+  ScrollView,
 } from "react-native";
 import {
   ListItem,
@@ -15,10 +16,8 @@ import * as rssParser from "react-native-rss-parser";
 import { Audio } from "expo-av";
 import Slider from "@react-native-community/slider";
 import { MaterialIcons } from "@expo/vector-icons";
-import { FlatList, SectionList, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import MaterialIconCommunity from "react-native-vector-icons/MaterialCommunityIcons.js";
-
-import AudiobookAccordionList from "../components/audiobookAccordionList.js";
 
 import { Button, List } from "react-native-paper";
 
@@ -32,7 +31,6 @@ import {
   updateBookShelveDB,
   initialAudioBookStoreDB,
   removeShelvedAudiobookDB,
-  updateAudiobookRatingDB,
 } from "../database_functions";
 
 function Audiotracks(props) {
@@ -62,6 +60,10 @@ function Audiotracks(props) {
     useState([]);
   const [shelveIconToggle, setShelveIconToggle] = useState(0);
   const [audiobookRating, setAudiobookRating] = useState(0);
+  const [audiotrackAccordionExpanded, setAudiotrackAccordionsExpanded] =
+    useState(true);
+  const [reviewsAccordionExpanded, setReviewsAccordionsExpanded] =
+    useState(true);
 
   const [
     AudioBooksRSSLinkToAudioTracks,
@@ -248,7 +250,7 @@ function Audiotracks(props) {
 
   useEffect(() => {
     try {
-      if (audiobookReviewData["result"].length !== 0) {
+      if (audiobookReviewData["result"]) {
         const initialValue = 0;
         let allReviewsStars = audiobookReviewData["result"].map((review) =>
           Number(review.stars)
@@ -257,18 +259,12 @@ function Audiotracks(props) {
           (previousValue, currentValue) => previousValue + currentValue,
           initialValue
         );
-        console.log(summedReviewStars);
-        console.log(summedReviewStars / allReviewsStars.length);
         setAudiobookRating(summedReviewStars / allReviewsStars.length);
       }
     } catch (e) {
       console.log(e);
     }
-  }, [audiobookReviewData]);
-
-  // audiobookReviewData["result"].map((review)=>{
-  // console.log("test",review)
-  // })
+  }, []);
 
   useEffect(() => {
     try {
@@ -552,8 +548,9 @@ function Audiotracks(props) {
   };
 
   // TODO: error handle if null/undefined i.e no reader listed/read by/.
-  const renderAudiotracks = ({ item, index }) => (
+  const RenderAudiotracks = ({ item, index }) => (
     <ListItem bottomDivider>
+      {console.log(item)}
       <ListItem.Content>
         <ListItem.Title>
           {item.section_number}: {item.title}
@@ -592,7 +589,7 @@ function Audiotracks(props) {
     </ListItem>
   );
 
-  const renderReviews = ({ item, index }) => (
+  const RenderReviews = ({ item, index }) => (
     <Card>
       <ListItem.Title>{item.reviewtitle}</ListItem.Title>
       <Card.Divider />
@@ -665,6 +662,13 @@ function Audiotracks(props) {
     }
   }
 
+  function handleAudiobookAccordionPress() {
+    setAudiotrackAccordionsExpanded(!audiotrackAccordionExpanded);
+  }
+  function handleReviewsAccordionPress() {
+    setReviewsAccordionsExpanded(!reviewsAccordionExpanded);
+  }
+
   if (!loadingAudioListeningLinks && !loadingAudiobookData) {
     const getHeader = () => {
       return (
@@ -733,43 +737,44 @@ function Audiotracks(props) {
       );
     };
 
-    const audiotracksKeyExtractor = (item) => {
-      return item.id;
-    };
-    const reviewsKeyExtractor = (item, idx) => {
-      return item.reviewdate;
-    };
-
-    const AudioTracksScreenData = [
-      {
-        title: "Audiotracks",
-        renderItem: renderAudiotracks,
-        data: AudioBookData[0].sections,
-        keyExtractor: audiotracksKeyExtractor,
-      },
-      {
-        title: "Reviews",
-        renderItem: renderReviews,
-        data: audiobookReviewData["result"],
-        keyExtractor: reviewsKeyExtractor,
-      },
-    ];
-    // {console.log(AudioBookData[0].sections)}
     return (
       <View style={styles.container}>
         <View style={styles.AudioTracksStyle}>
           <View style={styles.listItemHeaderStyle}>
             <View style={styles.AudioTracksStyle}></View>
-            <SectionList
-              sections={AudioTracksScreenData}
-              keyExtractor={({ section: { keyExtractor } }) => {
-                keyExtractor;
-              }}
-              renderItem={({ section: { renderItem } }) => (
-                <List.Accordion>{renderItem}</List.Accordion>
-              )}
-              ListHeaderComponent={getHeader()}
-            />
+            <ScrollView>
+              {getHeader()}
+              <List.Accordion
+                title="Audiotracks"
+                expanded={audiotrackAccordionExpanded}
+                onPress={handleAudiobookAccordionPress}
+              >
+                {AudioBookData[0].sections
+                  ? AudioBookData[0].sections.map((section, index) => (
+                      <RenderAudiotracks
+                        item={section}
+                        index={index}
+                        key={section.id}
+                      />
+                    ))
+                  : console.log("No Audiotracks")}
+              </List.Accordion>
+              <List.Accordion
+                title="Reviews"
+                expanded={reviewsAccordionExpanded}
+                onPress={handleReviewsAccordionPress}
+              >
+                {audiobookReviewData["result"]
+                  ? audiobookReviewData["result"].map((section, index) => (
+                      <RenderReviews
+                        item={section}
+                        index={index}
+                        key={section["reviewdate"]}
+                      />
+                    ))
+                  : console.log("No Reviews")}
+              </List.Accordion>
+            </ScrollView>
           </View>
         </View>
 
