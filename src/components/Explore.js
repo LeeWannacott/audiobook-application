@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, memo } from "react";
 import { SearchBar, Overlay, Slider } from "react-native-elements";
 import AudioBooks from "../components/Audiobooks";
 import { Switch, View, Dimensions, Text, TextInput } from "react-native";
@@ -12,6 +12,8 @@ import { genreList } from "../resources/audiobookGenreList.js";
 // let authorsListJson = require("../resources/audiobookAuthorsList.json");
 import { getAsyncData, storeAsyncData } from "../database_functions";
 
+import { Button } from "react-native-paper";
+
 function Search() {
   const [search, updateSearch] = useState("");
   const [userInputEntered, setUserInputEntered] = useState("");
@@ -20,6 +22,7 @@ function Search() {
   const [visible, setVisible] = useState(false);
   const [enableGenreSelection, setEnableGenreSelection] = useState(false);
   const [enableAuthorSelection, setEnableAuthorSelection] = useState(false);
+  const [isSearchBarDisabled, setIsSearchBarDisabled] = useState(false);
 
   const [apiSettings, setApiSettings] = useState({
     searchBy: "",
@@ -46,12 +49,15 @@ function Search() {
               ["audiobookAmountRequested"]: 26,
             });
       });
-      getAsyncData("authorAndGenreSelectedBooleans").then((authorAndGenre) => {
-        authorAndGenre
-          ? (setEnableAuthorSelection(authorAndGenre[0]),
-            setEnableGenreSelection(authorAndGenre[1]))
-          : null;
-      });
+      getAsyncData("author&GenrePickerSearchbarDisableBools").then(
+        (authorGenreSearchbar) => {
+          authorGenreSearchbar
+            ? (setEnableAuthorSelection(authorGenreSearchbar[0]),
+              setEnableGenreSelection(authorGenreSearchbar[1]),
+              setIsSearchBarDisabled(authorGenreSearchbar[2]))
+            : null;
+        }
+      );
     } catch (err) {
       console.log(err);
     }
@@ -69,11 +75,13 @@ function Search() {
 
   const storeAuthorGenreEnablePickers = (
     authorSelectedBool,
-    genreSelectedBool
+    genreSelectedBool,
+    isSearchDisabled
   ) => {
-    storeAsyncData("authorAndGenreSelectedBooleans", [
+    storeAsyncData("author&GenrePickerSearchbarDisableBools", [
       authorSelectedBool,
       genreSelectedBool,
+      isSearchDisabled,
     ]);
   };
 
@@ -94,44 +102,62 @@ function Search() {
     setVisible(!visible);
   };
 
-  const genreListRender = genreList.map((genre, i) => {
-    return (
-      <Picker.Item key={`${genre}`} label={`${genre}`} value={`${genre}`} />
-    );
-  });
+  const genreListRender = React.useCallback(
+    genreList.map((genre, i) => {
+      return (
+        <Picker.Item key={`${genre}`} label={`${genre}`} value={`${genre}`} />
+      );
+    }),
+    [genreList]
+  );
 
-  const authorsListRender = authorsListJson["authors"].map((author, i) => {
-    return (
-      <Picker.Item
-        key={`${authorsListJson["authors"][i].id}`}
-        label={`${authorsListJson["authors"][i].first_name} ${authorsListJson["authors"][i].last_name}`}
-        value={`${authorsListJson["authors"][i].last_name}`}
-      />
-    );
-  });
+  const AuthorsListRender = React.useCallback(
+    authorsListJson["authors"].map((author, i) => {
+      return (
+        <Picker.Item
+          key={`${authorsListJson["authors"][i].id}`}
+          label={`${authorsListJson["authors"][i].first_name} ${authorsListJson["authors"][i].last_name}`}
+          value={`${authorsListJson["authors"][i].last_name}`}
+        />
+      );
+    }),
+    [authorsListJson]
+  );
+
+  function searchBarPlaceholder() {
+    switch (apiSettings["searchBy"]) {
+      case "title":
+        return "Search by title: ";
+      case "author":
+        return `Author: ${apiSettings["authorLastName"]}`;
+      case "genre":
+        return `Genre: ${apiSettings["audiobookGenre"]}`;
+    }
+  }
 
   return (
     <View>
       <View style={styles.searchBarAndSettingsIcon}>
         <View style={styles.searchStyle}>
           <SearchBar
-            placeholder={`Search by ${apiSettings["searchBy"]}...`}
+            placeholder={searchBarPlaceholder()}
+            disabled={isSearchBarDisabled}
             onChangeText={(val) => {
               updateSearch(val);
             }}
             onSubmitEditing={() => setUserInputEntered(search)}
             value={search}
-            inputContainerStyle={{ marginRight: -7, backgroundColor: "white" }}
+            inputContainerStyle={{backgroundColor: "white" }}
             containerStyle={{ backgroundColor: "black" }}
           />
         </View>
-        <MaterialIconCommunity
-          name="cog"
-          size={45}
-          color="white"
-          style={styles.settingsIcon}
-          onPress={toggleOverlay}
-        />
+        <Button onPress={toggleOverlay} mode="outlined" style={styles.settingsIcon} >
+          <MaterialIconCommunity
+            name="cog"
+            size={45}
+            color="white"
+          />
+        </Button>
         <Overlay
           isVisible={visible}
           onBackdropPress={toggleOverlay}
@@ -157,17 +183,20 @@ function Search() {
                 case "title":
                   setEnableAuthorSelection(false);
                   setEnableGenreSelection(false);
-                  storeAuthorGenreEnablePickers(false, false);
+                  setIsSearchBarDisabled(false);
+                  storeAuthorGenreEnablePickers(false, false, false);
                   break;
                 case "genre":
                   setEnableAuthorSelection(false);
                   setEnableGenreSelection(true);
-                  storeAuthorGenreEnablePickers(false, true);
+                  setIsSearchBarDisabled(true);
+                  storeAuthorGenreEnablePickers(false, true, true);
                   break;
                 case "author":
                   setEnableAuthorSelection(true);
                   setEnableGenreSelection(false);
-                  storeAuthorGenreEnablePickers(true, false);
+                  setIsSearchBarDisabled(true);
+                  storeAuthorGenreEnablePickers(true, false, true);
                   break;
               }
             }}
@@ -198,7 +227,7 @@ function Search() {
               );
             }}
           >
-            {authorsListRender}
+            {AuthorsListRender}
           </Picker>
 
           <View style={styles.titleOrAuthorStringFlexbox}>
@@ -235,7 +264,7 @@ function Search() {
             value={apiSettings["audiobookAmountRequested"]}
             maximumValue={420}
             minimumValue={1}
-            onSlidingComplete={changeAudiobookAmountRequested}
+            onValueChange={changeAudiobookAmountRequested}
             step={1}
             trackStyle={{
               height: 10,
