@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { ButtonGroup } from "react-native-elements";
-import Icon from "react-native-vector-icons/FontAwesome";
 import MaterialIcon from "react-native-vector-icons/MaterialIcons.js";
 import MaterialIconCommunity from "react-native-vector-icons/MaterialCommunityIcons.js";
 import { useNavigation } from "@react-navigation/native";

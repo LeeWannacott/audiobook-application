@@ -98,7 +98,7 @@ export default function Audiobooks(props) {
   const reviewsURL = [];
   useEffect(() => {
     // console.log(data.books);
-    if (data.books != null || data.books != undefined) {
+    if (data.books) {
       const dataKeys = Object.values(data.books);
       let bookCoverImagePath;
       dataKeys.forEach((bookCoverURLPath) => {
@@ -164,7 +164,6 @@ export default function Audiobooks(props) {
               }, 2000);
             }}
           />
-          <View></View>
         </View>
       </ListItem>
       <AudiobookAccordionList

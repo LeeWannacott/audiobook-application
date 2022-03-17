@@ -5,13 +5,7 @@ import {
   InteractionManager,
   ScrollView,
 } from "react-native";
-import {
-  ListItem,
-  Image,
-  LinearProgress,
-  Card,
-  Rating,
-} from "react-native-elements";
+import { ListItem, LinearProgress, Image, Card, Rating, Overlay } from "react-native-elements";
 import * as rssParser from "react-native-rss-parser";
 import { Audio } from "expo-av";
 import Slider from "@react-native-community/slider";
@@ -19,7 +13,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { StyleSheet, Text, View } from "react-native";
 import MaterialIconCommunity from "react-native-vector-icons/MaterialCommunityIcons.js";
 
-import { Button, List } from "react-native-paper";
+import { Button, List, Switch, Colors } from "react-native-paper";
 
 import { openDatabase } from "../utils";
 
@@ -64,6 +58,9 @@ function Audiotracks(props) {
     useState(true);
   const [reviewsAccordionExpanded, setReviewsAccordionsExpanded] =
     useState(true);
+  const [controlPanelButtonSize] = useState(30);
+  const [visible, setVisible] = useState(false);
+  const [isSwitchOn, setIsSwitchOn] = useState(false);
 
   const [
     AudioBooksRSSLinkToAudioTracks,
@@ -89,7 +86,7 @@ function Audiotracks(props) {
     }
   }, []);
 
-  const updateAudioBookPosition = (
+  const updateAudioBookPosition = async (
     audiobook_id,
     audiotrack_progress_bars,
     current_audiotrack_positions
@@ -100,7 +97,7 @@ function Audiotracks(props) {
       current_audiotrack_positions = JSON.stringify(
         current_audiotrack_positions
       );
-      updateAudioTrackPositionsDB(
+      await updateAudioTrackPositionsDB(
         db,
         audiotrack_progress_bars,
         current_audiotrack_positions,
@@ -139,7 +136,7 @@ function Audiotracks(props) {
       try {
         tx.executeSql("select * from testaudio14", [], (_, { rows }) => {
           rows["_array"].forEach((element) => {
-            if (audiobook_id == element.audiobook_id) {
+            if (audiobook_id === element.audiobook_id) {
               let audiobook_positions_temp = JSON.parse(
                 element.audiotrack_progress_bars
               );
@@ -264,11 +261,12 @@ function Audiotracks(props) {
     } catch (e) {
       console.log(e);
     }
-  }, []);
+  }, [audiobookReviewData["result"]]);
 
   useEffect(() => {
     try {
       let initialAudioBookSections = new Array(lengthOfSections).fill(0);
+      console.log("test");
       setlinearProgressBars(initialAudioBookSections);
       setCurrentAudiotrackPositionsMs(initialAudioBookSections);
       // will only happen if no entry in db already.
@@ -297,32 +295,36 @@ function Audiotracks(props) {
     }
   }, [sound.current]);
 
-  function updateAndStoreAudiobookPositions(data) {
-    try {
-      console.log(
-        data.positionMillis,
-        data.durationMillis,
-        currentSliderPosition,
-        data.playableDurationMillis,
-        data.progressUpdateIntervalMillis,
-        data.uri
-      );
-      let sliderPositionCalculate =
+  function sliderPositionCalculation(sliderPositionCalculate,data){
+    sliderPositionCalculate =
         (data.positionMillis / data.durationMillis) * 100;
-      setCurrentSliderPosition(sliderPositionCalculate);
-
-      let updatedLinearProgessBarPositions = [...linearProgessBars];
-      updatedLinearProgessBarPositions[currentAudioTrackIndex.current] =
+    setCurrentSliderPosition(sliderPositionCalculate);
+    return sliderPositionCalculate
+  }
+  function updateLinearProgressBars(updatedLinearProgessBarPositions,data){
+    updatedLinearProgessBarPositions = [...linearProgessBars];
+    updatedLinearProgessBarPositions[currentAudioTrackIndex.current] =
         linearProgessBars[currentAudioTrackIndex.current] =
-          data.positionMillis / data.durationMillis;
-      setlinearProgressBars(updatedLinearProgessBarPositions);
-
-      let updatedCurrentAudiotrackPositions = [...currentAudiotrackPositionsMs];
-      updatedCurrentAudiotrackPositions[currentAudioTrackIndex.current] =
+            data.positionMillis / data.durationMillis;
+    setlinearProgressBars(updatedLinearProgessBarPositions);
+    return updatedLinearProgessBarPositions
+  }
+  function updateAudiotrackPositions(updatedCurrentAudiotrackPositions,data){
+    updatedCurrentAudiotrackPositions = [...currentAudiotrackPositionsMs];
+    updatedCurrentAudiotrackPositions[currentAudioTrackIndex.current] =
         currentAudiotrackPositionsMs[currentAudioTrackIndex.current] =
-          data.positionMillis;
-      setCurrentAudiotrackPositionsMs(updatedCurrentAudiotrackPositions);
+            data.positionMillis;
+    setCurrentAudiotrackPositionsMs(updatedCurrentAudiotrackPositions);
+  }
 
+  async function updateAndStoreAudiobookPositions(data) {
+    let sliderPositionCalculate;
+    let updatedLinearProgessBarPositions
+    let updatedCurrentAudiotrackPositions
+    try {
+      // await sliderPositionCalculation(sliderPositionCalculate,data)
+      await updateLinearProgressBars(updatedLinearProgessBarPositions, data)
+      await updateAudiotrackPositions(updatedCurrentAudiotrackPositions, data)
       updateAudioBookPosition(
         AudioBookId,
         linearProgessBars,
@@ -349,9 +351,9 @@ function Audiotracks(props) {
   const SeekUpdate = async (data) => {
     try {
       const result = await sound.current.getStatusAsync();
-      if (result.isLoaded == true) {
+      if (result.isLoaded === true) {
         const result = (data / 100) * Duration;
-        return await sound.current.setPositionAsync(Math.round(result));
+        await sound.current.setPositionAsync(Math.round(result));
       }
     } catch (error) {
       console.log("Error: ", error);
@@ -376,8 +378,6 @@ function Audiotracks(props) {
     setLoadingCurrentAudiotrack(true);
     console.log(index, "Playing");
     const checkLoading = await sound.current.getStatusAsync();
-    // console.log(listRSSURLS[index]);
-    // console.log(AudioBookData[0].sections[index].title);
     if (checkLoading.isLoaded === false) {
       try {
         const result = await sound.current.loadAsync(
@@ -410,8 +410,8 @@ function Audiotracks(props) {
           setLoadingCurrentAudiotrack(false);
           setLoadedCurrentAudiotrack(true);
           SetDuration(result.durationMillis);
-          PlayAudio();
           sound.current.setOnPlaybackStatusUpdate(UpdateStatus);
+          await PlayAudio();
         }
       } catch (error) {
         setLoadingCurrentAudiotrack(false);
@@ -430,7 +430,7 @@ function Audiotracks(props) {
       if (result.isLoaded) {
         if (result.isPlaying === false) {
           console.log("playing");
-          sound.current.playAsync();
+          await sound.current.playAsync();
           SetPlaying(true);
         }
       }
@@ -446,7 +446,7 @@ function Audiotracks(props) {
       const result = await sound.current.getStatusAsync();
       if (result.isLoaded) {
         if (result.isPlaying === true) {
-          sound.current.pauseAsync();
+          await sound.current.pauseAsync();
           setAudioPaused(true);
           SetPlaying(false);
         }
@@ -465,7 +465,7 @@ function Audiotracks(props) {
           currentAudioTrackIndex.current += 1;
           setCurrentSliderPosition(0);
           // ResetPlayer();
-          return LoadAudio(
+          await LoadAudio(
             currentAudioTrackIndex.current,
             currentAudiotrackPositionsMs[currentAudioTrackIndex.current]
           );
@@ -475,8 +475,8 @@ function Audiotracks(props) {
         if (unloadSound.isLoaded === false) {
           currentAudioTrackIndex.current = 0;
           setCurrentSliderPosition(0);
-          ResetPlayer();
-          return LoadAudio(
+          await ResetPlayer();
+          await LoadAudio(
             currentAudioTrackIndex.current,
             currentAudiotrackPositionsMs[currentAudioTrackIndex.current]
           );
@@ -492,7 +492,7 @@ function Audiotracks(props) {
       if (currentAudioTrackIndex.current - 1 >= 0) {
         const unloadSound = await sound.current.unloadAsync();
         if (unloadSound.isLoaded === false) {
-          LoadAudio(
+          await LoadAudio(
             currentAudioTrackIndex.current - 1,
             currentAudiotrackPositionsMs[currentAudioTrackIndex.current - 1]
           );
@@ -539,8 +539,8 @@ function Audiotracks(props) {
       const unloadSound = await sound.current.unloadAsync();
       if (unloadSound.isLoaded === false) {
         setCurrentSliderPosition(0);
-        ResetPlayer();
-        return LoadAudio(index, currentAudiotrackPositionsMs[index]);
+        await ResetPlayer();
+        await LoadAudio(index, currentAudiotrackPositionsMs[index]);
       }
     } catch (e) {
       console.log(e);
@@ -550,13 +550,12 @@ function Audiotracks(props) {
   // TODO: error handle if null/undefined i.e no reader listed/read by/.
   const RenderAudiotracks = ({ item, index }) => (
     <ListItem bottomDivider>
-      {console.log(item)}
       <ListItem.Content>
         <ListItem.Title>
           {item.section_number}: {item.title}
         </ListItem.Title>
         <ListItem.Subtitle>
-          <Text numberOfLines={1} ellipsizeMode="tail" style={{}}>
+          <Text numberOfLines={1} ellipsizeMode="tail">
             Playtime: {GetDurationFormat(currentAudiotrackPositionsMs[index])}
             {" | "}
             {FormatChapterDurations(chapterDurations[index])}
@@ -567,11 +566,12 @@ function Audiotracks(props) {
           value={linearProgessBars[index]}
           variant="determinate"
           trackColor="lightblue"
+          width={190}
         />
         <ListItem.Subtitle>
-          <Text numberOfLines={1} ellipsizeMode="tail" style={{}}>
+          <Text numberOfLines={1} ellipsizeMode="tail">
             Reader:{" "}
-            {item.readers[0]["display_name"] !== undefined
+            {item.readers[0]["display_name"]
               ? item.readers[0]["display_name"]
               : "Not listed."}
           </Text>
@@ -594,7 +594,6 @@ function Audiotracks(props) {
       <ListItem.Title>{item.reviewtitle}</ListItem.Title>
       <Card.Divider />
       <Rating
-        showRating
         imageSize={20}
         ratingCount={5}
         startingValue={item.stars}
@@ -669,6 +668,14 @@ function Audiotracks(props) {
     setReviewsAccordionsExpanded(!reviewsAccordionExpanded);
   }
 
+  const toggleOverlay = () => {
+    setVisible(!visible);
+  };
+
+  function onToggleSwitch() {
+    setIsSwitchOn(!isSwitchOn);
+  }
+
   if (!loadingAudioListeningLinks && !loadingAudiobookData) {
     const getHeader = () => {
       return (
@@ -739,16 +746,18 @@ function Audiotracks(props) {
 
     return (
       <View style={styles.container}>
+        <Overlay
+          isVisible={visible}
+          onBackdropPress={toggleOverlay}
+          fullScreen={false}
+        >
+          <Switch value={isSwitchOn} onValueChange={onToggleSwitch} />
+        </Overlay>
         <View style={styles.AudioTracksStyle}>
           <View style={styles.listItemHeaderStyle}>
             <View style={styles.AudioTracksStyle}></View>
             <ScrollView>
               {getHeader()}
-              <List.Accordion
-                title="Audiotracks"
-                expanded={audiotrackAccordionExpanded}
-                onPress={handleAudiobookAccordionPress}
-              >
                 {AudioBookData[0].sections
                   ? AudioBookData[0].sections.map((section, index) => (
                       <RenderAudiotracks
@@ -758,7 +767,6 @@ function Audiotracks(props) {
                       />
                     ))
                   : console.log("No Audiotracks")}
-              </List.Accordion>
               <List.Accordion
                 title="Reviews"
                 expanded={reviewsAccordionExpanded}
@@ -820,10 +828,18 @@ function Audiotracks(props) {
         </View>
         <View style={styles.controlsVert}>
           <View style={styles.controls}>
+            <Button mode="outlined">
+              <MaterialIcons
+                name="reply"
+                size={controlPanelButtonSize}
+                color="black"
+                style={styles.control}
+              />
+            </Button>
             <Button mode="outlined" onPress={() => HandlePrev()}>
               <MaterialIcons
                 name="skip-previous"
-                size={50}
+                size={controlPanelButtonSize}
                 color="black"
                 style={styles.control}
               />
@@ -838,7 +854,7 @@ function Audiotracks(props) {
               >
                 <MaterialIcons
                   name="not-started"
-                  size={50}
+                  size={controlPanelButtonSize}
                   color="black"
                   style={styles.control}
                 />
@@ -847,18 +863,18 @@ function Audiotracks(props) {
               <Button mode="outlined" onPress={() => PauseAudio()}>
                 <MaterialIcons
                   name="pause"
-                  size={50}
+                  size={controlPanelButtonSize}
                   color="black"
                   style={styles.control}
                 />
               </Button>
-            ) : audioPaused == false ? (
+            ) : audioPaused === false ? (
               <ActivityIndicator size={"large"} color={"dodgerblue"} />
             ) : (
               <Button mode="outlined" onPress={() => PlayAudio()}>
                 <MaterialIcons
                   name="play-arrow"
-                  size={50}
+                  size={controlPanelButtonSize}
                   color="black"
                   style={styles.control}
                 />
@@ -867,7 +883,15 @@ function Audiotracks(props) {
             <Button mode="outlined" onPress={() => HandleNext()}>
               <MaterialIcons
                 name="skip-next"
-                size={50}
+                size={controlPanelButtonSize}
+                color="black"
+                style={styles.control}
+              />
+            </Button>
+            <Button mode="outlined" onPress={toggleOverlay} size={20}>
+              <MaterialIcons
+                name="list"
+                size={controlPanelButtonSize}
                 color="black"
                 style={styles.control}
               />

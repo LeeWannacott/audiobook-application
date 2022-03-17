@@ -1,7 +1,7 @@
-import React, { useState, memo } from "react";
+import React, { useState } from "react";
 import { SearchBar, Overlay, Slider } from "react-native-elements";
 import AudioBooks from "../components/Audiobooks";
-import { Switch, View, Dimensions, Text, TextInput } from "react-native";
+import { View, Dimensions, Text } from "react-native";
 import { StyleSheet } from "react-native";
 import ButtonPanel from "../components/ButtonPanel";
 // import { MaterialIcons } from "@expo/vector-icons";
@@ -103,7 +103,7 @@ function Search() {
   };
 
   const genreListRender = React.useCallback(
-    genreList.map((genre, i) => {
+    genreList.map((genre) => {
       return (
         <Picker.Item key={`${genre}`} label={`${genre}`} value={`${genre}`} />
       );
