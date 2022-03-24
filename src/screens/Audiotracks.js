@@ -5,12 +5,19 @@ import {
   InteractionManager,
   ScrollView,
 } from "react-native";
-import { ListItem, LinearProgress, Image, Card, Rating, Overlay } from "react-native-elements";
+import {
+  ListItem,
+  LinearProgress,
+  Image,
+  Card,
+  Rating,
+  Overlay,
+} from "react-native-elements";
 import * as rssParser from "react-native-rss-parser";
 import { Audio } from "expo-av";
 import Slider from "@react-native-community/slider";
 import { MaterialIcons } from "@expo/vector-icons";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View, FlatList, SectionList } from "react-native";
 import MaterialIconCommunity from "react-native-vector-icons/MaterialCommunityIcons.js";
 
 import { Button, List, Switch, Colors } from "react-native-paper";
@@ -29,7 +36,9 @@ import {
 
 function Audiotracks(props) {
   const [AudioBookData, setAudioBookData] = useState([]);
-  const [dataRSS, setData] = useState([]);
+  const [dataRSS, setDataRSS] = useState([]);
+  const [listRSSURLS, setRssURLS] = useState([]);
+  const [chapterDurations, setChapterDurations] = useState([]);
   const [audiobookReviewData, setAudiobookReviewData] = useState([]);
   const [AudioBookDescription, setAudioBookDescription] = useState([]);
   const currentAudioTrackIndex = useRef(0);
@@ -78,7 +87,7 @@ function Audiotracks(props) {
     audiobookReviewUrl,
   ] = props.route.params;
 
-  React.useEffect(() => {
+  useEffect(() => {
     try {
       createTablesDB(db);
     } catch (err) {
@@ -97,7 +106,7 @@ function Audiotracks(props) {
       current_audiotrack_positions = JSON.stringify(
         current_audiotrack_positions
       );
-      await updateAudioTrackPositionsDB(
+      updateAudioTrackPositionsDB(
         db,
         audiotrack_progress_bars,
         current_audiotrack_positions,
@@ -212,7 +221,7 @@ function Audiotracks(props) {
       .then((response) => response.text())
       .then((responseData) => rssParser.parse(responseData))
       .then((rss) => {
-        setData(rss.items);
+        setDataRSS(rss.items);
         setAudioBookDescription(rss);
       })
       .catch((error) => console.log("Error: ", error))
@@ -240,16 +249,16 @@ function Audiotracks(props) {
     fetch(audiobookReviewUrl)
       .then((response) => response.json())
       .then((json) => {
-        return setAudiobookReviewData(json);
+        return setAudiobookReviewData(json["result"]);
       })
       .catch((error) => console.log("Error: ", error));
   }, []);
 
   useEffect(() => {
     try {
-      if (audiobookReviewData["result"]) {
+      if (audiobookReviewData.length > 0 && audiobookReviewData) {
         const initialValue = 0;
-        let allReviewsStars = audiobookReviewData["result"].map((review) =>
+        let allReviewsStars = audiobookReviewData.map((review) =>
           Number(review.stars)
         );
         const summedReviewStars = allReviewsStars.reduce(
@@ -261,7 +270,7 @@ function Audiotracks(props) {
     } catch (e) {
       console.log(e);
     }
-  }, [audiobookReviewData["result"]]);
+  }, [audiobookReviewData]);
 
   useEffect(() => {
     try {
@@ -282,7 +291,7 @@ function Audiotracks(props) {
     }
   }, []);
 
-  React.useEffect(() => {
+  useEffect(() => {
     try {
       return sound
         ? () => {
@@ -295,36 +304,31 @@ function Audiotracks(props) {
     }
   }, [sound.current]);
 
-  function sliderPositionCalculation(sliderPositionCalculate,data){
-    sliderPositionCalculate =
-        (data.positionMillis / data.durationMillis) * 100;
-    setCurrentSliderPosition(sliderPositionCalculate);
-    return sliderPositionCalculate
+  function sliderPositionCalculation(progress) {
+    let sliderPositionCalculate = progress * 100;
+    return sliderPositionCalculate;
   }
-  function updateLinearProgressBars(updatedLinearProgessBarPositions,data){
-    updatedLinearProgessBarPositions = [...linearProgessBars];
+  async function updateLinearProgressBars(progress) {
+    let updatedLinearProgessBarPositions = [...linearProgessBars];
     updatedLinearProgessBarPositions[currentAudioTrackIndex.current] =
-        linearProgessBars[currentAudioTrackIndex.current] =
-            data.positionMillis / data.durationMillis;
-    setlinearProgressBars(updatedLinearProgessBarPositions);
-    return updatedLinearProgessBarPositions
+      linearProgessBars[currentAudioTrackIndex.current] = progress;
   }
-  function updateAudiotrackPositions(updatedCurrentAudiotrackPositions,data){
-    updatedCurrentAudiotrackPositions = [...currentAudiotrackPositionsMs];
+  async function updateAudiotrackPositions(dataPosition) {
+    let updatedCurrentAudiotrackPositions = [...currentAudiotrackPositionsMs];
     updatedCurrentAudiotrackPositions[currentAudioTrackIndex.current] =
-        currentAudiotrackPositionsMs[currentAudioTrackIndex.current] =
-            data.positionMillis;
-    setCurrentAudiotrackPositionsMs(updatedCurrentAudiotrackPositions);
+      currentAudiotrackPositionsMs[currentAudioTrackIndex.current] =
+        dataPosition;
   }
 
   async function updateAndStoreAudiobookPositions(data) {
-    let sliderPositionCalculate;
-    let updatedLinearProgessBarPositions
-    let updatedCurrentAudiotrackPositions
     try {
-      // await sliderPositionCalculation(sliderPositionCalculate,data)
-      await updateLinearProgressBars(updatedLinearProgessBarPositions, data)
-      await updateAudiotrackPositions(updatedCurrentAudiotrackPositions, data)
+      let progress = data.positionMillis / data.durationMillis;
+      updateLinearProgressBars(progress);
+      updateAudiotrackPositions(data.positionMillis);
+
+      const sliderPositionCalculated = sliderPositionCalculation(progress);
+      setCurrentSliderPosition(sliderPositionCalculated);
+
       updateAudioBookPosition(
         AudioBookId,
         linearProgessBars,
@@ -435,7 +439,6 @@ function Audiotracks(props) {
         }
       }
     } catch (error) {
-      SetPlaying(false);
       console.log("Error: ", error);
     }
   };
@@ -453,7 +456,6 @@ function Audiotracks(props) {
       }
     } catch (error) {
       console.log("Error: ", error);
-      SetPlaying(true);
     }
   };
 
@@ -548,7 +550,7 @@ function Audiotracks(props) {
   };
 
   // TODO: error handle if null/undefined i.e no reader listed/read by/.
-  const RenderAudiotracks = ({ item, index }) => (
+  const renderAudiotracks = ({ item, index }) => (
     <ListItem bottomDivider>
       <ListItem.Content>
         <ListItem.Title>
@@ -589,7 +591,7 @@ function Audiotracks(props) {
     </ListItem>
   );
 
-  const RenderReviews = ({ item, index }) => (
+  const renderReviews = ({ item, index }) => (
     <Card>
       <ListItem.Title>{item.reviewtitle}</ListItem.Title>
       <Card.Divider />
@@ -615,13 +617,19 @@ function Audiotracks(props) {
     </Card>
   );
 
-  const rssURLS = Object.entries(dataRSS);
-  const listRSSURLS = rssURLS.map(([key, value]) => {
-    return value.enclosures[0].url;
-  });
 
-  const chapterDurations = dataRSS.map((item) => item["itunes"].duration);
-  // console.log(chapterDurations);
+  useEffect(() => {
+    if (dataRSS.length > 0) {
+      const rssURLS = Object.entries(dataRSS);
+      const listRSSURLSTemp = rssURLS.map(([key, value]) => {
+        return value.enclosures[0].url;
+      });
+      setRssURLS(listRSSURLSTemp)
+      const chapterDurationsTemp = dataRSS.map((item) => item["itunes"].duration);
+        setChapterDurations(chapterDurationsTemp)
+      console.log(chapterDurations)
+    }
+  }, [dataRSS]);
 
   function pressedToShelveBook(
     audiobook_rss_url,
@@ -744,6 +752,27 @@ function Audiotracks(props) {
       );
     };
 
+    const audiotracksKeyExtractor = (item) => {
+      return item.id;
+    };
+    const reviewsKeyExtractor = (item) => {
+      return item.createdate;
+    };
+
+    const AudioTracksScreenData = [
+      {
+        title: "Audiotracks",
+        renderItem: renderAudiotracks,
+        data: AudioBookData[0].sections,
+        keyExtractor: audiotracksKeyExtractor,
+      },
+      {
+        title: "Reviews",
+        renderItem: renderReviews,
+        data: audiobookReviewData,
+        keyExtractor: reviewsKeyExtractor,
+      },
+    ];
     return (
       <View style={styles.container}>
         <Overlay
@@ -756,33 +785,19 @@ function Audiotracks(props) {
         <View style={styles.AudioTracksStyle}>
           <View style={styles.listItemHeaderStyle}>
             <View style={styles.AudioTracksStyle}></View>
-            <ScrollView>
-              {getHeader()}
-                {AudioBookData[0].sections
-                  ? AudioBookData[0].sections.map((section, index) => (
-                      <RenderAudiotracks
-                        item={section}
-                        index={index}
-                        key={section.id}
-                      />
-                    ))
-                  : console.log("No Audiotracks")}
-              <List.Accordion
-                title="Reviews"
-                expanded={reviewsAccordionExpanded}
-                onPress={handleReviewsAccordionPress}
-              >
-                {audiobookReviewData["result"]
-                  ? audiobookReviewData["result"].map((section, index) => (
-                      <RenderReviews
-                        item={section}
-                        index={index}
-                        key={section["reviewdate"]}
-                      />
-                    ))
-                  : console.log("No Reviews")}
-              </List.Accordion>
-            </ScrollView>
+            <SectionList
+              sections={AudioTracksScreenData}
+              keyExtractor={({ section: { keyExtractor } }) => {
+                keyExtractor;
+              }}
+              renderItem={({ section: { renderItem } }) => renderItem}
+              ListHeaderComponent={getHeader()}
+              renderSectionHeader={({ section: { title } }) => (
+                <View style={styles.sectionTitlesContainer}>
+                  <Text style={styles.sectionTitles}>{title}</Text>
+                </View>
+              )}
+            />
           </View>
         </View>
 
@@ -1004,6 +1019,16 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "row",
     flexWrap: "wrap",
+  },
+  sectionTitles: {
+    color: "red",
+    fontSize: 16,
+  },
+  sectionTitlesContainer: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "center",
+    alignSelf: "center",
   },
 });
 
