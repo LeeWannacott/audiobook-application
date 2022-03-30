@@ -123,29 +123,20 @@ function Audiotracks(props) {
     updateBookShelveDB(db, audiobook_id, audiobook_shelved);
   };
 
-  const initialAudioBookStore = (
-    audiobook_id,
-    audiotrack_progress_bars,
-    current_audiotrack_positions,
-    audiobook_shelved,
-    audiotrack_rating
-  ) => {
-    audiotrack_progress_bars = JSON.stringify(audiotrack_progress_bars);
-    current_audiotrack_positions = JSON.stringify(current_audiotrack_positions);
-    initialAudioBookStoreDB(
-      db,
-      audiobook_id,
-      audiotrack_progress_bars,
-      current_audiotrack_positions,
-      audiobook_shelved,
-      audiotrack_rating
+  const initialAudioBookStore = (initAudioBookData) => {
+    initAudioBookData.audiotrack_progress_bars = JSON.stringify(
+      initAudioBookData.audiotrack_progress_bars
     );
+    initAudioBookData.current_audiotrack_positions = JSON.stringify(
+      initAudioBookData.current_audiotrack_positions
+    );
+    initialAudioBookStoreDB(db, initAudioBookData);
     // initial load of audiotrack data from DB.
     db.transaction((tx) => {
       try {
         tx.executeSql("select * from testaudio14", [], (_, { rows }) => {
           rows["_array"].forEach((element) => {
-            if (audiobook_id === element.audiobook_id) {
+            if (initAudioBookData.audiobook_id === element.audiobook_id) {
               let audiobook_positions_temp = JSON.parse(
                 element.audiotrack_progress_bars
               );
@@ -165,10 +156,10 @@ function Audiotracks(props) {
     }, null);
   };
 
-  const shelveAudiobook = (
-    bookBeingShelved
-  ) => {
-    bookBeingShelved.audiobookGenres = JSON.stringify(bookBeingShelved.audiobookGenres);
+  const shelveAudiobook = (bookBeingShelved) => {
+    bookBeingShelved.audiobook_genres = JSON.stringify(
+      bookBeingShelved.audiobook_genres
+    );
     shelveAudiobookDB(db, bookBeingShelved);
   };
   const removeShelvedAudiobook = (audiobook_id) => {
@@ -258,13 +249,14 @@ function Audiotracks(props) {
       setlinearProgressBars(initialAudioBookSections);
       setCurrentAudiotrackPositionsMs(initialAudioBookSections);
       // will only happen if no entry in db already.
-      initialAudioBookStore(
-        audioBookId,
-        initialAudioBookSections,
-        initialAudioBookSections,
-        shelveIconToggle,
-        audiobookRating
-      );
+
+      initialAudioBookStore({
+        audiobook_id: audioBookId,
+        audiotrack_progress_bars: initialAudioBookSections,
+        current_audiotrack_positions: initialAudioBookSections,
+        audiobook_shelved: shelveIconToggle,
+        audiotrack_rating: audiobookRating,
+      });
     } catch (err) {
       console.log(err);
     }
@@ -611,22 +603,18 @@ function Audiotracks(props) {
     }
   }, [dataRSS]);
 
-  function pressedToShelveBook(
-    bookBeingShelved
-  ) {
+  function pressedToShelveBook(bookBeingShelved) {
     switch (shelveIconToggle) {
       case 0:
         setShelveIconToggle(1);
-        shelveAudiobook(
-          bookBeingShelved
-        );
-        updateBookShelve(bookBeingShelved.audioBookId, !shelveIconToggle);
+        shelveAudiobook(bookBeingShelved);
+        updateBookShelve(bookBeingShelved.audiobook_id, !shelveIconToggle);
         break;
       case 1:
         // remove from db
         setShelveIconToggle(0);
-        updateBookShelve(bookBeingShelved.audioBookId, !shelveIconToggle);
-        removeShelvedAudiobook(bookBeingShelved.audioBookId);
+        updateBookShelve(bookBeingShelved.audiobook_id, !shelveIconToggle);
+        removeShelvedAudiobook(bookBeingShelved.audiobook_id);
         break;
     }
   }
@@ -686,16 +674,16 @@ function Audiotracks(props) {
                 mode="outlined"
                 onPress={() => {
                   pressedToShelveBook({
-                    audioBooksRSSLinkToAudioTracks,
-                    audioBookId,
-                    bookCoverImage,
-                    audiobookTitle,
-                    audiobookAuthorFirstName,
-                    audiobookAuthorLastName,
-                    audiobookTotalTime,
-                    audiobookCopyrightYear,
-                    audiobookGenres,
-                    audiobookRating,
+                    audiobook_rss_url: audioBooksRSSLinkToAudioTracks,
+                    audiobook_id: audioBookId,
+                    audiobook_image: bookCoverImage,
+                    audiobook_title: audiobookTitle,
+                    audiobook_author_first_name: audiobookAuthorFirstName,
+                    audiobook_author_last_name: audiobookAuthorLastName,
+                    audiobook_total_time: audiobookTotalTime,
+                    audiobook_copyright_year: audiobookCopyrightYear,
+                    audiobook_genres: audiobookGenres,
+                    audiobook_rating: audiobookRating,
                   });
                 }}
               >

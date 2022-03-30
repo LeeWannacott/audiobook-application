@@ -62,16 +62,16 @@ export function shelveAudiobookDB(db, shelveData) {
     tx.executeSql(
       "insert into testshelve23 (audiobook_rss_url, audiobook_id, audiobook_image, audiobook_title, audiobook_author_first_name, audiobook_author_last_name, audiobook_total_time, audiobook_copyright_year, audiobook_genres, audiobook_rating) values (?,?,?,?,?,?,?,?,?,?)",
       [
-        shelveData.audioBooksRSSLinkToAudioTracks,
-        shelveData.audioBookId,
-        shelveData.bookCoverImage,
-        shelveData.audiobookTitle,
-        shelveData.audiobookAuthorFirstName,
-        shelveData.audiobookAuthorLastName,
-        shelveData.audiobookTotalTime,
-        shelveData.audiobookCopyrightYear,
-        shelveData.audiobookGenres,
-        shelveData.audiobookRating,
+        shelveData.audiobook_rss_url,
+        shelveData.audiobook_id,
+        shelveData.audiobook_image,
+        shelveData.audiobook_title,
+        shelveData.audiobook_author_first_name,
+        shelveData.audiobook_author_last_name,
+        shelveData.audiobook_total_time,
+        shelveData.audiobook_copyright_year,
+        shelveData.audiobook_genres,
+        shelveData.audiobook_rating,
       ]
     );
     tx.executeSql("select * from testshelve23", [], (_, { rows }) => {
@@ -118,23 +118,16 @@ export function updateAudiobookRatingDB(db, audiobook_id, audiobook_rating) {
   });
 }
 
-export function initialAudioBookStoreDB(
-  db,
-  audiobook_id,
-  audiotrack_progress_bars,
-  current_audiotrack_positions,
-  audiobook_shelved,
-  audiobook_rating
-) {
+export function initialAudioBookStoreDB(db, initAudioBookData) {
   db.transaction((tx) => {
     tx.executeSql(
       "insert into testaudio14(audiobook_id, audiotrack_progress_bars, current_audiotrack_positions,audiobook_shelved,audiobook_rating) values(?,?,?,?,?)",
       [
-        audiobook_id,
-        audiotrack_progress_bars,
-        current_audiotrack_positions,
-        audiobook_shelved,
-        audiobook_rating,
+        initAudioBookData.audiobook_id,
+        initAudioBookData.audiotrack_progress_bars,
+        initAudioBookData.current_audiotrack_positions,
+        initAudioBookData.audiobook_shelved,
+        initAudioBookData.audiobook_rating,
       ]
     );
   });
