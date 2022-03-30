@@ -21,31 +21,20 @@ export function createHistoryTableDB(db) {
   });
 }
 
-export function addAudiobookToHistoryDB(
-  db,
-  audiobook_rss_url,
-  audiobook_id,
-  audiobook_image,
-  audiobook_title,
-  audiobook_author_first_name,
-  audiobook_author_last_name,
-  audiobook_total_time,
-  audiobook_copyright_year,
-  audiobook_genres
-) {
+export function addAudiobookToHistoryDB(db, bookDataForHistory) {
   db.transaction((tx) => {
     tx.executeSql(
       "insert into testHistory14 (audiobook_rss_url, audiobook_id, audiobook_image, audiobook_title, audiobook_author_first_name, audiobook_author_last_name, audiobook_total_time, audiobook_copyright_year, audiobook_genres) values (?,?,?,?,?,?,?,?,?)",
       [
-        audiobook_rss_url,
-        audiobook_id,
-        audiobook_image,
-        audiobook_title,
-        audiobook_author_first_name,
-        audiobook_author_last_name,
-        audiobook_total_time,
-        audiobook_copyright_year,
-        audiobook_genres,
+        bookDataForHistory.audiobook_rss_url,
+        bookDataForHistory.audiobook_id,
+        bookDataForHistory.audiobook_image,
+        bookDataForHistory.audiobook_title,
+        bookDataForHistory.audiobook_author_first_name,
+        bookDataForHistory.audiobook_author_last_name,
+        bookDataForHistory.audiobook_total_time,
+        bookDataForHistory.audiobook_copyright_year,
+        bookDataForHistory.audiobook_genres,
       ]
     );
   }, null);

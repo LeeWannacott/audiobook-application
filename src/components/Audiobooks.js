@@ -29,30 +29,11 @@ export default function Audiobooks(props) {
     createHistoryTableDB(db);
   }, []);
 
-  const addAudiobookToHistory = (
-    audiobook_rss_url,
-    audiobook_id,
-    audiobook_image,
-    audiobook_title,
-    audiobook_author_first_name,
-    audiobook_author_last_name,
-    audiobook_total_time,
-    audiobook_copyright_year,
-    audiobook_genres
-  ) => {
-    audiobook_genres = JSON.stringify(audiobook_genres);
-    addAudiobookToHistoryDB(
-      db,
-      audiobook_rss_url,
-      audiobook_id,
-      audiobook_image,
-      audiobook_title,
-      audiobook_author_first_name,
-      audiobook_author_last_name,
-      audiobook_total_time,
-      audiobook_copyright_year,
-      audiobook_genres
+  const addAudiobookToHistory = (bookDataForHistory) => {
+    bookDataForHistory.audiobook_genres = JSON.stringify(
+      bookDataForHistory.audiobook_genres
     );
+    addAudiobookToHistoryDB(db, bookDataForHistory);
   };
 
   useEffect(() => {
@@ -131,17 +112,17 @@ export default function Audiobooks(props) {
             style={{ width: windowWidth / 2 - 42, height: windowHeight / 5 }}
             onPress={() => {
               if (avatarOnPressEnabled) {
-                addAudiobookToHistory(
-                  item.url_rss,
-                  item.id,
-                  bookCovers[index],
-                  item.title,
-                  item.authors[0]["first_name"],
-                  item.authors[0]["last_name"],
-                  item.totaltime,
-                  item.copyright_year,
-                  item.genres
-                );
+                addAudiobookToHistory({
+                  audiobook_rss_url: item.url_rss,
+                  audiobook_id: item.id,
+                  audiobook_image: bookCovers[index],
+                  audiobook_title: item.title,
+                  audiobook_author_first_name: item.authors[0]["first_name"],
+                  audiobook_author_last_name: item.authors[0]["last_name"],
+                  audiobook_total_time: item.totaltime,
+                  audiobook_copyright_year: item.copyright_year,
+                  audiobook_genres: item.genres,
+                });
                 navigation.navigate("Audio", [
                   item.url_rss,
                   item.id,
