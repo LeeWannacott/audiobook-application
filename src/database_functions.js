@@ -57,46 +57,21 @@ export function deleteAudiobookHistoryDB(db) {
   }, null);
 }
 
-export function shelveAudiobookDB(
-  db,
-  audiobook_rss_url,
-  audiobook_id,
-  audiobook_image,
-  audiobook_title,
-  audiobook_author_first_name,
-  audiobook_author_last_name,
-  audiobook_total_time,
-  audiobook_copyright_year,
-  audiobook_genres,
-  audiobook_rating
-) {
-  // is text empty?
-  if (audiobook_rss_url === null || audiobook_rss_url === "") {
-    return false;
-  }
-
-  if (audiobook_id === null || audiobook_id === "") {
-    return false;
-  }
-
-  if (audiobook_image === null || audiobook_image === "") {
-    return false;
-  }
-
+export function shelveAudiobookDB(db, shelveData) {
   db.transaction((tx) => {
     tx.executeSql(
       "insert into testshelve23 (audiobook_rss_url, audiobook_id, audiobook_image, audiobook_title, audiobook_author_first_name, audiobook_author_last_name, audiobook_total_time, audiobook_copyright_year, audiobook_genres, audiobook_rating) values (?,?,?,?,?,?,?,?,?,?)",
       [
-        audiobook_rss_url,
-        audiobook_id,
-        audiobook_image,
-        audiobook_title,
-        audiobook_author_first_name,
-        audiobook_author_last_name,
-        audiobook_total_time,
-        audiobook_copyright_year,
-        audiobook_genres,
-        audiobook_rating,
+        shelveData.audioBooksRSSLinkToAudioTracks,
+        shelveData.audioBookId,
+        shelveData.bookCoverImage,
+        shelveData.audiobookTitle,
+        shelveData.audiobookAuthorFirstName,
+        shelveData.audiobookAuthorLastName,
+        shelveData.audiobookTotalTime,
+        shelveData.audiobookCopyrightYear,
+        shelveData.audiobookGenres,
+        shelveData.audiobookRating,
       ]
     );
     tx.executeSql("select * from testshelve23", [], (_, { rows }) => {
