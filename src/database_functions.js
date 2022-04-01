@@ -3,9 +3,10 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 export function createTablesDB(db) {
   db.transaction((tx) => {
     tx.executeSql(
-      "create table if not exists testshelve23 (id integer primary key not null, audiobook_rss_url text not null unique, audiobook_id text not null unique, audiobook_image text, audiobook_title text, audiobook_author_first_name text, audiobook_author_last_name text, audiobook_total_time text, audiobook_copyright_year text, audiobook_genres text, audiobook_rating text);"
+      "create table if not exists testshelve24 (id integer primary key not null, audiobook_rss_url text not null unique, audiobook_id text not null unique, audiobook_image text, audiobook_title text, audiobook_author_first_name text, audiobook_author_last_name text, audiobook_total_time text, audiobook_copyright_year text, audiobook_genres text, audiobook_rating text, audiobook_review_url text, audiobook_num_sections text, audiobook_ebook_url text, audiobook_zip text);"
     );
   });
+
   db.transaction((tx) => {
     tx.executeSql(
       "create table if not exists testaudio14 (id integer primary key not null, audiobook_id text not null unique, audiotrack_progress_bars text, current_audiotrack_positions text, audiobook_shelved int, audiobook_rating int);"
@@ -49,7 +50,7 @@ export function deleteAudiobookHistoryDB(db) {
 export function shelveAudiobookDB(db, shelveData) {
   db.transaction((tx) => {
     tx.executeSql(
-      "insert into testshelve23 (audiobook_rss_url, audiobook_id, audiobook_image, audiobook_title, audiobook_author_first_name, audiobook_author_last_name, audiobook_total_time, audiobook_copyright_year, audiobook_genres, audiobook_rating) values (?,?,?,?,?,?,?,?,?,?)",
+      "insert into testshelve24 (audiobook_rss_url, audiobook_id, audiobook_image, audiobook_title, audiobook_author_first_name, audiobook_author_last_name, audiobook_total_time, audiobook_copyright_year, audiobook_genres, audiobook_rating, audiobook_review_url, audiobook_num_sections, audiobook_ebook_url, audiobook_zip) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
       [
         shelveData.audiobook_rss_url,
         shelveData.audiobook_id,
@@ -61,9 +62,13 @@ export function shelveAudiobookDB(db, shelveData) {
         shelveData.audiobook_copyright_year,
         shelveData.audiobook_genres,
         shelveData.audiobook_rating,
+        shelveData.audiobook_review_url,
+        shelveData.audiobook_num_sections,
+        shelveData.audiobook_ebook_url,
+        shelveData.audiobook_zip,
       ]
     );
-    tx.executeSql("select * from testshelve23", [], (_, { rows }) => {
+    tx.executeSql("select * from testshelve24", [], (_, { rows }) => {
       console.log(JSON.stringify(rows));
       console.log(rows);
     });
@@ -131,7 +136,7 @@ export function removeShelvedAudiobookDB(db, audiobook_id) {
     return false;
   }
   db.transaction((tx) => {
-    tx.executeSql("delete from testshelve23 where audiobook_id=?", [
+    tx.executeSql("delete from testshelve24 where audiobook_id=?", [
       audiobook_id,
     ]);
   }, null);

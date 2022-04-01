@@ -22,7 +22,7 @@ function History() {
   useEffect(() => {
     db.transaction((tx) => {
       tx.executeSql("select * from testHistory14", [], (_, { rows }) => {
-        setAudiobookHistory(rows);
+        setAudiobookHistory(rows["_array"].reverse());
         setLoadingHistory(false);
       });
     }, null);
@@ -56,6 +56,11 @@ function History() {
                 audiobookTotalTime: item.audiobook_total_time,
                 audiobookCopyrightYear: item.audiobook_copyright_year,
                 audiobookGenres: item.audiobook_genres,
+                // audiobookRating: item.audiobook_rating,
+                // audiobookReviewUrl: item.audiobook_review_url,
+                // numberBookSections: item.audiobook_num_sections,
+                // ebookTextSource: item.audiobook_ebook_url,
+                // ListenUrlZip: item.audiobook_zip_file,
               });
             }}
           />
@@ -78,7 +83,7 @@ function History() {
       <View>
         <View style={styles.flatListStyle}>
           <FlatList
-            data={audiobookHistory["_array"]}
+            data={audiobookHistory}
             keyExtractor={keyExtractor}
             renderItem={renderItem}
             numColumns={2}

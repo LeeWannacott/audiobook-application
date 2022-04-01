@@ -19,9 +19,10 @@ function Bookshelf() {
 
   useEffect(() => {
     db.transaction((tx) => {
-      tx.executeSql("select * from testShelve23", [], (_, { rows }) => {
+      tx.executeSql("select * from testShelve24", [], (_, { rows }) => {
         setAudiobookHistory(rows);
         setLoadingHistory(false);
+        console.log(audiobookHistory)
       });
     }, null);
   }, []);
@@ -56,6 +57,11 @@ function Bookshelf() {
                 audiobookTotalTime: item.audiobook_total_time,
                 audiobookCopyrightYear: item.audiobook_copyright_year,
                 audiobookGenres: item.audiobook_genres,
+                audiobookRating: item.audiobook_rating,
+                audiobookReviewUrl: item.audiobook_review_url,
+                numberBookSections: item.audiobook_num_sections,
+                ebookTextSource: item.audiobook_ebook_url,
+                ListenUrlZip: item.audiobook_zip_file,
               });
             }}
           />

@@ -684,7 +684,12 @@ function Audiotracks(props) {
                     audiobook_copyright_year: audiobookCopyrightYear,
                     audiobook_genres: audiobookGenres,
                     audiobook_rating: audiobookRating,
+                    audiobook_review_url: audiobookReviewUrl,
+                    audiobook_num_sections: numberBookSections,
+                    audiobook_ebook_url: ebookTextSource,
+                    audiobook_zip_file:ListenUrlZip,
                   });
+
                 }}
               >
                 <MaterialIconCommunity
