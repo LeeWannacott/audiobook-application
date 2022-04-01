@@ -69,7 +69,6 @@ function ButtonPanel(props) {
   const buttons = [
     { element: Explore },
     { element: Favourited },
-    { element: Download },
     { element: History },
     { element: Settings },
   ];
