@@ -8,7 +8,7 @@ import { ListItem, Avatar } from "react-native-elements";
 import { FlatList, ActivityIndicator, Dimensions } from "react-native";
 import { List, Divider } from "react-native-paper";
 import MaterialIconCommunity from "react-native-vector-icons/MaterialCommunityIcons.js";
-import AudiobookAccordionList from "../components/audiobookAccordionList.js"
+import AudiobookAccordionList from "../components/audiobookAccordionList.js";
 
 import { openDatabase } from "../utils";
 
@@ -46,17 +46,17 @@ function History() {
             source={{ uri: item.audiobook_image }}
             style={{ width: windowWidth / 2 - 42, height: windowHeight / 5 }}
             onPress={() => {
-              navigation.navigate("Audio", [
-                item.audiobook_rss_url,
-                item.audiobook_id,
-                item.audiobook_image,
-                item.audiobook_title,
-                item.audiobook_author_first_name,
-                item.audiobook_author_last_name,
-                item.audiobook_total_time,
-                item.audiobook_copyright_year,
-                item.audiobook_genres,
-              ]);
+              navigation.navigate("Audio", {
+                audioBooksRSSLinkToAudioTracks: item.audiobook_rss_url,
+                audioBookId: item.audiobook_id,
+                bookCoverImage: item.audiobook_image,
+                audiobookTitle: item.audiobook_title,
+                audiobookAuthorFirstName: item.audiobook_author_first_name,
+                audiobookAuthorLastName: item.audiobook_author_last_name,
+                audiobookTotalTime: item.audiobook_total_time,
+                audiobookCopyrightYear: item.audiobook_copyright_year,
+                audiobookGenres: item.audiobook_genres,
+              });
             }}
           />
         </View>

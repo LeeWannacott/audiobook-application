@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 
 import ButtonPanel from "../components/ButtonPanel";
 import { useNavigation } from "@react-navigation/native";
-import { ListItem, Avatar , Rating} from "react-native-elements";
+import { ListItem, Avatar, Rating } from "react-native-elements";
 import { FlatList, ActivityIndicator, Dimensions } from "react-native";
 import AudiobookAccordionList from "../components/audiobookAccordionList.js";
 
@@ -46,32 +46,32 @@ function Bookshelf() {
             source={{ uri: item.audiobook_image }}
             style={{ width: windowWidth / 2 - 42, height: windowHeight / 5 }}
             onPress={() => {
-              navigation.navigate("Audio", [
-                item.audiobook_rss_url,
-                item.audiobook_id,
-                item.audiobook_image,
-                item.audiobook_title,
-                item.audiobook_author_first_name,
-                item.audiobook_author_last_name,
-                item.audiobook_total_time,
-                item.audiobook_copyright_year,
-                item.audiobook_genres,
-              ]);
+              navigation.navigate("Audio", {
+                audioBooksRSSLinkToAudioTracks: item.audiobook_rss_url,
+                audioBookId: item.audiobook_id,
+                bookCoverImage: item.audiobook_image,
+                audiobookTitle: item.audiobook_title,
+                audiobookAuthorFirstName: item.audiobook_author_first_name,
+                audiobookAuthorLastName: item.audiobook_author_last_name,
+                audiobookTotalTime: item.audiobook_total_time,
+                audiobookCopyrightYear: item.audiobook_copyright_year,
+                audiobookGenres: item.audiobook_genres,
+              });
             }}
           />
         </View>
       </ListItem>
-          <Rating
-            showRating
-            imageSize={20}
-            ratingCount={5}
-            startingValue={item.audiobook_rating}
-            showRating={false}
-            readonly={true}
-            style={{ratingColor:"red"}}
-            tintColor={"black"}
-            ratingBackgroundColor={"purple"}
-          />
+      <Rating
+        showRating
+        imageSize={20}
+        ratingCount={5}
+        startingValue={item.audiobook_rating}
+        showRating={false}
+        readonly={true}
+        style={{ ratingColor: "red" }}
+        tintColor={"black"}
+        ratingBackgroundColor={"purple"}
+      />
       <AudiobookAccordionList
         audiobookTitle={item.audiobook_title}
         audiobookAuthorFirstName={item.audiobook_author_first_name}

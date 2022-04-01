@@ -123,21 +123,21 @@ export default function Audiobooks(props) {
                   audiobook_copyright_year: item.copyright_year,
                   audiobook_genres: item.genres,
                 });
-                navigation.navigate("Audio", [
-                  item.url_rss,
-                  item.id,
-                  bookCovers[index],
-                  item.num_sections,
-                  item.url_text_source,
-                  item.url_zip_file,
-                  item.title,
-                  item.authors[0]["first_name"],
-                  item.authors[0]["last_name"],
-                  item.totaltime,
-                  item.copyright_year,
-                  item.genres,
-                  reviewsUrlList[index],
-                ]);
+                navigation.navigate("Audio", {
+                  audioBooksRSSLinkToAudioTracks: item.url_rss,
+                  audioBookId: item.id,
+                  bookCoverImage: bookCovers[index],
+                  numberBookSections: item.num_sections,
+                  ebookTextSource: item.url_text_source,
+                  ListenUrlZip: item.url_zip_file,
+                  audiobookTitle: item.title,
+                  audiobookAuthorFirstName: item.authors[0]["first_name"],
+                  audiobookAuthorLastName: item.authors[0]["last_name"],
+                  audiobookTotalTime: item.totaltime,
+                  audiobookCopyrightYear: item.copyright_year,
+                  audiobookGenres: item.genres,
+                  audiobookReviewUrl: reviewsUrlList[index],
+                });
               }
               setAvatarOnPressEnabled(false);
               setTimeout(() => {

@@ -71,7 +71,7 @@ function Audiotracks(props) {
   const [visible, setVisible] = useState(false);
   const [isSwitchOn, setIsSwitchOn] = useState(false);
 
-  const [
+  const {
     audioBooksRSSLinkToAudioTracks,
     audioBookId,
     bookCoverImage,
@@ -85,7 +85,7 @@ function Audiotracks(props) {
     audiobookCopyrightYear,
     audiobookGenres,
     audiobookReviewUrl,
-  ] = props.route.params;
+  } = props.route.params;
 
   useEffect(() => {
     try {
