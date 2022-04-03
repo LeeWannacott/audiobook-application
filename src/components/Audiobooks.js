@@ -85,8 +85,8 @@ export default function Audiobooks(props) {
       dataKeys.forEach((bookCoverURLPath) => {
         bookCoverImagePath = bookCoverURLPath.url_zip_file.split("/");
         bookCoverImagePath = bookCoverImagePath[bookCoverImagePath.length - 2];
-        const reviewUrl = `https://archive.org/metadata/${bookCoverImagePath}/reviews/`;
-        bookCoverImagePath = `https://archive.org/services/get-item-image.php?identifier=${bookCoverImagePath}`;
+        const reviewUrl = encodeURI(`https://archive.org/metadata/${bookCoverImagePath}/reviews/`);
+        bookCoverImagePath = encodeURI(`https://archive.org/services/get-item-image.php?identifier=${bookCoverImagePath}`);
         bookCoverURL.push(bookCoverImagePath);
         reviewsURL.push(reviewUrl);
       });
@@ -148,16 +148,17 @@ export default function Audiobooks(props) {
         </View>
       </ListItem>
       <AudiobookAccordionList
-        audiobookTitle={item.title}
-        audiobookAuthorFirstName={item.authors[0]["first_name"]}
-        audiobookAuthorLastName={item.authors[0]["last_name"]}
-        audiobookTotalTime={item.totaltime}
-        audiobookCopyrightYear={item.copyright_year}
-        audiobookGenres={JSON.stringify(item.genres)}
+        audiobookTitle={item?.title}
+        audiobookAuthorFirstName={item.authors[0]?.first_name}
+        audiobookAuthorLastName={item.authors[0]?.last_name}
+        audiobookTotalTime={item?.totaltime}
+        audiobookCopyrightYear={item?.copyright_year}
+        audiobookGenres={JSON.stringify(item?.genres)}
       />
     </View>
   );
 
+  // {console.log(data.books)}
   if (!loadingAudioBooks) {
     return (
       <View style={styles.audiobookContainer}>

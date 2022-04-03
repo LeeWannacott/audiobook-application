@@ -39,7 +39,7 @@ function Audiotracks(props) {
   const [dataRSS, setDataRSS] = useState([]);
   const [listRSSURLS, setRssURLS] = useState([]);
   const [chapterDurations, setChapterDurations] = useState([]);
-  const [audiobookReviewData, setAudiobookReviewData] = useState([]);
+  const [audiobookReviewData, setAudiobookReviews] = useState([]);
   const [AudioBookDescription, setAudioBookDescription] = useState([]);
   const currentAudioTrackIndex = useRef(0);
   const [loadingAudiobookData, setLoadingAudioBookData] = useState(true);
@@ -70,6 +70,7 @@ function Audiotracks(props) {
   const [controlPanelButtonSize] = useState(30);
   const [visible, setVisible] = useState(false);
   const [isSwitchOn, setIsSwitchOn] = useState(false);
+  const [speedOfAudiotrack, setSpeedOfAudiotrack] = useState(1);
 
   const {
     audioBooksRSSLinkToAudioTracks,
@@ -191,8 +192,10 @@ function Audiotracks(props) {
       .then((response) => response.text())
       .then((responseData) => rssParser.parse(responseData))
       .then((rss) => {
-        setDataRSS(rss.items);
         setAudioBookDescription(rss);
+        if (rss?.items !== undefined) {
+          setDataRSS(rss?.items);
+        }
       })
       .catch((error) => console.log("Error: ", error))
       .finally(() => {
@@ -207,8 +210,8 @@ function Audiotracks(props) {
       .then((response) => response.json())
       .then((json) => {
         return (
-          setAudioBookData(json.books),
-          setLengthOfSections(json.books[0].sections.length)
+          setAudioBookData(json?.books),
+          setLengthOfSections(json?.books?.[0]?.sections?.length)
         );
       })
       .catch((error) => console.log("Error: ", error))
@@ -219,19 +222,21 @@ function Audiotracks(props) {
     fetch(audiobookReviewUrl)
       .then((response) => response.json())
       .then((json) => {
-        return setAudiobookReviewData(json["result"]);
+        if (json?.result !== undefined) {
+          setAudiobookReviews(json.result);
+        }
       })
       .catch((error) => console.log("Error: ", error));
-  }, []);
+  }, [audiobookReviewUrl]);
 
   useEffect(() => {
     try {
       if (audiobookReviewData.length > 0 && audiobookReviewData) {
         const initialValue = 0;
-        let allReviewsStars = audiobookReviewData.map((review) =>
+        let allReviewsStars = audiobookReviewData?.map((review) =>
           Number(review.stars)
         );
-        const summedReviewStars = allReviewsStars.reduce(
+        const summedReviewStars = allReviewsStars?.reduce(
           (previousValue, currentValue) => previousValue + currentValue,
           initialValue
         );
@@ -293,11 +298,11 @@ function Audiotracks(props) {
 
   async function updateAndStoreAudiobookPositions(data) {
     try {
-      let progress = data.positionMillis / data.durationMillis;
-      updateLinearProgressBars(progress);
+      let currentAudiotrackProgress = data.positionMillis / data.durationMillis;
+      updateLinearProgressBars(currentAudiotrackProgress);
       updateAudiotrackPositions(data.positionMillis);
 
-      const sliderPositionCalculated = sliderPositionCalculation(progress);
+      const sliderPositionCalculated = sliderPositionCalculation(currentAudiotrackProgress);
       setCurrentSliderPosition(sliderPositionCalculated);
 
       updateAudioBookPosition(
@@ -316,6 +321,10 @@ function Audiotracks(props) {
         updateAndStoreAudiobookPositions(data);
         return HandleNext(currentAudioTrackIndex.current);
       } else if (data.positionMillis && data.durationMillis) {
+        // data.rate = speedOfAudiotrack;
+        // await data.setAudioModeAsync({
+        // rate: speedOfAudiotrack,
+        // });
         updateAndStoreAudiobookPositions(data);
       }
     } catch (error) {
@@ -361,7 +370,7 @@ function Audiotracks(props) {
             progressUpdateIntervalMillis: 5000,
             positionMillis: audiotrackPositions,
             shouldPlay: false,
-            rate: 1.0,
+            rate: speedOfAudiotrack,
             shouldCorrectPitch: false,
             volume: 1.0,
             isMuted: false,
@@ -374,17 +383,17 @@ function Audiotracks(props) {
           setLoadedCurrentAudiotrack(false);
         } else {
           setAudioTrackChapterPlayingTitle(
-            AudioBookData[0].sections[index].section_number +
+            AudioBookData[0]?.sections[index]?.section_number +
               ". " +
-              AudioBookData[0].sections[index].title
+              AudioBookData[0]?.sections[index]?.title
           );
           setAudioTrackReader(
-            AudioBookData[0].sections[index].readers[0]["display_name"]
+            AudioBookData[0]?.sections[index]?.readers[0]?.display_name
           );
           // ...long-running synchronous task...
           setLoadingCurrentAudiotrack(false);
           setLoadedCurrentAudiotrack(true);
-          SetDuration(result.durationMillis);
+          SetDuration(result?.durationMillis);
           sound.current.setOnPlaybackStatusUpdate(UpdateStatus);
           await PlayAudio();
         }
@@ -525,7 +534,7 @@ function Audiotracks(props) {
     <ListItem bottomDivider>
       <ListItem.Content>
         <ListItem.Title>
-          {item.section_number}: {item.title}
+          {item?.section_number}: {item?.title}
         </ListItem.Title>
         <ListItem.Subtitle>
           <Text numberOfLines={1} ellipsizeMode="tail">
@@ -543,10 +552,7 @@ function Audiotracks(props) {
         />
         <ListItem.Subtitle>
           <Text numberOfLines={1} ellipsizeMode="tail">
-            Reader:{" "}
-            {item.readers[0]["display_name"]
-              ? item.readers[0]["display_name"]
-              : "Not listed."}
+            Reader: {item?.readers[0]?.display_name}
           </Text>
         </ListItem.Subtitle>
       </ListItem.Content>
@@ -564,25 +570,25 @@ function Audiotracks(props) {
 
   const renderReviews = ({ item, index }) => (
     <Card>
-      <ListItem.Title>{item.reviewtitle}</ListItem.Title>
+      <ListItem.Title>{item?.reviewtitle}</ListItem.Title>
       <Card.Divider />
       <Rating
         imageSize={20}
         ratingCount={5}
-        startingValue={item.stars}
+        startingValue={item?.stars}
         showRating={false}
         readonly={true}
       />
       <ListItem>
-        <ListItem.Subtitle>{item.reviewbody}</ListItem.Subtitle>
+        <ListItem.Subtitle>{item?.reviewbody}</ListItem.Subtitle>
       </ListItem>
 
       <View style={styles.reviewFooter}>
         <ListItem>
-          <ListItem.Subtitle>By: {item.reviewer}</ListItem.Subtitle>
+          <ListItem.Subtitle>By: {item?.reviewer}</ListItem.Subtitle>
         </ListItem>
         <ListItem>
-          <ListItem.Subtitle>{item.reviewdate}</ListItem.Subtitle>
+          <ListItem.Subtitle>{item?.reviewdate}</ListItem.Subtitle>
         </ListItem>
       </View>
     </Card>
@@ -592,11 +598,11 @@ function Audiotracks(props) {
     if (dataRSS.length > 0) {
       const rssURLS = Object.entries(dataRSS);
       const listRSSURLSTemp = rssURLS.map(([key, value]) => {
-        return value.enclosures[0].url;
+        return value?.enclosures[0]?.url;
       });
       setRssURLS(listRSSURLSTemp);
       const chapterDurationsTemp = dataRSS.map(
-        (item) => item["itunes"].duration
+        (item) => item["itunes"]?.duration
       );
       setChapterDurations(chapterDurationsTemp);
       console.log(chapterDurations);
@@ -641,7 +647,7 @@ function Audiotracks(props) {
           <Card>
             <Card.Title style={styles.bookTitle}>
               {" "}
-              {AudioBookData[0].title}
+              {AudioBookData[0]?.title}
             </Card.Title>
             <Card.Divider />
             <Card.Image
@@ -655,11 +661,11 @@ function Audiotracks(props) {
             />
             <Text style={styles.bookAuthor}>
               {" "}
-              Author: {AudioBookData[0].authors[0].first_name}{" "}
-              {AudioBookData[0].authors[0].last_name}
+              Author: {AudioBookData[0]?.authors[0]?.first_name}{" "}
+              {AudioBookData[0]?.authors[0]?.last_name}
             </Text>
             <Text style={styles.bookDescription}>
-              {AudioBookDescription.description}
+              {AudioBookDescription?.description}
             </Text>
             <Rating
               showRating
@@ -687,9 +693,8 @@ function Audiotracks(props) {
                     audiobook_review_url: audiobookReviewUrl,
                     audiobook_num_sections: numberBookSections,
                     audiobook_ebook_url: ebookTextSource,
-                    audiobook_zip_file:ListenUrlZip,
+                    audiobook_zip_file: ListenUrlZip,
                   });
-
                 }}
               >
                 <MaterialIconCommunity
@@ -708,17 +713,17 @@ function Audiotracks(props) {
     };
 
     const audiotracksKeyExtractor = (item) => {
-      return item.id;
+      return item?.id;
     };
     const reviewsKeyExtractor = (item) => {
-      return item.createdate;
+      return item?.createdate;
     };
 
     const AudioTracksScreenData = [
       {
         title: "Audiotracks",
         renderItem: renderAudiotracks,
-        data: AudioBookData[0].sections,
+        data: AudioBookData[0]?.sections,
         keyExtractor: audiotracksKeyExtractor,
       },
       {
@@ -735,6 +740,19 @@ function Audiotracks(props) {
           onBackdropPress={toggleOverlay}
           fullScreen={false}
         >
+          <Slider
+            value={speedOfAudiotrack}
+            style={{ width: 200, height: 40 }}
+            minimumValue={0}
+            maximumValue={2}
+            minimumTrackTintColor="#FFFFFF"
+            maximumTrackTintColor="#"
+            step={0.25}
+            onValueChange={(value) => {
+              setSpeedOfAudiotrack(value);
+            }}
+          />
+          <Text>Speedy gonzales aud {speedOfAudiotrack}</Text>
           <Switch value={isSwitchOn} onValueChange={onToggleSwitch} />
         </Overlay>
         <View style={styles.AudioTracksStyle}>
