@@ -49,13 +49,13 @@ export default function Audiobooks(props) {
     let apiFetchQuery;
     switch (props.apiSettings["searchBy"]) {
       case "title":
-        apiFetchQuery = `https://librivox.org/api/feed/audiobooks/?title=${carot}${searchQuery}&extended=1&format=json&limit=${amountOfAudiobooks}`;
+        apiFetchQuery = `https://librivox.org/api/feed/audiobooks/?title=${carot}${searchQuery}&extended=0&format=json&limit=${amountOfAudiobooks}`;
         break;
       case "author":
-        apiFetchQuery = `https://librivox.org/api/feed/audiobooks/?author=${author}&extended=1&format=json&limit=${amountOfAudiobooks}`;
+        apiFetchQuery = `https://librivox.org/api/feed/audiobooks/?author=${author}&extended=0&format=json&limit=${amountOfAudiobooks}`;
         break;
       case "genre":
-        apiFetchQuery = `https://librivox.org/api/feed/audiobooks/?genre=${genre}&extended=1&format=json&limit=${amountOfAudiobooks}`;
+        apiFetchQuery = `https://librivox.org/api/feed/audiobooks/?genre=${genre}&extended=0&format=json&limit=${amountOfAudiobooks}`;
         break;
       default:
         break;
@@ -113,29 +113,29 @@ export default function Audiobooks(props) {
             onPress={() => {
               if (avatarOnPressEnabled) {
                 addAudiobookToHistory({
-                  audiobook_rss_url: item.url_rss,
-                  audiobook_id: item.id,
+                  audiobook_rss_url: item?.url_rss,
+                  audiobook_id: item?.id,
                   audiobook_image: bookCovers[index],
-                  audiobook_title: item.title,
-                  audiobook_author_first_name: item.authors[0]["first_name"],
-                  audiobook_author_last_name: item.authors[0]["last_name"],
-                  audiobook_total_time: item.totaltime,
-                  audiobook_copyright_year: item.copyright_year,
-                  audiobook_genres: item.genres,
+                  audiobook_title: item?.title,
+                  audiobook_author_first_name: item?.authors[0]?.first_name,
+                  audiobook_author_last_name: item?.authors[0]?.last_name,
+                  audiobook_total_time: item?.totaltime,
+                  audiobook_copyright_year: item?.copyright_year,
+                  audiobook_genres: item?.genres,
                 });
                 navigation.navigate("Audio", {
-                  audioBooksRSSLinkToAudioTracks: item.url_rss,
-                  audioBookId: item.id,
+                  audioBooksRSSLinkToAudioTracks: item?.url_rss,
+                  audioBookId: item?.id,
                   bookCoverImage: bookCovers[index],
-                  numberBookSections: item.num_sections,
-                  ebookTextSource: item.url_text_source,
-                  ListenUrlZip: item.url_zip_file,
-                  audiobookTitle: item.title,
-                  audiobookAuthorFirstName: item.authors[0]["first_name"],
-                  audiobookAuthorLastName: item.authors[0]["last_name"],
-                  audiobookTotalTime: item.totaltime,
-                  audiobookCopyrightYear: item.copyright_year,
-                  audiobookGenres: item.genres,
+                  numberBookSections: item?.num_sections,
+                  ebookTextSource: item?.url_text_source,
+                  ListenUrlZip: item?.url_zip_file,
+                  audiobookTitle: item?.title,
+                  audiobookAuthorFirstName: item?.authors[0]?.first_name ,
+                  audiobookAuthorLastName: item?.authors[0]?.last_name,
+                  audiobookTotalTime: item?.totaltime,
+                  audiobookCopyrightYear: item?.copyright_year,
+                  audiobookGenres: item?.genres,
                   audiobookReviewUrl: reviewsUrlList[index],
                 });
               }
@@ -149,8 +149,8 @@ export default function Audiobooks(props) {
       </ListItem>
       <AudiobookAccordionList
         audiobookTitle={item?.title}
-        audiobookAuthorFirstName={item.authors[0]?.first_name}
-        audiobookAuthorLastName={item.authors[0]?.last_name}
+        audiobookAuthorFirstName={item?.authors[0]?.first_name}
+        audiobookAuthorLastName={item?.authors[0]?.last_name}
         audiobookTotalTime={item?.totaltime}
         audiobookCopyrightYear={item?.copyright_year}
         audiobookGenres={JSON.stringify(item?.genres)}

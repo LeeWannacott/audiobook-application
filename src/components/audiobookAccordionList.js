@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet,Dimensions } from "react-native";
+import { StyleSheet, Dimensions } from "react-native";
 import { List, Divider } from "react-native-paper";
 import { ListItem } from "react-native-elements";
 import MaterialIconCommunity from "react-native-vector-icons/MaterialCommunityIcons.js";
@@ -52,20 +52,21 @@ function AudiobookAccordionList(props) {
           {props.audiobookCopyrightYear}
         </ListItem.Subtitle>
         <Divider />
-        <ListItem.Subtitle style={styles.accordianItemsStyle}>
-          <MaterialIconCommunity
-            name="guy-fawkes-mask"
-            size={20}
-          ></MaterialIconCommunity>
-          {": "}
-          {JSON.parse(props.audiobookGenres).map((genre) => {
-            return `${genre.name} `;
-          })}
-        </ListItem.Subtitle>
       </List.Section>
     </List.Accordion>
   );
 }
+
+// <ListItem.Subtitle style={styles.accordianItemsStyle}>
+// <MaterialIconCommunity
+// name="guy-fawkes-mask"
+// size={20}
+// ></MaterialIconCommunity>
+// {": "}
+// {JSON.parse(props.audiobookGenres).map((genre) => {
+// return `${genre.name} `;
+// })}
+// </ListItem.Subtitle>
 
 export default AudiobookAccordionList;
 
