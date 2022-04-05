@@ -105,6 +105,15 @@ export function updateBookShelveDB(db, audiobook_id, audiobook_shelved) {
   });
 }
 
+export function updateRatingForHistory(db, audiobook_id, audiobook_rating) {
+  db.transaction((tx) => {
+    tx.executeSql(
+      `update testHistory14 set audiobook_rating=? where audiobook_id=?;`,
+      [audiobook_rating, audiobook_id]
+    );
+  });
+}
+
 export function updateAudiobookRatingDB(db, audiobook_id, audiobook_rating) {
   db.transaction((tx) => {
     tx.executeSql(

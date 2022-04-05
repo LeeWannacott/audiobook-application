@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 
 import ButtonPanel from "../components/ButtonPanel";
 import { useNavigation } from "@react-navigation/native";
-import { ListItem, Avatar } from "react-native-elements";
+import { ListItem, Rating, Avatar } from "react-native-elements";
 import { FlatList, ActivityIndicator, Dimensions } from "react-native";
 import { List, Divider } from "react-native-paper";
 import MaterialIconCommunity from "react-native-vector-icons/MaterialCommunityIcons.js";
@@ -57,8 +57,8 @@ function History() {
                 audiobookCopyrightYear: item?.audiobook_copyright_year,
                 audiobookGenres: JSON.parse(item?.audiobook_genres),
                 audiobookLanguage: item?.audiobook_language,
-                // audiobookRating: item.audiobook_rating,
-                // audiobookReviewUrl: item.audiobook_review_url,
+                audiobookRating: item?.audiobook_rating,
+                audiobookReviewUrl: item?.audiobook_review_url,
                 numberBookSections: item?.audiobook_num_sections,
                 // ebookTextSource: item.audiobook_ebook_url,
                 // ListenUrlZip: item.audiobook_zip_file,
@@ -67,6 +67,17 @@ function History() {
           />
         </View>
       </ListItem>
+      <Rating
+        showRating
+        imageSize={20}
+        ratingCount={5}
+        startingValue={item?.audiobook_rating}
+        showRating={false}
+        readonly={true}
+        style={{ ratingColor: "red" }}
+        tintColor={"black"}
+        ratingBackgroundColor={"purple"}
+      />
       <AudiobookAccordionList
         audiobookTitle={item?.audiobook_title}
         audiobookAuthorFirstName={item?.audiobook_author_first_name}

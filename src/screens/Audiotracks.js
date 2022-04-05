@@ -32,6 +32,7 @@ import {
   updateBookShelveDB,
   initialAudioBookStoreDB,
   removeShelvedAudiobookDB,
+  updateRatingForHistory,
 } from "../database_functions";
 
 function Audiotracks(props) {
@@ -140,15 +141,15 @@ function Audiotracks(props) {
           rows["_array"].forEach((element) => {
             if (initAudioBookData.audiobook_id === element.audiobook_id) {
               let audiobook_positions_temp = JSON.parse(
-                element.audiotrack_progress_bars
+                element?.audiotrack_progress_bars
               );
               let audiotrack_positionsMS = JSON.parse(
-                element.current_audiotrack_positions
+                element?.current_audiotrack_positions
               );
               setlinearProgressBars(audiobook_positions_temp);
               setCurrentAudiotrackPositionsMs(audiotrack_positionsMS);
-              setShelveIconToggle(element.audiobook_shelved);
-              setAudiobookRating(element.audiobook_rating);
+              setShelveIconToggle(element?.audiobook_shelved);
+              setAudiobookRating(element?.audiobook_rating);
             }
           });
         });
@@ -243,7 +244,10 @@ function Audiotracks(props) {
           (previousValue, currentValue) => previousValue + currentValue,
           initialValue
         );
-        setAudiobookRating(summedReviewStars / allReviewsStars.length);
+        const averageAudiobookRating =
+          summedReviewStars / allReviewsStars.length;
+        setAudiobookRating(averageAudiobookRating);
+        updateRatingForHistory(db, audioBookId, averageAudiobookRating);
       }
     } catch (e) {
       console.log(e);
