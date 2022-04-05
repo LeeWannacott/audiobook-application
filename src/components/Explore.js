@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { SearchBar, Overlay, Slider } from "react-native-elements";
 import AudioBooks from "../components/Audiobooks";
 import { View, Dimensions, Text } from "react-native";
@@ -23,6 +23,7 @@ function Search() {
   const [enableGenreSelection, setEnableGenreSelection] = useState(false);
   const [enableAuthorSelection, setEnableAuthorSelection] = useState(false);
   const [isSearchBarDisabled, setIsSearchBarDisabled] = useState(false);
+  const refToSearchbar = useRef(null);
 
   const [apiSettings, setApiSettings] = useState({
     searchBy: "",
@@ -140,6 +141,7 @@ function Search() {
       <View style={styles.searchBarAndSettingsIcon}>
         <View style={styles.searchStyle}>
           <SearchBar
+            ref={(searchbar) => (refToSearchbar.current = searchbar)}
             placeholder={searchBarPlaceholder()}
             disabled={isSearchBarDisabled}
             onChangeText={(val) => {
@@ -187,12 +189,14 @@ function Search() {
                   storeAuthorGenreEnablePickers(false, false, false);
                   break;
                 case "genre":
+                  refToSearchbar.current.clear();
                   setEnableAuthorSelection(false);
                   setEnableGenreSelection(true);
                   setIsSearchBarDisabled(true);
                   storeAuthorGenreEnablePickers(false, true, true);
                   break;
                 case "author":
+                  refToSearchbar.current.clear();
                   setEnableAuthorSelection(true);
                   setEnableGenreSelection(false);
                   setIsSearchBarDisabled(true);
