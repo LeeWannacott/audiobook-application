@@ -1,9 +1,8 @@
-
 import authorsListJson from "../resources/audiobookAuthorsList.json";
 import { Picker } from "@react-native-picker/picker";
-import React, {memo} from 'react';
+import React, { memo } from "react";
 
-function ListOfAuthorsRender()  {
+function ListOfAuthorsRender() {
   authorsListJson["authors"].map((author, i) => {
     return (
       <Picker.Item
@@ -15,4 +14,4 @@ function ListOfAuthorsRender()  {
   });
 }
 
-export default ListOfAuthorsRender
+export default ListOfAuthorsRender;

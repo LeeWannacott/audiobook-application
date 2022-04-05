@@ -147,16 +147,16 @@ function Search() {
             }}
             onSubmitEditing={() => setUserInputEntered(search)}
             value={search}
-            inputContainerStyle={{backgroundColor: "white" }}
+            inputContainerStyle={{ backgroundColor: "white" }}
             containerStyle={{ backgroundColor: "black" }}
           />
         </View>
-        <Button onPress={toggleOverlay} mode="outlined" style={styles.settingsIcon} >
-          <MaterialIconCommunity
-            name="cog"
-            size={45}
-            color="white"
-          />
+        <Button
+          onPress={toggleOverlay}
+          mode="outlined"
+          style={styles.settingsIcon}
+        >
+          <MaterialIconCommunity name="cog" size={45} color="white" />
         </Button>
         <Overlay
           isVisible={visible}

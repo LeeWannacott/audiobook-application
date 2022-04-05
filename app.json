@@ -5,8 +5,6 @@
     "name": "audiobook-application",
     "slug": "audiobook-application",
     "version": "1.0.0",
-    "assetBundlePatterns": [
-      "**/*"
-    ]
+    "assetBundlePatterns": ["**/*"]
   }
 }

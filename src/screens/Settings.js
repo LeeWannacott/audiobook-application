@@ -92,7 +92,7 @@ const userSettings = () => {
                   },
                 ],
                 {
-                  cancelable:true,
+                  cancelable: true,
                 }
               )
             }
@@ -161,11 +161,11 @@ const userSettings = () => {
 };
 
 const styles = StyleSheet.create({
-  container: { backgroundColor: "#331800" ,flex:1},
+  container: { backgroundColor: "#331800", flex: 1 },
   title: {
     fontSize: 24,
   },
-  sectionHeadings: { backgroundColor: "#f6f6f6" ,flex:1},
+  sectionHeadings: { backgroundColor: "#f6f6f6", flex: 1 },
   settingsTitleText: {
     color: "white",
     marginTop: 35,
@@ -181,9 +181,9 @@ const styles = StyleSheet.create({
     borderColor: "red",
   },
   buttonStyle: {
-    position:"absolute",
-    backgroundColor:"yellow",
-    height:200,
+    position: "absolute",
+    backgroundColor: "yellow",
+    height: 200,
   },
 });
 
