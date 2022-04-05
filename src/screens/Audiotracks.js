@@ -40,7 +40,7 @@ function Audiotracks(props) {
   const [listRSSURLS, setRssURLS] = useState([]);
   const [chapterDurations, setChapterDurations] = useState([]);
   const [audiobookReviewData, setAudiobookReviews] = useState([]);
-  const [AudioBookDescription, setAudioBookDescription] = useState([]);
+  const [AudioBookDescription, setAudioBookDescription] = useState("");
   const currentAudioTrackIndex = useRef(0);
   const [loadingAudiobookData, setLoadingAudioBookData] = useState(true);
   const [loadingAudioListeningLinks, setLoadingAudioListeningLinks] =
@@ -86,6 +86,7 @@ function Audiotracks(props) {
     audiobookCopyrightYear,
     audiobookGenres,
     audiobookReviewUrl,
+    audiobookLanguage,
   } = props.route.params;
 
   useEffect(() => {
@@ -192,7 +193,9 @@ function Audiotracks(props) {
       .then((response) => response.text())
       .then((responseData) => rssParser.parse(responseData))
       .then((rss) => {
-        setAudioBookDescription(rss);
+        if (rss?.description !== undefined) {
+          setAudioBookDescription(rss?.description);
+        }
         if (rss?.items !== undefined) {
           setDataRSS(rss?.items);
         }
@@ -302,7 +305,9 @@ function Audiotracks(props) {
       updateLinearProgressBars(currentAudiotrackProgress);
       updateAudiotrackPositions(data.positionMillis);
 
-      const sliderPositionCalculated = sliderPositionCalculation(currentAudiotrackProgress);
+      const sliderPositionCalculated = sliderPositionCalculation(
+        currentAudiotrackProgress
+      );
       setCurrentSliderPosition(sliderPositionCalculated);
 
       updateAudioBookPosition(
@@ -664,9 +669,7 @@ function Audiotracks(props) {
               Author: {AudioBookData[0]?.authors[0]?.first_name}{" "}
               {AudioBookData[0]?.authors[0]?.last_name}
             </Text>
-            <Text style={styles.bookDescription}>
-              {AudioBookDescription?.description}
-            </Text>
+            <Text style={styles.bookDescription}>{AudioBookDescription}</Text>
             <Rating
               showRating
               ratingCount={5}
@@ -694,6 +697,7 @@ function Audiotracks(props) {
                     audiobook_num_sections: numberBookSections,
                     audiobook_ebook_url: ebookTextSource,
                     audiobook_zip_file: ListenUrlZip,
+                    audiobook_language: audiobookLanguage,
                   });
                 }}
               >

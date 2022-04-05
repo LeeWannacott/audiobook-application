@@ -47,18 +47,19 @@ function History() {
             style={{ width: windowWidth / 2 - 42, height: windowHeight / 5 }}
             onPress={() => {
               navigation.navigate("Audio", {
-                audioBooksRSSLinkToAudioTracks: item.audiobook_rss_url,
-                audioBookId: item.audiobook_id,
-                bookCoverImage: item.audiobook_image,
-                audiobookTitle: item.audiobook_title,
-                audiobookAuthorFirstName: item.audiobook_author_first_name,
-                audiobookAuthorLastName: item.audiobook_author_last_name,
-                audiobookTotalTime: item.audiobook_total_time,
-                audiobookCopyrightYear: item.audiobook_copyright_year,
-                audiobookGenres: item.audiobook_genres,
+                audioBooksRSSLinkToAudioTracks: item?.audiobook_rss_url,
+                audioBookId: item?.audiobook_id,
+                bookCoverImage: item?.audiobook_image,
+                audiobookTitle: item?.audiobook_title,
+                audiobookAuthorFirstName: item?.audiobook_author_first_name,
+                audiobookAuthorLastName: item?.audiobook_author_last_name,
+                audiobookTotalTime: item?.audiobook_total_time,
+                audiobookCopyrightYear: item?.audiobook_copyright_year,
+                audiobookGenres: JSON.parse(item?.audiobook_genres),
+                audiobookLanguage: item?.audiobook_language,
                 // audiobookRating: item.audiobook_rating,
                 // audiobookReviewUrl: item.audiobook_review_url,
-                // numberBookSections: item.audiobook_num_sections,
+                numberBookSections: item?.audiobook_num_sections,
                 // ebookTextSource: item.audiobook_ebook_url,
                 // ListenUrlZip: item.audiobook_zip_file,
               });
@@ -67,12 +68,13 @@ function History() {
         </View>
       </ListItem>
       <AudiobookAccordionList
-        audiobookTitle={item.audiobook_title}
-        audiobookAuthorFirstName={item.audiobook_author_first_name}
-        audiobookAuthorLastName={item.audiobook_author_last_name}
-        audiobookTotalTime={item.audiobook_total_time}
-        audiobookCopyrightYear={item.audiobook_copyright_year}
-        audiobookGenres={item.audiobook_genres}
+        audiobookTitle={item?.audiobook_title}
+        audiobookAuthorFirstName={item?.audiobook_author_first_name}
+        audiobookAuthorLastName={item?.audiobook_author_last_name}
+        audiobookTotalTime={item?.audiobook_total_time}
+        audiobookCopyrightYear={item?.audiobook_copyright_year}
+        audiobookGenres={item?.audiobook_genres}
+        audiobookLanguage={item?.audiobook_language}
       />
     </View>
   );

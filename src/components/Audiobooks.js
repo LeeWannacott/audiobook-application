@@ -38,24 +38,31 @@ export default function Audiobooks(props) {
 
   useEffect(() => {
     setLoadingAudioBooks(true);
-    const searchQuery = encodeURIComponent(props.searchBarCurrentText);
-    const genre = encodeURIComponent(props.apiSettings["audiobookGenre"]);
-    const author = encodeURIComponent(props.apiSettings["authorLastName"]);
-    const amountOfAudiobooks = encodeURIComponent(
-      props.apiSettings["audiobookAmountRequested"]
-    );
+    const searchQuery = props.searchBarCurrentText;
+    const genre = props.apiSettings["audiobookGenre"];
+    const author = props.apiSettings["authorLastName"];
+    const amountOfAudiobooks = props.apiSettings["audiobookAmountRequested"];
+    const librivoxAudiobooksAPI = "https://librivox.org/api/feed/audiobooks";
     const carot = "^";
-
+    // fields removed: sections(adds to loading time), description(not url decoded),translators.
+    const fields =
+      "id,title,url_text_source,language,copyright_year,num_sections,url_rss,url_zip_file,url_project,url_librivox,url_iarchive,url_other,totaltime,totaltimesecs,authors,genres";
     let apiFetchQuery;
     switch (props.apiSettings["searchBy"]) {
       case "title":
-        apiFetchQuery = `https://librivox.org/api/feed/audiobooks/?title=${carot}${searchQuery}&extended=0&format=json&limit=${amountOfAudiobooks}`;
+        apiFetchQuery = encodeURI(
+          `${librivoxAudiobooksAPI}/?title=${carot}${searchQuery}&fields={${fields}}&extended=1&format=json&limit=${amountOfAudiobooks}`
+        );
         break;
       case "author":
-        apiFetchQuery = `https://librivox.org/api/feed/audiobooks/?author=${author}&extended=0&format=json&limit=${amountOfAudiobooks}`;
+        apiFetchQuery = encodeURI(
+          `${librivoxAudiobooksAPI}/?author=${author}&fields={${fields}}&extended=1&format=json&limit=${amountOfAudiobooks}`
+        );
         break;
       case "genre":
-        apiFetchQuery = `https://librivox.org/api/feed/audiobooks/?genre=${genre}&extended=0&format=json&limit=${amountOfAudiobooks}`;
+        apiFetchQuery = encodeURI(
+          `${librivoxAudiobooksAPI}/?genre=${genre}&fields={${fields}}&extended=1&format=json&limit=${amountOfAudiobooks}`
+        );
         break;
       default:
         break;
@@ -82,11 +89,17 @@ export default function Audiobooks(props) {
     if (data.books) {
       const dataKeys = Object.values(data.books);
       let bookCoverImagePath;
+      // console.log(dataKeys);
       dataKeys.forEach((bookCoverURLPath) => {
+        console.log(bookCoverURLPath);
         bookCoverImagePath = bookCoverURLPath.url_zip_file.split("/");
         bookCoverImagePath = bookCoverImagePath[bookCoverImagePath.length - 2];
-        const reviewUrl = encodeURI(`https://archive.org/metadata/${bookCoverImagePath}/reviews/`);
-        bookCoverImagePath = encodeURI(`https://archive.org/services/get-item-image.php?identifier=${bookCoverImagePath}`);
+        const reviewUrl = encodeURI(
+          `https://archive.org/metadata/${bookCoverImagePath}/reviews/`
+        );
+        bookCoverImagePath = encodeURI(
+          `https://archive.org/services/get-item-image.php?identifier=${bookCoverImagePath}`
+        );
         bookCoverURL.push(bookCoverImagePath);
         reviewsURL.push(reviewUrl);
       });
@@ -122,6 +135,7 @@ export default function Audiobooks(props) {
                   audiobook_total_time: item?.totaltime,
                   audiobook_copyright_year: item?.copyright_year,
                   audiobook_genres: item?.genres,
+                  audiobook_language: item?.language,
                 });
                 navigation.navigate("Audio", {
                   audioBooksRSSLinkToAudioTracks: item?.url_rss,
@@ -131,12 +145,13 @@ export default function Audiobooks(props) {
                   ebookTextSource: item?.url_text_source,
                   ListenUrlZip: item?.url_zip_file,
                   audiobookTitle: item?.title,
-                  audiobookAuthorFirstName: item?.authors[0]?.first_name ,
+                  audiobookAuthorFirstName: item?.authors[0]?.first_name,
                   audiobookAuthorLastName: item?.authors[0]?.last_name,
                   audiobookTotalTime: item?.totaltime,
                   audiobookCopyrightYear: item?.copyright_year,
                   audiobookGenres: item?.genres,
                   audiobookReviewUrl: reviewsUrlList[index],
+                  audiobookLanguage: item?.language,
                 });
               }
               setAvatarOnPressEnabled(false);
@@ -147,6 +162,7 @@ export default function Audiobooks(props) {
           />
         </View>
       </ListItem>
+      {console.log("yogi", item.genres)}
       <AudiobookAccordionList
         audiobookTitle={item?.title}
         audiobookAuthorFirstName={item?.authors[0]?.first_name}
@@ -154,6 +170,7 @@ export default function Audiobooks(props) {
         audiobookTotalTime={item?.totaltime}
         audiobookCopyrightYear={item?.copyright_year}
         audiobookGenres={JSON.stringify(item?.genres)}
+        audiobookLanguage={item?.language}
       />
     </View>
   );

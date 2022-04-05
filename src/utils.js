@@ -1,6 +1,5 @@
-
 import * as SQLite from "expo-sqlite";
-import {Platform} from "react-native"
+import { Platform } from "react-native";
 
 function openDatabase() {
   if (Platform.OS === "web") {
@@ -13,9 +12,9 @@ function openDatabase() {
     };
   }
 
-  const db = SQLite.openDatabase("db.db");
+  const db = SQLite.openDatabase("audiobooktest9.db");
   return db;
 }
 module.exports = {
-  openDatabase:openDatabase
-}
+  openDatabase: openDatabase,
+};

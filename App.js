@@ -22,7 +22,7 @@ function App() {
         <Stack.Screen name="Settings" component={Settings} />
         <Stack.Screen name="Downloads" component={Downloads} />
       </Stack.Navigator>
-    <StatusBar style="light" backgroundColor="" translucent= {true}  />
+      <StatusBar style="light" backgroundColor="" translucent={true} />
     </NavigationContainer>
   );
 }

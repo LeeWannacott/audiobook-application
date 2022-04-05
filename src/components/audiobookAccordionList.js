@@ -42,7 +42,26 @@ function AudiobookAccordionList(props) {
           {props.audiobookTotalTime}
         </ListItem.Subtitle>
         <Divider />
-
+        <ListItem.Subtitle style={styles.accordianItemsStyle}>
+          <MaterialIconCommunity
+            name="account-voice"
+            size={20}
+          ></MaterialIconCommunity>
+          {": "}
+          {props.audiobookLanguage}
+        </ListItem.Subtitle>
+        <Divider />
+        <ListItem.Subtitle style={styles.accordianItemsStyle}>
+          <MaterialIconCommunity
+            name="guy-fawkes-mask"
+            size={20}
+          ></MaterialIconCommunity>
+          {": "}
+          {JSON.parse(props?.audiobookGenres).map((genre) => {
+            return `${genre?.name} `;
+          })}
+        </ListItem.Subtitle>
+        <Divider />
         <ListItem.Subtitle style={styles.accordianItemsStyle}>
           <MaterialIconCommunity
             name="copyright"
@@ -51,22 +70,10 @@ function AudiobookAccordionList(props) {
           {": "}
           {props.audiobookCopyrightYear}
         </ListItem.Subtitle>
-        <Divider />
       </List.Section>
     </List.Accordion>
   );
 }
-
-// <ListItem.Subtitle style={styles.accordianItemsStyle}>
-// <MaterialIconCommunity
-// name="guy-fawkes-mask"
-// size={20}
-// ></MaterialIconCommunity>
-// {": "}
-// {JSON.parse(props.audiobookGenres).map((genre) => {
-// return `${genre.name} `;
-// })}
-// </ListItem.Subtitle>
 
 export default AudiobookAccordionList;
 
