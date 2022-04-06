@@ -2,7 +2,7 @@ import React from "react";
 import { StyleSheet, View } from "react-native";
 import Explore from "../components/Explore";
 
-function App() {
+function HomeScreen() {
   return (
     <View style={styles.container}>
       <View>
@@ -12,7 +12,7 @@ function App() {
   );
 }
 
-export default App;
+export default HomeScreen;
 
 const styles = StyleSheet.create({
   container: {

@@ -14,6 +14,7 @@ import { getAsyncData, storeAsyncData } from "../database_functions";
 
 import { Button } from "react-native-paper";
 
+
 function Search() {
   const [search, updateSearch] = useState("");
   const [userInputEntered, setUserInputEntered] = useState("");
@@ -138,6 +139,7 @@ function Search() {
 
   return (
     <View>
+
       <View style={styles.searchBarAndSettingsIcon}>
         <View style={styles.searchStyle}>
           <SearchBar

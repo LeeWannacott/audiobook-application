@@ -18,7 +18,7 @@ import { openDatabase } from "../utils";
 const db = openDatabase();
 import { deleteAudiobookHistoryDB } from "../database_functions";
 
-const userSettings = () => {
+const UserSettings = () => {
   const [switchValue, setColorToggle] = useState(false);
   const [switchValue2, setSwitchValue2] = useState(false);
 
@@ -187,4 +187,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default userSettings;
+export default UserSettings;
