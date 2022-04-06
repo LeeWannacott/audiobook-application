@@ -2,7 +2,6 @@ import React from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { useState, useEffect } from "react";
 
-import ButtonPanel from "../components/ButtonPanel";
 import { useNavigation } from "@react-navigation/native";
 import { ListItem, Avatar, Rating } from "react-native-elements";
 import { FlatList, ActivityIndicator, Dimensions } from "react-native";
@@ -103,9 +102,6 @@ function Bookshelf() {
             numColumns={2}
             containerStyle={{ bottom: 10 }}
           />
-          <View styles={styles.buttonStyle}>
-            <ButtonPanel buttonPressedIndex={1} />
-          </View>
         </View>
       </View>
     );
@@ -139,9 +135,6 @@ const styles = StyleSheet.create({
     height: 750,
     color: "blue",
     backgroundColor: "#331800",
-  },
-  buttonStyle: {
-    paddingTop: 0,
   },
   AudioBookListView: {
     backgroundColor: "#51361a",

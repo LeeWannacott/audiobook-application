@@ -10,7 +10,6 @@ import {
   Alert,
   Linking,
 } from "react-native";
-import ButtonPanel from "../components/ButtonPanel";
 import SettingsList from "react-native-settings-list";
 import MaterialIcon from "react-native-vector-icons/MaterialIcons.js";
 import MaterialIconCommunity from "react-native-vector-icons/MaterialCommunityIcons.js";
@@ -153,9 +152,6 @@ const UserSettings = () => {
           />
         </SettingsList>
       </View>
-      <View styles={styles.buttonStyle}>
-        <ButtonPanel buttonPressedIndex={4} />
-      </View>
     </View>
   );
 };
@@ -179,11 +175,6 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     backgroundColor: "#263238",
     borderColor: "red",
-  },
-  buttonStyle: {
-    position: "absolute",
-    backgroundColor: "yellow",
-    height: 200,
   },
 });
 

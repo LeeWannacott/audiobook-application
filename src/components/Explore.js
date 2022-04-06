@@ -3,7 +3,6 @@ import { SearchBar, Overlay, Slider } from "react-native-elements";
 import AudioBooks from "../components/Audiobooks";
 import { View, Dimensions, Text } from "react-native";
 import { StyleSheet } from "react-native";
-import ButtonPanel from "../components/ButtonPanel";
 // import { MaterialIcons } from "@expo/vector-icons";
 import MaterialIconCommunity from "react-native-vector-icons/MaterialCommunityIcons.js";
 import { Picker } from "@react-native-picker/picker";
@@ -293,9 +292,6 @@ function Search() {
           requestAudiobookAmount={requestAudiobookAmount}
         />
       </View>
-      <View style={styles.buttonStyle}>
-        <ButtonPanel buttonPressedIndex={0} />
-      </View>
     </View>
   );
 }
@@ -333,9 +329,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
   },
-  buttonStyle: {
-    bottom: 5,
-  },
   titleOrAuthorStringFlexbox: {
     display: "flex",
     flexDirection: "row",
@@ -343,7 +336,7 @@ const styles = StyleSheet.create({
   },
   scrollStyle: {
     top: 20,
-    height: 600,
+    height: 620,
     backgroundColor: "#331800",
   },
 });
