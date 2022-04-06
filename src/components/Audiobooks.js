@@ -92,7 +92,6 @@ export default function Audiobooks(props) {
       let bookCoverImagePath;
       // console.log(dataKeys);
       dataKeys.forEach((bookCoverURLPath) => {
-        console.log(bookCoverURLPath);
         bookCoverImagePath = bookCoverURLPath.url_zip_file.split("/");
         bookCoverImagePath = bookCoverImagePath[bookCoverImagePath.length - 2];
         const reviewUrl = encodeURI(
@@ -167,7 +166,6 @@ export default function Audiobooks(props) {
           />
         </View>
       </ListItem>
-      {console.log("yogi", item.genres)}
       <AudiobookAccordionList
         audiobookTitle={item?.title}
         audiobookAuthorFirstName={item?.authors[0]?.first_name}
