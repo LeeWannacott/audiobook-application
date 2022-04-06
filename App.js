@@ -9,47 +9,78 @@ import { NavigationContainer } from "@react-navigation/native";
 import { StatusBar } from "expo-status-bar";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons.js";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 const Stack = createNativeStackNavigator();
 
 const Tab = createBottomTabNavigator();
 
-const HomeNavigator = () => {
+const TabNavigation = () => {
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="Home" component={HomeScreen} />
-      <Stack.Screen name="Audio" component={AudioTracks} />
-    </Stack.Navigator>
-  )
-}
-
-const HistoryNavigator = () => {
-  return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="History" component={History} />
-      <Stack.Screen name="Audio" component={AudioTracks} />
-    </Stack.Navigator>
-  )
-}
-
-const BookshelfNavigator = () => {
-  return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="Bookshelf" component={Bookshelf} />
-      <Stack.Screen name="Audio" component={AudioTracks} />
-    </Stack.Navigator>
-  )
-}
+    <Tab.Navigator screenOptions={{ headerShown: false }}>
+      <Tab.Screen
+        name="Explore"
+        component={HomeScreen}
+        options={{
+          tabBarLabel: "Explore",
+          tabBarIcon: ({ color, size }) => (
+            <MaterialCommunityIcons
+              name="book-search"
+              color={color}
+              size={size}
+            />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Bookshelf"
+        component={Bookshelf}
+        options={{
+          tabBarLabel: "Bookshelf",
+          tabBarIcon: ({ color, size }) => (
+            <MaterialCommunityIcons
+              name="bookshelf"
+              color={color}
+              size={size}
+            />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="History"
+        component={History}
+        options={{
+          tabBarLabel: "History",
+          tabBarIcon: ({ color, size }) => (
+            <MaterialCommunityIcons name="history" color={color} size={size} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Settings"
+        component={Settings}
+        options={{
+          tabBarLabel: "Settings",
+          tabBarIcon: ({ color, size }) => (
+            <MaterialCommunityIcons
+              name="account-cog"
+              color={color}
+              size={size}
+            />
+          ),
+        }}
+      />
+    </Tab.Navigator>
+  );
+};
 
 function App() {
   return (
     <NavigationContainer>
-      <Tab.Navigator screenOptions={{ headerShown: false }}>
-        <Tab.Screen name="HomeTab" component={HomeNavigator} />
-        <Tab.Screen name="HistoryTab" component={HistoryNavigator} />
-        <Tab.Screen name="BookshelfTab" component={BookshelfNavigator} />
-        <Tab.Screen name="SettingsTab" component={Settings} />
-      </Tab.Navigator>
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="BottomTabs" component={TabNavigation} />
+        <Stack.Screen name="Audio" component={AudioTracks} />
+      </Stack.Navigator>
       <StatusBar style="light" backgroundColor="" translucent={true} />
     </NavigationContainer>
   );
