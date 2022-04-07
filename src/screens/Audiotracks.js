@@ -38,8 +38,7 @@ import {
 function Audiotracks(props) {
   const [chapters, setChapters] = useState([]);
   const [dataRSS, setDataRSS] = useState([]);
-  const [listRSSURLS, setRssURLS] = useState([]);
-  const [chapterDurations, setChapterDurations] = useState([]);
+  const [URLSToPlayAudiotracks, setURLSToPlayAudiotracks] = useState([]);
   const [reviews, setAudiobookReviews] = useState([]);
   const [AudioBookDescription, setAudioBookDescription] = useState("");
   const currentAudioTrackIndex = useRef(0);
@@ -69,8 +68,11 @@ function Audiotracks(props) {
     useState(true);
   const [controlPanelButtonSize] = useState(30);
   const [visible, setVisible] = useState(false);
-  const [isSwitchOn, setIsSwitchOn] = useState(false);
+  const [isPitchCorrect, setIsPitchCorrect] = useState(true);
+  const [isMute, setIsMute] = useState(false);
   const [speedOfAudiotrack, setSpeedOfAudiotrack] = useState(1);
+  const [looping, setIsLooping] = useState(false);
+  // const [pitchCorrection, setPitchCorrection] = useState(true);
 
   const {
     audioBooksRSSLinkToAudioTracks,
@@ -233,9 +235,7 @@ function Audiotracks(props) {
     try {
       if (reviews.length > 0 && reviews) {
         const initialValue = 0;
-        let starsFromReviews = reviews?.map((review) =>
-          Number(review.stars)
-        );
+        let starsFromReviews = reviews?.map((review) => Number(review.stars));
         const sumOfStarsFromReviews = starsFromReviews?.reduce(
           (previousValue, currentValue) => previousValue + currentValue,
           initialValue
@@ -323,12 +323,12 @@ function Audiotracks(props) {
     try {
       if (data.didJustFinish) {
         updateAndStoreAudiobookPositions(data);
-        return HandleNext(currentAudioTrackIndex.current);
+        console.log("testingloop", looping);
+        if (looping === false) {
+          return HandleNext(currentAudioTrackIndex.current);
+        }
       } else if (data.positionMillis && data.durationMillis) {
-        // data.rate = speedOfAudiotrack;
-        // await data.setAudioModeAsync({
-        // rate: speedOfAudiotrack,
-        // });
+        console.log(data);
         updateAndStoreAudiobookPositions(data);
       }
     } catch (error) {
@@ -369,16 +369,16 @@ function Audiotracks(props) {
     if (checkLoading.isLoaded === false) {
       try {
         const result = await sound.current.loadAsync(
-          { uri: listRSSURLS[index] },
+          { uri: URLSToPlayAudiotracks[index] },
           {
             progressUpdateIntervalMillis: 5000,
             positionMillis: audiotrackPositions,
             shouldPlay: false,
             rate: speedOfAudiotrack,
-            shouldCorrectPitch: false,
-            volume: 1.0,
-            isMuted: false,
-            isLooping: false,
+            shouldCorrectPitch: isPitchCorrect,
+            volume: volume,
+            isMuted: isMute,
+            isLooping: looping,
           },
           true
         );
@@ -387,9 +387,7 @@ function Audiotracks(props) {
           setLoadedCurrentAudiotrack(false);
         } else {
           setAudioTrackChapterPlayingTitle(
-            chapters[index]?.section_number +
-              ". " +
-              chapters[index]?.title
+            chapters[index]?.section_number + ". " + chapters[index]?.title
           );
           setAudioTrackReader(chapters[index]?.readers[0]?.display_name);
           // ...long-running synchronous task...
@@ -443,7 +441,7 @@ function Audiotracks(props) {
 
   const HandleNext = async () => {
     try {
-      if (currentAudioTrackIndex.current < listRSSURLS.length - 1) {
+      if (currentAudioTrackIndex.current < URLSToPlayAudiotracks.length - 1) {
         const unloadSound = await sound.current.unloadAsync();
         if (unloadSound.isLoaded === false) {
           currentAudioTrackIndex.current += 1;
@@ -454,7 +452,10 @@ function Audiotracks(props) {
             currentAudiotrackPositionsMs[currentAudioTrackIndex.current]
           );
         }
-      } else if (currentAudioTrackIndex.current >= listRSSURLS.length - 1) {
+      } else if (
+        currentAudioTrackIndex.current >=
+        URLSToPlayAudiotracks.length - 1
+      ) {
         const unloadSound = await sound.current.unloadAsync();
         if (unloadSound.isLoaded === false) {
           currentAudioTrackIndex.current = 0;
@@ -546,7 +547,6 @@ function Audiotracks(props) {
           <Text numberOfLines={1} ellipsizeMode="tail">
             Playtime: {GetDurationFormat(currentAudiotrackPositionsMs[index])}
             {" | "}
-            {console.log(chapters[index]?.playtime, "***********")}
             {FormatChapterDurations(chapters[index]?.playtime)}
           </Text>
         </ListItem.Subtitle>
@@ -603,16 +603,12 @@ function Audiotracks(props) {
 
   useEffect(() => {
     if (dataRSS.length > 0) {
-      const rssURLS = Object.entries(dataRSS);
-      const listRSSURLSTemp = rssURLS.map(([key, value]) => {
+      console.log(dataRSS);
+      const dataRSSDict = Object.entries(dataRSS);
+      const listRSSURLSTemp = dataRSSDict.map(([key, value]) => {
         return value?.enclosures[0]?.url;
       });
-      setRssURLS(listRSSURLSTemp);
-      const chapterDurationsTemp = dataRSS.map(
-        (item) => item["itunes"]?.duration
-      );
-      setChapterDurations(chapterDurationsTemp);
-      // console.log(chapterDurations);
+      setURLSToPlayAudiotracks(listRSSURLSTemp);
     }
   }, [dataRSS]);
 
@@ -643,8 +639,43 @@ function Audiotracks(props) {
     setVisible(!visible);
   };
 
-  function onToggleSwitch() {
-    setIsSwitchOn(!isSwitchOn);
+  async function onTogglePitchSwitch(value) {
+    try {
+      setIsPitchCorrect(!isPitchCorrect);
+      if (value) {
+        await sound.current.setRateAsync(speedOfAudiotrack, true);
+      } else if (!value) {
+        await sound.current.setRateAsync(speedOfAudiotrack, false);
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  async function onToggleMuteSwitch(value) {
+    try {
+      setIsMute(!isMute);
+      if (value) {
+        await sound.current.setIsMutedAsync(true);
+      } else if (!value) {
+        await sound.current.setIsMutedAsync(false);
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  async function onToggleLoopSwitch(value) {
+    try {
+      setIsLooping(!looping);
+      if (value) {
+        await sound.current.setIsLoopingAsync(true);
+      } else if (!value) {
+        await sound.current.setIsLoopingAsync(false);
+      }
+    } catch (e) {
+      console.log(e);
+    }
   }
 
   if (!loadingAudioListeningLinks && !loadingAudiobookData) {
@@ -720,9 +751,6 @@ function Audiotracks(props) {
     const reviewsKeyExtractor = (item) => {
       return item?.createdate;
     };
-    {
-      console.log(chapters);
-    }
 
     const AudioTracksScreenData = [
       {
@@ -745,20 +773,50 @@ function Audiotracks(props) {
           onBackdropPress={toggleOverlay}
           fullScreen={false}
         >
+          <Text>Speed of Audiotrack: {speedOfAudiotrack}</Text>
           <Slider
             value={speedOfAudiotrack}
             style={{ width: 200, height: 40 }}
-            minimumValue={0}
-            maximumValue={2}
-            minimumTrackTintColor="#FFFFFF"
-            maximumTrackTintColor="#"
+            minimumValue={0.5}
+            maximumValue={2.5}
+            minimumTrackTintColor="green"
+            maximumTrackTintColor="grey"
             step={0.25}
-            onValueChange={(value) => {
-              setSpeedOfAudiotrack(value);
+            onValueChange={async (speed) => {
+              try {
+                setSpeedOfAudiotrack(speed);
+                await sound.current.setRateAsync(speed, isPitchCorrect);
+              } catch (e) {
+                console.log(e);
+              }
             }}
           />
-          <Text>Speedy gonzales aud {speedOfAudiotrack}</Text>
-          <Switch value={isSwitchOn} onValueChange={onToggleSwitch} />
+          <Text>Pitch Correction: {isPitchCorrect}</Text>
+          <Switch value={isPitchCorrect} onValueChange={onTogglePitchSwitch} />
+          <Text>Mute: {isPitchCorrect}</Text>
+          <Switch value={isMute} onValueChange={onToggleMuteSwitch} />
+
+          <Text>looping: {looping}</Text>
+          <Switch value={looping} onValueChange={onToggleLoopSwitch} />
+
+          <Text>Volume of Audiotrack: {volume}</Text>
+          <Slider
+            value={volume}
+            style={{ width: 200, height: 40 }}
+            minimumValue={0}
+            maximumValue={1}
+            minimumTrackTintColor="green"
+            maximumTrackTintColor="grey"
+            step={0.25}
+            onValueChange={async (volumeLevel) => {
+              try {
+                setVolume(volumeLevel);
+                await sound.current.setVolumeAsync(volumeLevel);
+              } catch (e) {
+                console.log(e);
+              }
+            }}
+          />
         </Overlay>
         <View style={styles.AudioTracksStyle}>
           <View style={styles.listItemHeaderStyle}>

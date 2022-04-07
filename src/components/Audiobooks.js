@@ -16,7 +16,6 @@ import {
   addAudiobookToHistoryDB,
 } from "../database_functions";
 
-
 const db = openDatabase();
 
 export default function Audiobooks(props) {
