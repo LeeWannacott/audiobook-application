@@ -536,7 +536,6 @@ function Audiotracks(props) {
     }
   };
 
-  // TODO: error handle if null/undefined i.e no reader listed/read by/.
   const renderAudiotracks = ({ item, index }) => (
     <ListItem bottomDivider>
       <ListItem.Content>
@@ -641,11 +640,16 @@ function Audiotracks(props) {
 
   async function onTogglePitchSwitch(value) {
     try {
+      const result = await sound.current.getStatusAsync();
       setIsPitchCorrect(!isPitchCorrect);
       if (value) {
-        await sound.current.setRateAsync(speedOfAudiotrack, true);
+        if (result.isLoaded === true) {
+          await sound.current.setRateAsync(speedOfAudiotrack, true);
+        }
       } else if (!value) {
-        await sound.current.setRateAsync(speedOfAudiotrack, false);
+        if (result.isLoaded === true) {
+          await sound.current.setRateAsync(speedOfAudiotrack, false);
+        }
       }
     } catch (e) {
       console.log(e);
@@ -654,11 +658,16 @@ function Audiotracks(props) {
 
   async function onToggleMuteSwitch(value) {
     try {
+      const result = await sound.current.getStatusAsync();
       setIsMute(!isMute);
       if (value) {
-        await sound.current.setIsMutedAsync(true);
+        if (result.isLoaded === true) {
+          await sound.current.setIsMutedAsync(true);
+        }
       } else if (!value) {
-        await sound.current.setIsMutedAsync(false);
+        if (result.isLoaded === true) {
+          await sound.current.setIsMutedAsync(false);
+        }
       }
     } catch (e) {
       console.log(e);
@@ -667,11 +676,16 @@ function Audiotracks(props) {
 
   async function onToggleLoopSwitch(value) {
     try {
+      const result = await sound.current.getStatusAsync();
       setIsLooping(!looping);
       if (value) {
-        await sound.current.setIsLoopingAsync(true);
+        if (result.isLoaded === true) {
+          await sound.current.setIsLoopingAsync(true);
+        }
       } else if (!value) {
-        await sound.current.setIsLoopingAsync(false);
+        if (result.isLoaded === true) {
+          await sound.current.setIsLoopingAsync(false);
+        }
       }
     } catch (e) {
       console.log(e);
@@ -785,7 +799,10 @@ function Audiotracks(props) {
             onValueChange={async (speed) => {
               try {
                 setSpeedOfAudiotrack(speed);
-                await sound.current.setRateAsync(speed, isPitchCorrect);
+                const result = await sound.current.getStatusAsync();
+                if (result.isLoaded === true) {
+                  await sound.current.setRateAsync(speed, isPitchCorrect);
+                }
               } catch (e) {
                 console.log(e);
               }
@@ -810,8 +827,11 @@ function Audiotracks(props) {
             step={0.25}
             onValueChange={async (volumeLevel) => {
               try {
+                const result = await sound.current.getStatusAsync();
                 setVolume(volumeLevel);
-                await sound.current.setVolumeAsync(volumeLevel);
+                if (result.isLoaded === true) {
+                  await sound.current.setVolumeAsync(volumeLevel);
+                }
               } catch (e) {
                 console.log(e);
               }
