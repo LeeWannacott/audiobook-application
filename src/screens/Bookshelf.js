@@ -12,28 +12,41 @@ import { openDatabase } from "../utils";
 const db = openDatabase();
 
 function Bookshelf() {
-  const [audiobookHistory, setAudiobookHistory] = useState("");
+  const [shelvedHistory, setShelvedHistory] = useState("");
   const [audiobooksdata, setaudiobooksdata] = useState("");
   const [loadingHistory, setLoadingHistory] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
-  useEffect(() => {
+  function getShelvedBooks() {
     db.transaction((tx) => {
       tx.executeSql("select * from testShelve24", [], (_, { rows }) => {
-        setAudiobookHistory(rows);
+        if (JSON.stringify(shelvedHistory) !== JSON.stringify(rows["_array"])) {
+          setShelvedHistory(rows["_array"]);
+        }
         setLoadingHistory(false);
-        console.log(audiobookHistory);
       });
     }, null);
-  }, []);
-  // console.log(2,audiobookHistory)
+  }
 
-  // console.log(typeof audiobookHistory, audiobookHistory);
+  useEffect(() => {
+    getShelvedBooks();
+  }, []);
+
+  function refreshBookshelveOnPull() {
+    setIsRefreshing(true);
+    getShelvedBooks();
+    setIsRefreshing(false);
+  }
+
+  // console.log(2,shelvedHistory)
+
+  // console.log(typeof shelvedHistory, shelvedHistory);
 
   useEffect(() => {
     console.log("useEffect");
   }, []);
 
-  const keyExtractor = (item, index) => index.toString();
+  const keyExtractor = (item, index) => item.audiobook_id.toString();
 
   const windowWidth = Dimensions.get("window").width;
   const windowHeight = Dimensions.get("window").height;
@@ -91,16 +104,18 @@ function Bookshelf() {
   );
 
   if (!loadingHistory) {
-    // console.log(audiobookHistory["_array"], "hisotry");
+    // console.log(shelvedHistory, "hisotry");
     return (
       <View>
         <View style={styles.audiobookImagesContainer}>
           <FlatList
-            data={audiobookHistory["_array"]}
+            data={shelvedHistory}
             keyExtractor={keyExtractor}
             renderItem={renderBookshelve}
             numColumns={2}
             containerStyle={{ bottom: 10 }}
+            onRefresh={() => refreshBookshelveOnPull()}
+            refreshing={isRefreshing}
           />
         </View>
       </View>

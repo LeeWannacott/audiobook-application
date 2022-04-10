@@ -17,6 +17,32 @@ function History() {
   const [audiobookHistory, setAudiobookHistory] = useState("");
   const [audiobooksdata, setaudiobooksdata] = useState("");
   const [loadingHistory, setLoadingHistory] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  function getShelvedBooks() {
+    db.transaction((tx) => {
+      // let start = performance.now()
+      tx.executeSql("select * from testHistory14", [], (_, { rows }) => {
+        if (JSON.stringify(audiobookHistory) !== JSON.stringify(rows["_array"])) {
+          setAudiobookHistory(rows["_array"].reverse());
+          // let end = performance.now()
+          // console.log("time: ",end - start)
+        }
+        setLoadingHistory(false);
+      });
+    }, null);
+  }
+
+  useEffect(() => {
+    getShelvedBooks();
+  }, []);
+
+  function refreshBookshelveOnPull() {
+    setIsRefreshing(true);
+    getShelvedBooks();
+    setIsRefreshing(false);
+  }
+
 
   useEffect(() => {
     db.transaction((tx) => {
@@ -32,7 +58,7 @@ function History() {
     console.log("useEffect");
   }, []);
 
-  const keyExtractor = (item, index) => index.toString();
+  const keyExtractor = (item, index) => item.audiobook_id.toString();
 
   const windowWidth = Dimensions.get("window").width;
   const windowHeight = Dimensions.get("window").height;
@@ -100,6 +126,10 @@ function History() {
             renderItem={renderItem}
             numColumns={2}
             containerStyle={{ bottom: 10 }}
+            onRefresh={() => refreshBookshelveOnPull()}
+            refreshing={isRefreshing}
+            // onEndReached={()=>refreshBookshelveOnPull()} 
+            // onEndReachedThreshold={0} // handle refresh 
           />
         </View>
       </View>
