@@ -8,28 +8,52 @@ import * as React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { StatusBar } from "expo-status-bar";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
 
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons.js";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 const Stack = createNativeStackNavigator();
 
+// const Tab = createMaterialBottomTabNavigator();
 const Tab = createBottomTabNavigator();
 
 const TabNavigation = () => {
   return (
-    <Tab.Navigator screenOptions={{ headerShown: false }}>
+    <Tab.Navigator
+      screenOptions={({ route }) => ({
+        headerShown: false,
+        tabBarStyle: { height: 75 },
+        tabBarIcon: ({ focused, color, size }) => {
+          size = 40;
+          let iconName;
+          switch (route.name) {
+            case "Explore":
+              iconName = focused ? "book-search" : "book-search";
+              break;
+            case "Bookshelf":
+              iconName = focused ? "bookshelf" : "bookshelf";
+              break;
+            case "History":
+              iconName = focused ? "history" : "history";
+              break;
+            case "Settings":
+              iconName = focused ? "account-cog" : "account-cog";
+              break;
+          }
+          // You can return any component that you like here!
+          return (
+            <MaterialCommunityIcons name={iconName} size={size} color={color} />
+          );
+        },
+        tabBarActiveTintColor: "#0062C8",
+        tabBarInactiveTintColor: "gray",
+      })}
+    >
       <Tab.Screen
         name="Explore"
         component={HomeScreen}
         options={{
           tabBarLabel: "Explore",
-          tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons
-              name="book-search"
-              color={color}
-              size={size}
-            />
-          ),
         }}
       />
       <Tab.Screen
@@ -37,13 +61,6 @@ const TabNavigation = () => {
         component={Bookshelf}
         options={{
           tabBarLabel: "Bookshelf",
-          tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons
-              name="bookshelf"
-              color={color}
-              size={size}
-            />
-          ),
         }}
       />
       <Tab.Screen
@@ -51,9 +68,6 @@ const TabNavigation = () => {
         component={History}
         options={{
           tabBarLabel: "History",
-          tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="history" color={color} size={size} />
-          ),
         }}
       />
       <Tab.Screen
@@ -61,13 +75,6 @@ const TabNavigation = () => {
         component={Settings}
         options={{
           tabBarLabel: "Settings",
-          tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons
-              name="account-cog"
-              color={color}
-              size={size}
-            />
-          ),
         }}
       />
     </Tab.Navigator>

@@ -132,7 +132,7 @@ const styles = StyleSheet.create({
     paddingTop: 40,
     paddingBottom: 0,
     // bottom: 162,
-    height: 750,
+    height: 681,
     color: "blue",
     backgroundColor: "#331800",
   },

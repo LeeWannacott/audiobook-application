@@ -334,7 +334,7 @@ const styles = StyleSheet.create({
   },
   scrollStyle: {
     top: 20,
-    height: 620,
+    height: 600,
     backgroundColor: "#331800",
   },
 });
