@@ -3,8 +3,14 @@ import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { useState, useEffect } from "react";
 
 import { useNavigation } from "@react-navigation/native";
-import { ListItem, Avatar, Rating } from "react-native-elements";
-import { FlatList, ActivityIndicator, Dimensions } from "react-native";
+import { ListItem, Rating } from "react-native-elements";
+import {
+  FlatList,
+  ActivityIndicator,
+  Pressable,
+  Dimensions,
+  Image,
+} from "react-native";
 import AudiobookAccordionList from "../components/audiobookAccordionList.js";
 
 import { openDatabase } from "../utils";
@@ -16,6 +22,7 @@ function Bookshelf() {
   const [audiobooksdata, setaudiobooksdata] = useState("");
   const [loadingHistory, setLoadingHistory] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [avatarOnPressEnabled, setAvatarOnPressEnabled] = useState(true);
 
   function getShelvedBooks() {
     db.transaction((tx) => {
@@ -50,34 +57,53 @@ function Bookshelf() {
 
   const windowWidth = Dimensions.get("window").width;
   const windowHeight = Dimensions.get("window").height;
+  const resizeCoverImageHeight = windowHeight / 5;
+  const resizeCoverImageWidth = windowWidth / 2 - 42;
   const navigation = useNavigation();
   const renderBookshelve = ({ item, index }) => (
     <View>
       <ListItem topDivider containerStyle={styles.AudioBookListView}>
         <View style={styles.ImageContainer}>
-          <Avatar
-            source={{ uri: item.audiobook_image }}
-            style={{ width: windowWidth / 2 - 42, height: windowHeight / 5 }}
-            onPress={() => {
-              navigation.navigate("Audio", {
-                audioBooksRSSLinkToAudioTracks: item?.audiobook_rss_url,
-                audioBookId: item?.audiobook_id,
-                bookCoverImage: item?.audiobook_image,
-                audiobookTitle: item?.audiobook_title,
-                audiobookAuthorFirstName: item?.audiobook_author_first_name,
-                audiobookAuthorLastName: item?.audiobook_author_last_name,
-                audiobookTotalTime: item?.audiobook_total_time,
-                audiobookCopyrightYear: item?.audiobook_copyright_year,
-                audiobookGenres: JSON.parse(item?.audiobook_genres),
-                audiobookRating: item?.audiobook_rating,
-                audiobookReviewUrl: item?.audiobook_review_url,
-                numberBookSections: item?.audiobook_num_sections,
-                ebookTextSource: item?.audiobook_ebook_url,
-                ListenUrlZip: item?.audiobook_zip_file,
-                audiobookLanguage: item?.audiobook_language,
-              });
+          <Pressable
+            android_ripple={{
+              color: "#FFF",
+              borderless: false,
+              foreground: true,
             }}
-          />
+            onPress={() => {
+              if (avatarOnPressEnabled) {
+                navigation.navigate("Audio", {
+                  audioBooksRSSLinkToAudioTracks: item?.audiobook_rss_url,
+                  audioBookId: item?.audiobook_id,
+                  bookCoverImage: item?.audiobook_image,
+                  audiobookTitle: item?.audiobook_title,
+                  audiobookAuthorFirstName: item?.audiobook_author_first_name,
+                  audiobookAuthorLastName: item?.audiobook_author_last_name,
+                  audiobookTotalTime: item?.audiobook_total_time,
+                  audiobookCopyrightYear: item?.audiobook_copyright_year,
+                  audiobookGenres: JSON.parse(item?.audiobook_genres),
+                  audiobookLanguage: item?.audiobook_language,
+                  audiobookRating: item?.audiobook_rating,
+                  audiobookReviewUrl: item?.audiobook_review_url,
+                  numberBookSections: item?.audiobook_num_sections,
+                  // ebookTextSource: item.audiobook_ebook_url,
+                  // ListenUrlZip: item.audiobook_zip_file,
+                });
+              }
+              setAvatarOnPressEnabled(false);
+              setTimeout(() => {
+                setAvatarOnPressEnabled(true);
+              }, 2000);
+            }}
+          >
+            <Image
+              source={{ uri: item.audiobook_image }}
+              style={{
+                width: resizeCoverImageWidth,
+                height: resizeCoverImageHeight,
+              }}
+            />
+          </Pressable>
         </View>
       </ListItem>
       <Rating
@@ -136,7 +162,7 @@ const windowHeight = Dimensions.get("window").height;
 const styles = StyleSheet.create({
   ImageContainer: {
     flexDirection: "column",
-    backgroundColor: "red",
+    backgroundColor: "white",
     width: windowWidth / 2 - 40,
     borderStyle: "solid",
     borderWidth: 1,

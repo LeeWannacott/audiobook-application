@@ -8,7 +8,6 @@ import {
 import {
   ListItem,
   LinearProgress,
-  Image,
   Card,
   Rating,
   Overlay,
@@ -17,7 +16,14 @@ import * as rssParser from "react-native-rss-parser";
 import { Audio } from "expo-av";
 import Slider from "@react-native-community/slider";
 import { MaterialIcons } from "@expo/vector-icons";
-import { StyleSheet, Text, View, FlatList, SectionList } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  FlatList,
+  SectionList,
+  Image,
+} from "react-native";
 import MaterialIconCommunity from "react-native-vector-icons/MaterialCommunityIcons.js";
 
 import { Button, List, Switch, Colors } from "react-native-paper";
@@ -1030,7 +1036,6 @@ const styles = StyleSheet.create({
   },
   listItemHeaderStyle: {
     fontSize: 20,
-    top: 20,
     backgroundColor: "black",
   },
   ActivityIndicatorStyle: {
@@ -1052,7 +1057,7 @@ const styles = StyleSheet.create({
   },
   bookHeader: {
     display: "flex",
-    paddingBottom: 10,
+    paddingBottom: 0,
     padding: 2,
   },
   albumCover: {

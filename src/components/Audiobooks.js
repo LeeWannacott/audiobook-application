@@ -4,6 +4,8 @@ import {
   View,
   ActivityIndicator,
   Dimensions,
+  Image,
+  Pressable,
 } from "react-native";
 import { ListItem, Avatar, Icon } from "react-native-elements";
 import { useNavigation } from "@react-navigation/native";
@@ -109,6 +111,9 @@ export default function Audiobooks(props) {
 
   const windowWidth = Dimensions.get("window").width;
   const windowHeight = Dimensions.get("window").height;
+
+  const resizeCoverImageHeight = windowHeight / 5;
+  const resizeCoverImageWidth = windowWidth / 2 - 42;
   const navigation = useNavigation();
   const keyExtractor = (item, index) => index.toString();
   const renderItem = ({ item, index }) => (
@@ -119,9 +124,7 @@ export default function Audiobooks(props) {
         key={item.id}
       >
         <View style={styles.ImageContainer}>
-          <Avatar
-            source={{ uri: bookCovers[index] }}
-            style={{ width: windowWidth / 2 - 42, height: windowHeight / 5 }}
+          <Pressable
             onPress={() => {
               if (avatarOnPressEnabled) {
                 addAudiobookToHistory({
@@ -162,7 +165,15 @@ export default function Audiobooks(props) {
                 setAvatarOnPressEnabled(true);
               }, 2000);
             }}
-          />
+          >
+            <Image
+              source={{ uri: bookCovers[index] }}
+              style={{
+                width: resizeCoverImageWidth,
+                height: resizeCoverImageHeight,
+              }}
+            />
+          </Pressable>
         </View>
       </ListItem>
       <AudiobookAccordionList

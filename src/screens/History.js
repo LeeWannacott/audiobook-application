@@ -1,11 +1,18 @@
 import React from "react";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { useState, useEffect } from "react";
 
 import { useNavigation } from "@react-navigation/native";
-import { Avatar, ListItem, Rating } from "react-native-elements";
-import { FlatList, ActivityIndicator, Dimensions ,Image} from "react-native";
-import { List, Divider, Button } from "react-native-paper";
+import { ListItem, Rating } from "react-native-elements";
+import {
+  FlatList,
+  ActivityIndicator,
+  Dimensions,
+  Image,
+  Pressable,
+  StyleSheet,
+  View,
+} from "react-native";
+import { Button } from "react-native-paper";
 import MaterialIconCommunity from "react-native-vector-icons/MaterialCommunityIcons.js";
 import AudiobookAccordionList from "../components/audiobookAccordionList.js";
 
@@ -20,6 +27,8 @@ function History() {
   const [loadingHistory, setLoadingHistory] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [orderBy, setOrderBy] = useState("order by id");
+  const [avatarOnPressEnabled, setAvatarOnPressEnabled] = useState(true);
+
   const [aescOrDesc, setAescOrDesc] = useState({
     toggle: 0,
     SQLOrder: "ASC",
@@ -94,38 +103,52 @@ function History() {
   {
     // console.log(audiobookHistory[0].audiobook_image);
   }
-  let resizeCoverImageHeight = windowHeight / 5;
-  let resizeCoverImageWidth = windowWidth / 2 - 42;
+  const resizeCoverImageHeight = windowHeight / 5;
+  const resizeCoverImageWidth = windowWidth / 2 - 42;
   const renderItem = ({ item, index }) => (
     <View>
       <ListItem topDivider containerStyle={styles.AudioBookListView}>
         <View style={styles.ImageContainer}>
-          <Image
-            source={{ uri: item.audiobook_image }}
-            style={{
-              width: resizeCoverImageWidth,
-              height: resizeCoverImageHeight,
+          <Pressable
+            android_ripple={{
+              color: "#FFF",
+              borderless: false,
+              foreground: true,
             }}
             onPress={() => {
-              navigation.navigate("Audio", {
-                audioBooksRSSLinkToAudioTracks: item?.audiobook_rss_url,
-                audioBookId: item?.audiobook_id,
-                bookCoverImage: item?.audiobook_image,
-                audiobookTitle: item?.audiobook_title,
-                audiobookAuthorFirstName: item?.audiobook_author_first_name,
-                audiobookAuthorLastName: item?.audiobook_author_last_name,
-                audiobookTotalTime: item?.audiobook_total_time,
-                audiobookCopyrightYear: item?.audiobook_copyright_year,
-                audiobookGenres: JSON.parse(item?.audiobook_genres),
-                audiobookLanguage: item?.audiobook_language,
-                audiobookRating: item?.audiobook_rating,
-                audiobookReviewUrl: item?.audiobook_review_url,
-                numberBookSections: item?.audiobook_num_sections,
-                // ebookTextSource: item.audiobook_ebook_url,
-                // ListenUrlZip: item.audiobook_zip_file,
-              });
+              if (avatarOnPressEnabled) {
+                navigation.navigate("Audio", {
+                  audioBooksRSSLinkToAudioTracks: item?.audiobook_rss_url,
+                  audioBookId: item?.audiobook_id,
+                  bookCoverImage: item?.audiobook_image,
+                  audiobookTitle: item?.audiobook_title,
+                  audiobookAuthorFirstName: item?.audiobook_author_first_name,
+                  audiobookAuthorLastName: item?.audiobook_author_last_name,
+                  audiobookTotalTime: item?.audiobook_total_time,
+                  audiobookCopyrightYear: item?.audiobook_copyright_year,
+                  audiobookGenres: JSON.parse(item?.audiobook_genres),
+                  audiobookLanguage: item?.audiobook_language,
+                  audiobookRating: item?.audiobook_rating,
+                  audiobookReviewUrl: item?.audiobook_review_url,
+                  numberBookSections: item?.audiobook_num_sections,
+                  // ebookTextSource: item.audiobook_ebook_url,
+                  // ListenUrlZip: item.audiobook_zip_file,
+                });
+              }
+              setAvatarOnPressEnabled(false);
+              setTimeout(() => {
+                setAvatarOnPressEnabled(true);
+              }, 2000);
             }}
-          />
+          >
+            <Image
+              source={{ uri: item.audiobook_image }}
+              style={{
+                width: resizeCoverImageWidth,
+                height: resizeCoverImageHeight,
+              }}
+            />
+          </Pressable>
         </View>
       </ListItem>
       <Rating
@@ -234,7 +257,7 @@ const windowHeight = Dimensions.get("window").height;
 const styles = StyleSheet.create({
   ImageContainer: {
     flexDirection: "column",
-    backgroundColor: "red",
+    backgroundColor: "white",
     width: windowWidth / 2 - 40,
     borderStyle: "solid",
     borderWidth: 1,
