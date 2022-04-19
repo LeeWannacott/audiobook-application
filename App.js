@@ -86,13 +86,11 @@ function App() {
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen name="BottomTabs" component={TabNavigation} />
-        <Stack.Screen name="Audio" component={AudioTracks} />
+        <Stack.Screen options={{ headerShown: true }} name="Audio" component={AudioTracks} />
       </Stack.Navigator>
       <StatusBar style="light" backgroundColor="" translucent={true} />
     </NavigationContainer>
   );
 }
 
-// <Tab.Screen name="Audio" component={AudioTracks} />
-// <Tab.Screen name="Downloads" component={Downloads} />
 export default App;
