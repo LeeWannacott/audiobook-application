@@ -40,12 +40,12 @@ export default function Audiobooks(props) {
 
   useEffect(() => {
     setLoadingAudioBooks(true);
-    const searchQuery = props.searchBarCurrentText;
-    const genre = props.apiSettings["audiobookGenre"];
-    const author = props.apiSettings["authorLastName"];
-    const amountOfAudiobooks = props.apiSettings["audiobookAmountRequested"];
-    const librivoxAudiobooksAPI = "https://librivox.org/api/feed/audiobooks";
-    const carot = "^";
+    const searchQuery = encodeURIComponent(props.searchBarCurrentText);
+    const genre = encodeURIComponent(props.apiSettings["audiobookGenre"]);
+    const author = encodeURIComponent(props.apiSettings["authorLastName"]);
+    const amountOfAudiobooks = encodeURIComponent(props.apiSettings["audiobookAmountRequested"]);
+    const librivoxAudiobooksAPI = encodeURI("https://librivox.org/api/feed/audiobooks");
+    const carot = encodeURIComponent("^");
     // fields removed: sections(adds to loading time), description(not url decoded),translators.
     const fields =
       "id,title,url_text_source,language,copyright_year,num_sections,url_rss,url_zip_file,url_project,url_librivox,url_iarchive,url_other,totaltime,totaltimesecs,authors,genres";
