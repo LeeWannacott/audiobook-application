@@ -69,7 +69,7 @@ function History() {
   const windowHeight = Dimensions.get("window").height;
   const navigation = useNavigation();
   {
-    console.log(audiobookHistory[0].audiobook_image);
+    // console.log(audiobookHistory[0].audiobook_image);
   }
   let resizeCoverImageHeight = windowHeight / 5;
   let resizeCoverImageWidth = windowWidth / 2 - 42;
