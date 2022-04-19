@@ -8,6 +8,7 @@ import * as React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { StatusBar } from "expo-status-bar";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import {Button} from "react-native-paper"
 import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
 
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons.js";
@@ -86,7 +87,25 @@ function App() {
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen name="BottomTabs" component={TabNavigation} />
-        <Stack.Screen options={{ headerShown: true }} name="Audio" component={AudioTracks} />
+        <Stack.Screen
+          name="Audio"
+          options={{
+            headerShown: true,
+            title: "Audioplayer",
+            headerRight: () => {
+              return (
+                <Button mode="outlined">
+                <MaterialCommunityIcons
+                  name={"account-music"}
+                  size={30}
+                  color={"black"}
+                />
+                </Button>
+              );
+            },
+          }}
+          component={AudioTracks}
+        />
       </Stack.Navigator>
       <StatusBar style="light" backgroundColor="" translucent={true} />
     </NavigationContainer>
