@@ -4,8 +4,8 @@ import { useState, useEffect } from "react";
 
 import { useNavigation } from "@react-navigation/native";
 import { Avatar, ListItem, Rating } from "react-native-elements";
-import { FlatList, ActivityIndicator, Dimensions } from "react-native";
-import { List, Divider } from "react-native-paper";
+import { FlatList, ActivityIndicator, Dimensions ,Image} from "react-native";
+import { List, Divider, Button } from "react-native-paper";
 import MaterialIconCommunity from "react-native-vector-icons/MaterialCommunityIcons.js";
 import AudiobookAccordionList from "../components/audiobookAccordionList.js";
 
@@ -19,13 +19,36 @@ function History() {
   const [audiobookHistory, setAudiobookHistory] = useState("");
   const [loadingHistory, setLoadingHistory] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [orderBy, setOrderBy] = useState("");
+  const [orderBy, setOrderBy] = useState("order by id");
+  const [aescOrDesc, setAescOrDesc] = useState({
+    toggle: 0,
+    SQLOrder: "ASC",
+    icon: "transfer-up",
+  });
+
+  function toggleAscOrDescSort() {
+    if (aescOrDesc.toggle == 0) {
+      setAescOrDesc({
+        ...aescOrDesc,
+        toggle: 1,
+        order: "DESC",
+        icon: "transfer-down",
+      });
+    } else {
+      setAescOrDesc({
+        ...aescOrDesc,
+        toggle: 0,
+        order: "ASC",
+        icon: "transfer-up",
+      });
+    }
+  }
 
   function getShelvedBooks() {
     db.transaction((tx) => {
       let start = performance.now();
       tx.executeSql(
-        `select * from testHistory14 ${orderBy}`,
+        `select * from testHistory14 ${orderBy} ${aescOrDesc.order}`,
         [],
         (_, { rows }) => {
           // if (JSON.stringify(audiobookHistory) !== JSON.stringify(rows["_array"])) {
@@ -77,7 +100,7 @@ function History() {
     <View>
       <ListItem topDivider containerStyle={styles.AudioBookListView}>
         <View style={styles.ImageContainer}>
-          <Avatar
+          <Image
             source={{ uri: item.audiobook_image }}
             style={{
               width: resizeCoverImageWidth,
@@ -129,45 +152,56 @@ function History() {
   );
 
   if (!loadingHistory) {
-    console.log(audiobookHistory);
+    // console.log(audiobookHistory);
     return (
       <View>
         <View style={styles.flatListStyle}>
           <View style={styles.SQLQueryPickerAndIcon}>
-          <View style={styles.SQLQueryPicker}>
-            <Picker
-              selectedValue={orderBy}
-              onValueChange={(itemValue, itemIndex) => (
-                setOrderBy(itemValue), getShelvedBooks()
-              )}
+            <View style={styles.SQLQueryPicker}>
+              <Picker
+                selectedValue={orderBy}
+                onValueChange={(itemValue, itemIndex) => (
+                  setOrderBy(itemValue), getShelvedBooks()
+                )}
+              >
+                <Picker.Item label="Order Visited" value="order by id" />
+                <Picker.Item label="Title" value="order by audiobook_title" />
+                <Picker.Item label="Rating" value="order by audiobook_rating" />
+                <Picker.Item
+                  label="Total Time"
+                  value="order by audiobook_total_time"
+                />
+                <Picker.Item
+                  label="Author Last Name"
+                  value="order by audiobook_author_last_name"
+                />
+                <Picker.Item
+                  label="Author First Name"
+                  value="order by audiobook_author_first_name"
+                />
+                <Picker.Item
+                  label="Language"
+                  value="order by audiobook_language"
+                />
+                <Picker.Item label="Genre" value="order by audiobook_genres" />
+                <Picker.Item
+                  label="Copyright year"
+                  value="order by audiobook_copyright_year"
+                />
+              </Picker>
+            </View>
+            <Button
+              mode="outlined"
+              onPress={() => {
+                toggleAscOrDescSort();
+              }}
             >
-              <Picker.Item label="Order Visited" value="order by id" />
-              <Picker.Item label="Title" value="order by audiobook_title" />
-              <Picker.Item label="Rating" value="order by audiobook_rating" />
-              <Picker.Item
-                label="Total Time"
-                value="order by audiobook_total_time"
+              <MaterialIconCommunity
+                name={aescOrDesc.icon}
+                size={40}
+                color="white"
               />
-              <Picker.Item
-                label="Author Last Name"
-                value="order by audiobook_author_last_name"
-              />
-              <Picker.Item
-                label="Author First Name"
-                value="order by audiobook_author_first_name"
-              />
-              <Picker.Item
-                label="Language"
-                value="order by audiobook_language"
-              />
-              <Picker.Item label="Genre" value="order by audiobook_genres" />
-              <Picker.Item
-                label="Copyright year"
-                value="order by audiobook_copyright_year"
-              />
-            </Picker>
-          </View>
-          <MaterialIconCommunity name="transfer-down" size={45} color="white" />
+            </Button>
           </View>
           <FlatList
             data={audiobookHistory}
@@ -223,11 +257,11 @@ const styles = StyleSheet.create({
     color: "green",
   },
   SQLQueryPicker: {
-    borderColor:"green",
-    borderWidth:1,
-    borderRadius:2,
+    borderColor: "green",
+    borderWidth: 1,
+    borderRadius: 2,
     backgroundColor: "white",
-    width:windowWidth - 70,
+    width: windowWidth - 70,
   },
   SQLQueryPickerAndIcon: {
     display: "flex",
