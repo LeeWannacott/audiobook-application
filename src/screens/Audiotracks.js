@@ -854,7 +854,7 @@ function Audiotracks(props) {
         </Overlay>
         <View style={styles.AudioTracksStyle}>
           <View style={styles.listItemHeaderStyle}>
-            <View style={styles.AudioTracksStyle}></View>
+            <View style={styles.AudioTracksStyle2}></View>
             <SectionList
               sections={AudioTracksScreenData}
               keyExtractor={({ section: { keyExtractor } }) => {
@@ -1003,12 +1003,15 @@ const windowHeight = Dimensions.get("window").height;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "darkgreen",
+    backgroundColor: "black",
     padding: 10,
+    paddingTop:2
   },
   AudioTracksStyle: {
     flex: 7,
-    marginBottom: 20,
+    paddingBottom: 2,
+  },
+  AudioTracksStyle2: {
   },
   controlsVert: {
     flex: 0.8,
@@ -1090,7 +1093,7 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
   },
   sectionTitles: {
-    color: "red",
+    color: "white",
     fontSize: 16,
   },
   sectionTitlesContainer: {
