@@ -183,6 +183,7 @@ function History() {
             <View style={styles.SQLQueryPicker}>
               <Picker
                 selectedValue={orderBy}
+                mode={"dropdown"}
                 onValueChange={(itemValue, itemIndex) => (
                   setOrderBy(itemValue), getShelvedBooks()
                 )}
@@ -214,7 +215,8 @@ function History() {
               </Picker>
             </View>
             <Button
-              mode="outlined"
+              mode="contained"
+              style={{backgroundColor:"black",height:62,marginTop:5,marginBottom:5}}
               onPress={() => {
                 toggleAscOrDescSort();
               }}
@@ -284,7 +286,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 2,
     backgroundColor: "white",
-    width: windowWidth - 70,
+    width: windowWidth - 100,
+    margin:5,
+    marginLeft:0,
   },
   SQLQueryPickerAndIcon: {
     display: "flex",

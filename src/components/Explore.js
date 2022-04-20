@@ -148,13 +148,15 @@ function Search() {
             }}
             onSubmitEditing={() => setUserInputEntered(search)}
             value={search}
-            inputContainerStyle={{ backgroundColor: "white" }}
-            containerStyle={{ backgroundColor: "black" }}
+            inputContainerStyle={{ backgroundColor: "white",height:55 }}
+            inputStyle={{ backgroundColor: "white",height:55}}
+            containerStyle={{ backgroundColor: "black" ,height:70}}
           />
         </View>
         <Button
           onPress={toggleOverlay}
-          mode="outlined"
+          mode="contained"
+          style={{backgroundColor:"black"}}
           style={styles.settingsIcon}
         >
           <MaterialIconCommunity name="cog" size={45} color="white" />
@@ -309,7 +311,7 @@ const styles = StyleSheet.create({
     backgroundColor: "black",
   },
   searchStyle: {
-    width: windowWidth - 80,
+    width: windowWidth - 100,
     top: -1,
     backgroundColor: "darkgreen",
   },
