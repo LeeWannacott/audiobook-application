@@ -29,6 +29,7 @@ import MaterialIconCommunity from "react-native-vector-icons/MaterialCommunityIc
 import { Button, List, Switch, Colors } from "react-native-paper";
 
 import { openDatabase } from "../utils";
+import { useNavigation } from "@react-navigation/native";
 
 const db = openDatabase();
 import {
@@ -96,6 +97,16 @@ function Audiotracks(props) {
     audiobookReviewUrl,
     audiobookLanguage,
   } = props.route.params;
+
+
+  const navigation = useNavigation();
+  useEffect(() => {
+    try {
+    navigation.setOptions({ headerTitle: audiobookTitle });
+    } catch (err) {
+      console.log(err);
+    }
+  }, []);
 
   useEffect(() => {
     try {
@@ -754,9 +765,6 @@ function Audiotracks(props) {
                   name={shelveIconToggle ? "book" : "book-outline"}
                   size={50}
                   color={shelveIconToggle ? "black" : "black"}
-                  onPress={() => {
-                    // navigation.navigate("Home", []);
-                  }}
                 />
               </Button>
             </View>
