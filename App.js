@@ -15,6 +15,7 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 const Stack = createNativeStackNavigator();
 
+
 // const Tab = createMaterialBottomTabNavigator();
 const Tab = createBottomTabNavigator();
 
@@ -91,18 +92,6 @@ function App() {
           name="Audio"
           options={{
             headerShown: true,
-            title: "Audioplayer",
-            headerRight: () => {
-              return (
-                <Button mode="outlined">
-                <MaterialCommunityIcons
-                  name={"account-music"}
-                  size={30}
-                  color={"black"}
-                />
-                </Button>
-              );
-            },
           }}
           component={AudioTracks}
         />

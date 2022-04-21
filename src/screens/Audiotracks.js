@@ -98,14 +98,34 @@ function Audiotracks(props) {
     audiobookLanguage,
   } = props.route.params;
 
-
   const navigation = useNavigation();
   useEffect(() => {
     try {
-    navigation.setOptions({ headerTitle: audiobookTitle });
+      navigation.setOptions({ headerTitle: audiobookTitle });
     } catch (err) {
       console.log(err);
     }
+  }, [audiobookTitle]);
+
+  React.useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <Button size={40} mode={"outlined"} onPress={() => toggleOverlay()}>
+          <MaterialIcons
+            name="settings"
+            size={controlPanelButtonSize}
+            color="black"
+            style={{
+              height: 50,
+              backgroundColor: "white",
+              borderRadius: 25,
+              color: "purple",
+              margin: 30,
+            }}
+          />
+        </Button>
+      ),
+    });
   }, []);
 
   useEffect(() => {
@@ -1005,14 +1025,13 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "black",
     padding: 10,
-    paddingTop:2
+    paddingTop: 2,
   },
   AudioTracksStyle: {
     flex: 7,
     paddingBottom: 2,
   },
-  AudioTracksStyle2: {
-  },
+  AudioTracksStyle2: {},
   controlsVert: {
     flex: 0.8,
   },
