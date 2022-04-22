@@ -1,10 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import {
-  ActivityIndicator,
-  Dimensions,
-  InteractionManager,
-  ScrollView,
-} from "react-native";
+import { ActivityIndicator, Dimensions } from "react-native";
 import {
   ListItem,
   LinearProgress,
@@ -56,7 +51,6 @@ function Audiotracks(props) {
     useState(false);
   const [loadedCurrentAudiotrack, setLoadedCurrentAudiotrack] = useState(false);
   const [audioPaused, setAudioPaused] = useState(false);
-  const [volume, setVolume] = useState(1.0);
   const [Playing, SetPlaying] = useState(false);
   const [Duration, SetDuration] = useState(0);
   const [audioTrackChapterPlayingTitle, setAudioTrackChapterPlayingTitle] =
@@ -69,17 +63,17 @@ function Audiotracks(props) {
     useState([]);
   const [shelveIconToggle, setShelveIconToggle] = useState(0);
   const [audiobookRating, setAudiobookRating] = useState(0);
-  const [audiotrackAccordionExpanded, setAudiotrackAccordionsExpanded] =
-    useState(true);
-  const [reviewsAccordionExpanded, setReviewsAccordionsExpanded] =
-    useState(true);
   const [controlPanelButtonSize] = useState(30);
   const [visible, setVisible] = useState(false);
-  const [isPitchCorrect, setIsPitchCorrect] = useState(true);
-  const [isMute, setIsMute] = useState(false);
-  const [speedOfAudiotrack, setSpeedOfAudiotrack] = useState(1);
-  const [looping, setIsLooping] = useState(false);
   // const [pitchCorrection, setPitchCorrection] = useState(true);
+  const [audioPlayerSettings, setAudioPlayerSettings] = useState({
+    rate: 1,
+    shouldCorrectPitch: true,
+    volume: 1.0,
+    isMuted: false,
+    isLooping: false,
+    shouldPlay: false,
+  });
 
   const {
     audioBooksRSSLinkToAudioTracks,
@@ -119,7 +113,7 @@ function Audiotracks(props) {
               height: 50,
               backgroundColor: "white",
               borderRadius: 25,
-              color: "purple",
+              color: "black",
               margin: 30,
             }}
           />
@@ -360,8 +354,7 @@ function Audiotracks(props) {
     try {
       if (data.didJustFinish) {
         updateAndStoreAudiobookPositions(data);
-        console.log("testingloop", looping);
-        if (looping === false) {
+        if (audioPlayerSettings.isLooping === false) {
           return HandleNext(currentAudioTrackIndex.current);
         }
       } else if (data.positionMillis && data.durationMillis) {
@@ -410,12 +403,12 @@ function Audiotracks(props) {
           {
             progressUpdateIntervalMillis: 5000,
             positionMillis: audiotrackPositions,
-            shouldPlay: false,
-            rate: speedOfAudiotrack,
-            shouldCorrectPitch: isPitchCorrect,
-            volume: volume,
-            isMuted: isMute,
-            isLooping: looping,
+            shouldPlay: audioPlayerSettings.shouldPlay,
+            rate: audioPlayerSettings.rate,
+            shouldCorrectPitch: audioPlayerSettings.shouldCorrectPitch,
+            volume: audioPlayerSettings.volume,
+            isMuted: audioPlayerSettings.isMuted,
+            isLooping: audioPlayerSettings.isLooping,
           },
           true
         );
@@ -606,7 +599,7 @@ function Audiotracks(props) {
           PlayFromListenButton(index);
         }}
       >
-        <MaterialIconCommunity name="book-play" size={40} color="#841584" />
+        <MaterialIconCommunity name="book-play" size={40} color="black" />
       </Button>
     </ListItem>
   );
@@ -664,13 +657,6 @@ function Audiotracks(props) {
     }
   }
 
-  function handleAudiobookAccordionPress() {
-    setAudiotrackAccordionsExpanded(!audiotrackAccordionExpanded);
-  }
-  function handleReviewsAccordionPress() {
-    setReviewsAccordionsExpanded(!reviewsAccordionExpanded);
-  }
-
   const toggleOverlay = () => {
     setVisible(!visible);
   };
@@ -678,14 +664,23 @@ function Audiotracks(props) {
   async function onTogglePitchSwitch(value) {
     try {
       const result = await sound.current.getStatusAsync();
-      setIsPitchCorrect(!isPitchCorrect);
+      setAudioPlayerSettings({
+        ...audioPlayerSettings,
+        shouldCorrectPitch: !audioPlayerSettings.shouldCorrectPitch,
+      });
       if (value) {
         if (result.isLoaded === true) {
-          await sound.current.setRateAsync(speedOfAudiotrack, true);
+          await sound.current.setRateAsync(
+            audioPlayerSettings.rate,
+            true
+          );
         }
       } else if (!value) {
         if (result.isLoaded === true) {
-          await sound.current.setRateAsync(speedOfAudiotrack, false);
+          await sound.current.setRateAsync(
+            audioPlayerSettings.rate,
+            false
+          );
         }
       }
     } catch (e) {
@@ -696,7 +691,10 @@ function Audiotracks(props) {
   async function onToggleMuteSwitch(value) {
     try {
       const result = await sound.current.getStatusAsync();
-      setIsMute(!isMute);
+      setAudioPlayerSettings({
+        ...audioPlayerSettings,
+        isMuted: !audioPlayerSettings.isMuted,
+      });
       if (value) {
         if (result.isLoaded === true) {
           await sound.current.setIsMutedAsync(true);
@@ -714,7 +712,10 @@ function Audiotracks(props) {
   async function onToggleLoopSwitch(value) {
     try {
       const result = await sound.current.getStatusAsync();
-      setIsLooping(!looping);
+      setAudioPlayerSettings({
+        ...audioPlayerSettings,
+        isLooping: !audioPlayerSettings.isLooping,
+      });
       if (value) {
         if (result.isLoaded === true) {
           await sound.current.setIsLoopingAsync(true);
@@ -821,9 +822,11 @@ function Audiotracks(props) {
           onBackdropPress={toggleOverlay}
           fullScreen={false}
         >
-          <Text>Speed of Audiotrack: {speedOfAudiotrack}</Text>
+          <Text>
+            Speed of Audiotrack: {audioPlayerSettings.rate}
+          </Text>
           <Slider
-            value={speedOfAudiotrack}
+            value={audioPlayerSettings.rate}
             style={{ width: 200, height: 40 }}
             minimumValue={0.5}
             maximumValue={2.5}
@@ -832,27 +835,44 @@ function Audiotracks(props) {
             step={0.25}
             onValueChange={async (speed) => {
               try {
-                setSpeedOfAudiotrack(speed);
+                setAudioPlayerSettings({
+                  ...audioPlayerSettings,
+                  rate: speed,
+                });
                 const result = await sound.current.getStatusAsync();
                 if (result.isLoaded === true) {
-                  await sound.current.setRateAsync(speed, isPitchCorrect);
+                  await sound.current.setRateAsync(
+                    speed,
+                    audioPlayerSettings.shouldCorrectPitch
+                  );
                 }
               } catch (e) {
                 console.log(e);
               }
             }}
           />
-          <Text>Pitch Correction: {isPitchCorrect}</Text>
-          <Switch value={isPitchCorrect} onValueChange={onTogglePitchSwitch} />
-          <Text>Mute: {isPitchCorrect}</Text>
-          <Switch value={isMute} onValueChange={onToggleMuteSwitch} />
+          <Text>Pitch Correction: {audioPlayerSettings.shouldCorrectPitch}</Text>
+          <Switch
+            value={audioPlayerSettings.shouldCorrectPitch}
+            onValueChange={onTogglePitchSwitch}
+          />
+          <Text>Mute: {audioPlayerSettings.isMuted}</Text>
+          <Switch
+            value={audioPlayerSettings.isMuted}
+            onValueChange={onToggleMuteSwitch}
+          />
 
-          <Text>looping: {looping}</Text>
-          <Switch value={looping} onValueChange={onToggleLoopSwitch} />
+          <Text>
+            looping: {audioPlayerSettings.isLooping}
+          </Text>
+          <Switch
+            value={audioPlayerSettings.isLooping}
+            onValueChange={onToggleLoopSwitch}
+          />
 
-          <Text>Volume of Audiotrack: {volume}</Text>
+          <Text>Volume of Audiotrack: {audioPlayerSettings.volume}</Text>
           <Slider
-            value={volume}
+            value={audioPlayerSettings.volume}
             style={{ width: 200, height: 40 }}
             minimumValue={0}
             maximumValue={1}
@@ -862,7 +882,10 @@ function Audiotracks(props) {
             onValueChange={async (volumeLevel) => {
               try {
                 const result = await sound.current.getStatusAsync();
-                setVolume(volumeLevel);
+                setAudioPlayerSettings({
+                  ...audioPlayerSettings,
+                  volume: volumeLevel,
+                });
                 if (result.isLoaded === true) {
                   await sound.current.setVolumeAsync(volumeLevel);
                 }
