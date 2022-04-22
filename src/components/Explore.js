@@ -35,13 +35,7 @@ function Search() {
     try {
       getAsyncData("apiSettings").then((apiSettingsFromStorage) => {
         apiSettingsFromStorage
-          ? setApiSettings({
-              ["searchBy"]: apiSettingsFromStorage["searchBy"],
-              ["audiobookGenre"]: apiSettingsFromStorage["audiobookGenre"],
-              ["authorLastName"]: apiSettingsFromStorage["authorLastName"],
-              ["audiobookAmountRequested"]:
-                apiSettingsFromStorage["audiobookAmountRequested"],
-            })
+          ? setApiSettings(apiSettingsFromStorage)
           : setApiSettings({
               ["searchBy"]: "title",
               ["audiobookGenre"]: "*Non-fiction",
@@ -63,13 +57,7 @@ function Search() {
     }
   }, []);
 
-  const storeApiSettings = (title, genre, author, amount) => {
-    const tempApiSettings = {
-      searchBy: title,
-      audiobookGenre: genre,
-      authorLastName: author,
-      audiobookAmountRequested: amount,
-    };
+  const storeApiSettings = (tempApiSettings) => {
     storeAsyncData("apiSettings", tempApiSettings);
   };
 
@@ -86,12 +74,10 @@ function Search() {
   };
 
   function changeAudiobookAmountRequested(amount) {
-    storeApiSettings(
-      apiSettings["searchBy"],
-      apiSettings["audiobookGenre"],
-      apiSettings["authorLastName"],
-      amount
-    );
+    storeApiSettings({
+      ...apiSettings,
+      ["audiobookAmountRequested"]: amount,
+    });
     setApiSettings((prevState) => ({
       ...prevState,
       ["audiobookAmountRequested"]: amount,
@@ -148,15 +134,15 @@ function Search() {
             }}
             onSubmitEditing={() => setUserInputEntered(search)}
             value={search}
-            inputContainerStyle={{ backgroundColor: "white",height:55 }}
-            inputStyle={{ backgroundColor: "white",height:55}}
-            containerStyle={{ backgroundColor: "black" ,height:70}}
+            inputContainerStyle={{ backgroundColor: "white", height: 55 }}
+            inputStyle={{ backgroundColor: "white", height: 55 }}
+            containerStyle={{ backgroundColor: "black", height: 70 }}
           />
         </View>
         <Button
           onPress={toggleOverlay}
           mode="contained"
-          style={{backgroundColor:"black"}}
+          style={{ backgroundColor: "black" }}
           style={styles.settingsIcon}
         >
           <MaterialIconCommunity name="cog" size={45} color="white" />
@@ -176,12 +162,10 @@ function Search() {
                 ...prevState,
                 ["searchBy"]: titleOrGenreOrAuthor,
               }));
-              storeApiSettings(
-                titleOrGenreOrAuthor,
-                apiSettings["audiobookGenre"],
-                apiSettings["authorLastName"],
-                apiSettings["audiobookAmountRequested"]
-              );
+              storeApiSettings({
+                ...apiSettings,
+                ["searchBy"]: titleOrGenreOrAuthor,
+              });
               switch (titleOrGenreOrAuthor) {
                 case "title":
                   setEnableAuthorSelection(false);
@@ -224,12 +208,10 @@ function Search() {
                 ...prevState,
                 ["authorLastName"]: author,
               }));
-              storeApiSettings(
-                apiSettings["searchBy"],
-                apiSettings["audiobookGenre"],
-                author,
-                apiSettings["audiobookAmountRequested"]
-              );
+              storeApiSettings({
+                ...apiSettings,
+                ["authorLastName"]: author,
+              });
             }}
           >
             {AuthorsListRender}
@@ -248,12 +230,10 @@ function Search() {
                 ...prevState,
                 ["audiobookGenre"]: genre,
               }));
-              storeApiSettings(
-                apiSettings["searchBy"],
-                genre,
-                apiSettings["authorLastname"],
-                apiSettings["audiobookAmountRequested"]
-              );
+              storeApiSettings({
+                ...apiSettings,
+                ["audiobookGenre"]: genre,
+              });
             }}
           >
             {genreListRender}
