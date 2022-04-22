@@ -21,7 +21,7 @@ import {
 } from "react-native";
 import MaterialIconCommunity from "react-native-vector-icons/MaterialCommunityIcons.js";
 
-import { Button, List, Switch, Colors } from "react-native-paper";
+import { Button, List, Colors, Switch } from "react-native-paper";
 
 import { openDatabase } from "../utils";
 import { useNavigation } from "@react-navigation/native";
@@ -36,6 +36,8 @@ import {
   removeShelvedAudiobookDB,
   updateRatingForHistory,
 } from "../database_functions";
+
+import { getAsyncData, storeAsyncData } from "../database_functions";
 
 function Audiotracks(props) {
   const [chapters, setChapters] = useState([]);
@@ -67,7 +69,7 @@ function Audiotracks(props) {
   const [visible, setVisible] = useState(false);
   // const [pitchCorrection, setPitchCorrection] = useState(true);
   const [audioPlayerSettings, setAudioPlayerSettings] = useState({
-    rate: 1,
+    rate: 1.0,
     shouldCorrectPitch: true,
     volume: 1.0,
     isMuted: false,
@@ -121,6 +123,24 @@ function Audiotracks(props) {
       ),
     });
   }, []);
+
+  React.useState(() => {
+    try {
+      getAsyncData("audioTrackSettingsTest").then(
+        (audioTrackSettingsRetrieved) => {
+          audioTrackSettingsRetrieved
+            ? setAudioPlayerSettings(audioTrackSettingsRetrieved)
+            : console.log("no settings stored");
+        }
+      );
+    } catch (err) {
+      console.log(err);
+    }
+  }, []);
+
+  const storeAudioTrackSettings = (settings) => {
+    storeAsyncData("audioTrackSettingsTest", settings);
+  };
 
   useEffect(() => {
     try {
@@ -339,7 +359,6 @@ function Audiotracks(props) {
         currentAudiotrackProgress
       );
       setCurrentSliderPosition(sliderPositionCalculated);
-
       updateAudioBookPosition(
         audioBookId,
         linearProgessBars,
@@ -670,19 +689,17 @@ function Audiotracks(props) {
       });
       if (value) {
         if (result.isLoaded === true) {
-          await sound.current.setRateAsync(
-            audioPlayerSettings.rate,
-            true
-          );
+          await sound.current.setRateAsync(audioPlayerSettings.rate, true);
         }
       } else if (!value) {
         if (result.isLoaded === true) {
-          await sound.current.setRateAsync(
-            audioPlayerSettings.rate,
-            false
-          );
+          await sound.current.setRateAsync(audioPlayerSettings.rate, false);
         }
       }
+      storeAudioTrackSettings({
+        ...audioPlayerSettings,
+        shouldCorrectPitch: !audioPlayerSettings.shouldCorrectPitch,
+      });
     } catch (e) {
       console.log(e);
     }
@@ -704,6 +721,10 @@ function Audiotracks(props) {
           await sound.current.setIsMutedAsync(false);
         }
       }
+      storeAudioTrackSettings({
+        ...audioPlayerSettings,
+        isMuted: !audioPlayerSettings.isMuted,
+      });
     } catch (e) {
       console.log(e);
     }
@@ -725,6 +746,10 @@ function Audiotracks(props) {
           await sound.current.setIsLoopingAsync(false);
         }
       }
+      storeAudioTrackSettings({
+        ...audioPlayerSettings,
+        isLooping: !audioPlayerSettings.isLooping,
+      });
     } catch (e) {
       console.log(e);
     }
@@ -822,9 +847,7 @@ function Audiotracks(props) {
           onBackdropPress={toggleOverlay}
           fullScreen={false}
         >
-          <Text>
-            Speed of Audiotrack: {audioPlayerSettings.rate}
-          </Text>
+          <Text>Speed of Audiotrack: {audioPlayerSettings.rate}</Text>
           <Slider
             value={audioPlayerSettings.rate}
             style={{ width: 200, height: 40 }}
@@ -846,12 +869,18 @@ function Audiotracks(props) {
                     audioPlayerSettings.shouldCorrectPitch
                   );
                 }
+                storeAudioTrackSettings({
+                  ...audioPlayerSettings,
+                  rate: speed,
+                });
               } catch (e) {
                 console.log(e);
               }
             }}
           />
-          <Text>Pitch Correction: {audioPlayerSettings.shouldCorrectPitch}</Text>
+          <Text>
+            Pitch Correction: {audioPlayerSettings.shouldCorrectPitch}
+          </Text>
           <Switch
             value={audioPlayerSettings.shouldCorrectPitch}
             onValueChange={onTogglePitchSwitch}
@@ -862,9 +891,7 @@ function Audiotracks(props) {
             onValueChange={onToggleMuteSwitch}
           />
 
-          <Text>
-            looping: {audioPlayerSettings.isLooping}
-          </Text>
+          <Text>looping: {audioPlayerSettings.isLooping}</Text>
           <Switch
             value={audioPlayerSettings.isLooping}
             onValueChange={onToggleLoopSwitch}
@@ -889,6 +916,10 @@ function Audiotracks(props) {
                 if (result.isLoaded === true) {
                   await sound.current.setVolumeAsync(volumeLevel);
                 }
+                storeAudioTrackSettings({
+                  ...audioPlayerSettings,
+                  volume: volumeLevel,
+                });
               } catch (e) {
                 console.log(e);
               }
