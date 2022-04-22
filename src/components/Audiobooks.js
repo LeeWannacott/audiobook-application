@@ -43,8 +43,12 @@ export default function Audiobooks(props) {
     const searchQuery = encodeURIComponent(props.searchBarCurrentText);
     const genre = encodeURIComponent(props.apiSettings["audiobookGenre"]);
     const author = encodeURIComponent(props.apiSettings["authorLastName"]);
-    const amountOfAudiobooks = encodeURIComponent(props.apiSettings["audiobookAmountRequested"]);
-    const librivoxAudiobooksAPI = encodeURI("https://librivox.org/api/feed/audiobooks");
+    const amountOfAudiobooks = encodeURIComponent(
+      props.apiSettings["audiobookAmountRequested"]
+    );
+    const librivoxAudiobooksAPI = encodeURI(
+      "https://librivox.org/api/feed/audiobooks"
+    );
     const carot = encodeURIComponent("^");
     // fields removed: sections(adds to loading time), description(not url decoded),translators.
     const fields =

@@ -216,7 +216,12 @@ function History() {
             </View>
             <Button
               mode="contained"
-              style={{backgroundColor:"black",height:62,marginTop:5,marginBottom:5}}
+              style={{
+                backgroundColor: "black",
+                height: 62,
+                marginTop: 5,
+                marginBottom: 5,
+              }}
               onPress={() => {
                 toggleAscOrDescSort();
               }}
@@ -287,8 +292,8 @@ const styles = StyleSheet.create({
     borderRadius: 2,
     backgroundColor: "white",
     width: windowWidth - 100,
-    margin:5,
-    marginLeft:0,
+    margin: 5,
+    marginLeft: 0,
   },
   SQLQueryPickerAndIcon: {
     display: "flex",
