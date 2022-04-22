@@ -61,15 +61,11 @@ function Search() {
     storeAsyncData("apiSettings", tempApiSettings);
   };
 
-  const storeAuthorGenreEnablePickers = (
-    authorSelectedBool,
-    genreSelectedBool,
-    isSearchDisabled
-  ) => {
+  const storeAuthorGenreEnablePickers = (dropdownPickers) => {
     storeAsyncData("author&GenrePickerSearchbarDisableBools", [
-      authorSelectedBool,
-      genreSelectedBool,
-      isSearchDisabled,
+      dropdownPickers.authorSelected,
+      dropdownPickers.genreSelected,
+      dropdownPickers.isSearchDisabled,
     ]);
   };
 
@@ -171,21 +167,34 @@ function Search() {
                   setEnableAuthorSelection(false);
                   setEnableGenreSelection(false);
                   setIsSearchBarDisabled(false);
-                  storeAuthorGenreEnablePickers(false, false, false);
+
+                  storeAuthorGenreEnablePickers({
+                    authorSelected: false,
+                    genreSelected: false,
+                    isSearchDisabled: false,
+                  });
                   break;
                 case "genre":
                   refToSearchbar.current.clear();
                   setEnableAuthorSelection(false);
                   setEnableGenreSelection(true);
                   setIsSearchBarDisabled(true);
-                  storeAuthorGenreEnablePickers(false, true, true);
+                  storeAuthorGenreEnablePickers({
+                    authorSelected: false,
+                    genreSelected: true,
+                    isSearchDisabled: true,
+                  });
                   break;
                 case "author":
                   refToSearchbar.current.clear();
                   setEnableAuthorSelection(true);
                   setEnableGenreSelection(false);
                   setIsSearchBarDisabled(true);
-                  storeAuthorGenreEnablePickers(true, false, true);
+                  storeAuthorGenreEnablePickers({
+                    authorSelected: true,
+                    genreSelected: false,
+                    isSearchDisabled: true,
+                  });
                   break;
               }
             }}
