@@ -16,19 +16,21 @@ import { Button } from "react-native-paper";
 function Search() {
   const [search, updateSearch] = useState("");
   const [userInputEntered, setUserInputEntered] = useState("");
-  const [requestAudiobookAmount, setRequestAudiobookAmount] = useState(26);
-
+  const [requestAudiobookAmount] = useState(26);
   const [visible, setVisible] = useState(false);
-  const [enableGenreSelection, setEnableGenreSelection] = useState(false);
-  const [enableAuthorSelection, setEnableAuthorSelection] = useState(false);
-  const [isSearchBarDisabled, setIsSearchBarDisabled] = useState(false);
-  const refToSearchbar = useRef(null);
 
+  const [statusOfPickers, setStatusOfPickers] = useState({
+    authorSelected: false,
+    genreSelected: false,
+    isSearchDisabled: false,
+  });
+
+  const refToSearchbar = useRef(null);
   const [apiSettings, setApiSettings] = useState({
-    searchBy: "",
-    audiobookGenre: "",
-    authorLastName: "",
-    audiobookAmountRequested: 0,
+    searchBy: "title",
+    audiobookGenre: "*Non-fiction",
+    authorLastName: "Hoffmann",
+    audiobookAmountRequested: 26,
   });
 
   React.useState(() => {
@@ -46,10 +48,12 @@ function Search() {
       getAsyncData("author&GenrePickerSearchbarDisableBools").then(
         (authorGenreSearchbar) => {
           authorGenreSearchbar
-            ? (setEnableAuthorSelection(authorGenreSearchbar[0]),
-              setEnableGenreSelection(authorGenreSearchbar[1]),
-              setIsSearchBarDisabled(authorGenreSearchbar[2]))
-            : null;
+            ? setStatusOfPickers(authorGenreSearchbar)
+            : setStatusOfPickers({
+                authorSelected: false,
+                genreSelected: false,
+                isSearchDisabled: false,
+              });
         }
       );
     } catch (err) {
@@ -62,22 +66,18 @@ function Search() {
   };
 
   const storeAuthorGenreEnablePickers = (dropdownPickers) => {
-    storeAsyncData("author&GenrePickerSearchbarDisableBools", [
-      dropdownPickers.authorSelected,
-      dropdownPickers.genreSelected,
-      dropdownPickers.isSearchDisabled,
-    ]);
+    storeAsyncData("author&GenrePickerSearchbarDisableBools", dropdownPickers);
   };
 
   function changeAudiobookAmountRequested(amount) {
-    storeApiSettings({
-      ...apiSettings,
-      ["audiobookAmountRequested"]: amount,
-    });
     setApiSettings((prevState) => ({
       ...prevState,
       ["audiobookAmountRequested"]: amount,
     }));
+    storeApiSettings({
+      ...apiSettings,
+      ["audiobookAmountRequested"]: amount,
+    });
   }
 
   const toggleOverlay = () => {
@@ -109,7 +109,7 @@ function Search() {
   function searchBarPlaceholder() {
     switch (apiSettings["searchBy"]) {
       case "title":
-        return "Search by title: ";
+        return "Title: ";
       case "author":
         return `Author: ${apiSettings["authorLastName"]}`;
       case "genre":
@@ -124,7 +124,7 @@ function Search() {
           <SearchBar
             ref={(searchbar) => (refToSearchbar.current = searchbar)}
             placeholder={searchBarPlaceholder()}
-            disabled={isSearchBarDisabled}
+            disabled={statusOfPickers.isSearchDisabled}
             onChangeText={(val) => {
               updateSearch(val);
             }}
@@ -138,7 +138,6 @@ function Search() {
         <Button
           onPress={toggleOverlay}
           mode="contained"
-          style={{ backgroundColor: "black" }}
           style={styles.settingsIcon}
         >
           <MaterialIconCommunity name="cog" size={45} color="white" />
@@ -164,10 +163,12 @@ function Search() {
               });
               switch (titleOrGenreOrAuthor) {
                 case "title":
-                  setEnableAuthorSelection(false);
-                  setEnableGenreSelection(false);
-                  setIsSearchBarDisabled(false);
-
+                  setStatusOfPickers({
+                    ...statusOfPickers,
+                    authorSelected: false,
+                    genreSelected: false,
+                    isSearchDisabled: false,
+                  });
                   storeAuthorGenreEnablePickers({
                     authorSelected: false,
                     genreSelected: false,
@@ -176,9 +177,12 @@ function Search() {
                   break;
                 case "genre":
                   refToSearchbar.current.clear();
-                  setEnableAuthorSelection(false);
-                  setEnableGenreSelection(true);
-                  setIsSearchBarDisabled(true);
+                  setStatusOfPickers({
+                    ...statusOfPickers,
+                    authorSelected: false,
+                    genreSelected: true,
+                    isSearchDisabled: true,
+                  });
                   storeAuthorGenreEnablePickers({
                     authorSelected: false,
                     genreSelected: true,
@@ -187,9 +191,12 @@ function Search() {
                   break;
                 case "author":
                   refToSearchbar.current.clear();
-                  setEnableAuthorSelection(true);
-                  setEnableGenreSelection(false);
-                  setIsSearchBarDisabled(true);
+                  setStatusOfPickers({
+                    ...statusOfPickers,
+                    authorSelected: true,
+                    genreSelected: false,
+                    isSearchDisabled: true,
+                  });
                   storeAuthorGenreEnablePickers({
                     authorSelected: true,
                     genreSelected: false,
@@ -211,7 +218,7 @@ function Search() {
             selectedValue={apiSettings["authorLastName"]}
             prompt={"Search by author:"}
             // mode={"dropdown"}
-            enabled={enableAuthorSelection}
+            enabled={statusOfPickers.authorSelected}
             onValueChange={(author, itemIndex) => {
               setApiSettings((prevState) => ({
                 ...prevState,
@@ -233,7 +240,7 @@ function Search() {
           <Picker
             selectedValue={apiSettings["audiobookGenre"]}
             prompt={"Search by genre:"}
-            enabled={enableGenreSelection}
+            enabled={statusOfPickers.genreSelected}
             onValueChange={(genre, itemIndex) => {
               setApiSettings((prevState) => ({
                 ...prevState,
