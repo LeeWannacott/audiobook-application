@@ -19,7 +19,7 @@ import {
   SectionList,
   Image,
 } from "react-native";
-import MaterialIconCommunity from "react-native-vector-icons/MaterialCommunityIcons.js";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons.js";
 
 import { Button, List, Colors, Switch } from "react-native-paper";
 
@@ -618,7 +618,7 @@ function Audiotracks(props) {
           PlayFromListenButton(index);
         }}
       >
-        <MaterialIconCommunity name="book-play" size={40} color="black" />
+        <MaterialCommunityIcons name="book-play" size={40} color="black" />
       </Button>
     </ListItem>
   );
@@ -807,7 +807,7 @@ function Audiotracks(props) {
                   });
                 }}
               >
-                <MaterialIconCommunity
+                <MaterialCommunityIcons
                   name={shelveIconToggle ? "book" : "book-outline"}
                   size={50}
                   color={shelveIconToggle ? "black" : "black"}
@@ -847,37 +847,46 @@ function Audiotracks(props) {
           onBackdropPress={toggleOverlay}
           fullScreen={false}
         >
-          <Text>Speed of Audiotrack: {audioPlayerSettings.rate}</Text>
-          <Slider
-            value={audioPlayerSettings.rate}
-            style={{ width: 200, height: 40 }}
-            minimumValue={0.5}
-            maximumValue={2.5}
-            minimumTrackTintColor="green"
-            maximumTrackTintColor="grey"
-            step={0.25}
-            onValueChange={async (speed) => {
-              try {
-                setAudioPlayerSettings({
-                  ...audioPlayerSettings,
-                  rate: speed,
-                });
-                const result = await sound.current.getStatusAsync();
-                if (result.isLoaded === true) {
-                  await sound.current.setRateAsync(
-                    speed,
-                    audioPlayerSettings.shouldCorrectPitch
-                  );
+          <Text>Volume of Audiotrack: {audioPlayerSettings.volume}</Text>
+          <View style={styles.sliderWithIconsOnSides}>
+            <MaterialCommunityIcons
+              name={"volume-minus"}
+              size={30}
+              color={"black"}
+            />
+            <Slider
+              value={audioPlayerSettings.volume}
+              style={{ width: 200, height: 40 }}
+              minimumValue={0}
+              maximumValue={1}
+              minimumTrackTintColor="green"
+              maximumTrackTintColor="grey"
+              step={0.25}
+              onValueChange={async (volumeLevel) => {
+                try {
+                  const result = await sound.current.getStatusAsync();
+                  setAudioPlayerSettings({
+                    ...audioPlayerSettings,
+                    volume: volumeLevel,
+                  });
+                  if (result.isLoaded === true) {
+                    await sound.current.setVolumeAsync(volumeLevel);
+                  }
+                  storeAudioTrackSettings({
+                    ...audioPlayerSettings,
+                    volume: volumeLevel,
+                  });
+                } catch (e) {
+                  console.log(e);
                 }
-                storeAudioTrackSettings({
-                  ...audioPlayerSettings,
-                  rate: speed,
-                });
-              } catch (e) {
-                console.log(e);
-              }
-            }}
-          />
+              }}
+            />
+            <MaterialCommunityIcons
+              name={"volume-plus"}
+              size={30}
+              color={"black"}
+            />
+          </View>
           <Text>
             Pitch Correction: {audioPlayerSettings.shouldCorrectPitch}
           </Text>
@@ -890,41 +899,50 @@ function Audiotracks(props) {
             value={audioPlayerSettings.isMuted}
             onValueChange={onToggleMuteSwitch}
           />
-
           <Text>looping: {audioPlayerSettings.isLooping}</Text>
           <Switch
             value={audioPlayerSettings.isLooping}
             onValueChange={onToggleLoopSwitch}
           />
-
-          <Text>Volume of Audiotrack: {audioPlayerSettings.volume}</Text>
-          <Slider
-            value={audioPlayerSettings.volume}
-            style={{ width: 200, height: 40 }}
-            minimumValue={0}
-            maximumValue={1}
-            minimumTrackTintColor="green"
-            maximumTrackTintColor="grey"
-            step={0.25}
-            onValueChange={async (volumeLevel) => {
-              try {
-                const result = await sound.current.getStatusAsync();
-                setAudioPlayerSettings({
-                  ...audioPlayerSettings,
-                  volume: volumeLevel,
-                });
-                if (result.isLoaded === true) {
-                  await sound.current.setVolumeAsync(volumeLevel);
+          <Text>Speed of Audiotrack: {audioPlayerSettings.rate}</Text>
+          <View style={styles.sliderWithIconsOnSides}>
+            <MaterialCommunityIcons
+              name={"tortoise"}
+              size={30}
+              color={"black"}
+            />
+            <Slider
+              value={audioPlayerSettings.rate}
+              style={{ width: 200, height: 40 }}
+              minimumValue={0.5}
+              maximumValue={2.5}
+              minimumTrackTintColor="green"
+              maximumTrackTintColor="grey"
+              step={0.25}
+              onValueChange={async (speed) => {
+                try {
+                  setAudioPlayerSettings({
+                    ...audioPlayerSettings,
+                    rate: speed,
+                  });
+                  const result = await sound.current.getStatusAsync();
+                  if (result.isLoaded === true) {
+                    await sound.current.setRateAsync(
+                      speed,
+                      audioPlayerSettings.shouldCorrectPitch
+                    );
+                  }
+                  storeAudioTrackSettings({
+                    ...audioPlayerSettings,
+                    rate: speed,
+                  });
+                } catch (e) {
+                  console.log(e);
                 }
-                storeAudioTrackSettings({
-                  ...audioPlayerSettings,
-                  volume: volumeLevel,
-                });
-              } catch (e) {
-                console.log(e);
-              }
-            }}
-          />
+              }}
+            />
+            <MaterialCommunityIcons name={"rabbit"} size={30} color={"black"} />
+          </View>
         </Overlay>
         <View style={styles.AudioTracksStyle}>
           <View style={styles.listItemHeaderStyle}>
@@ -1174,6 +1192,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     alignSelf: "center",
+  },
+  sliderWithIconsOnSides: {
+    display: "flex",
+    flexDirection: "row",
   },
 });
 
