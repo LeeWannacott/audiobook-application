@@ -291,8 +291,13 @@ function Audiotracks(props) {
           (previousValue, currentValue) => previousValue + currentValue,
           initialValue
         );
-        const averageAudiobookRating =
-          sumOfStarsFromReviews / starsFromReviews.length;
+        let averageAudiobookRating;
+        if (reviews.length == 1) {
+          averageAudiobookRating = sumOfStarsFromReviews;
+        } else {
+          averageAudiobookRating =
+            sumOfStarsFromReviews / starsFromReviews.length;
+        }
         setAudiobookRating(averageAudiobookRating);
         updateRatingForHistory(db, audioBookId, averageAudiobookRating);
       }
