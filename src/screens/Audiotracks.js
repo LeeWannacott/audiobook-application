@@ -77,6 +77,13 @@ function Audiotracks(props) {
     shouldPlay: false,
   });
 
+  const [audioModeSettings, setAudioModeSettings] = useState({
+    staysActiveInBackground: true,
+    interruptionModeAndroid: Audio.INTERRUPTION_MODE_ANDROID_DO_NOT_MIX,
+    shouldDuckAndroid: true,
+    playThroughEarpieceAndroid: true,
+  });
+
   const {
     audioBooksRSSLinkToAudioTracks,
     audioBookId,
@@ -225,10 +232,11 @@ function Audiotracks(props) {
     async function setAudioMode() {
       try {
         await Audio.setAudioModeAsync({
-          staysActiveInBackground: true,
-          interruptionModeAndroid: Audio.INTERRUPTION_MODE_ANDROID_DO_NOT_MIX,
-          shouldDuckAndroid: true,
-          playThroughEarpieceAndroid: true,
+          staysActiveInBackground: audioModeSettings.staysActiveInBackground,
+          interruptionModeAndroid: audioModeSettings.interruptionModeAndroid,
+          shouldDuckAndroid: audioModeSettings.shouldDuckAndroid,
+          playThroughEarpieceAndroid:
+            audioModeSettings.playThroughEarpieceAndroid,
           allowsRecordingIOS: true,
           interruptionModeIOS: Audio.INTERRUPTION_MODE_IOS_DO_NOT_MIX,
           playsInSilentModeIOS: true,
@@ -291,7 +299,7 @@ function Audiotracks(props) {
           (previousValue, currentValue) => previousValue + currentValue,
           initialValue
         );
-        let averageAudiobookRating;
+        let averageAudiobookRating = 0;
         if (reviews.length == 1) {
           averageAudiobookRating = sumOfStarsFromReviews;
         } else {
