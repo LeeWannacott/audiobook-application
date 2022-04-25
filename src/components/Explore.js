@@ -10,7 +10,6 @@ import authorsListJson from "../resources/audiobookAuthorsList.json";
 import { genreList } from "../resources/audiobookGenreList.js";
 // let authorsListJson = require("../resources/audiobookAuthorsList.json");
 import { getAsyncData, storeAsyncData } from "../database_functions";
-
 import { Button } from "react-native-paper";
 
 function Search() {
@@ -22,15 +21,15 @@ function Search() {
   const [statusOfPickers, setStatusOfPickers] = useState({
     authorSelected: false,
     genreSelected: false,
-    isSearchDisabled: false,
+    isSearchDisabled: true,
   });
 
   const refToSearchbar = useRef(null);
   const [apiSettings, setApiSettings] = useState({
-    searchBy: "title",
+    searchBy: "",
     audiobookGenre: "*Non-fiction",
     authorLastName: "Hoffmann",
-    audiobookAmountRequested: 26,
+    audiobookAmountRequested: 32,
   });
 
   React.useState(() => {
@@ -39,10 +38,10 @@ function Search() {
         apiSettingsFromStorage
           ? setApiSettings(apiSettingsFromStorage)
           : setApiSettings({
-              ["searchBy"]: "title",
+              ["searchBy"]: "recent",
               ["audiobookGenre"]: "*Non-fiction",
               ["authorLastName"]: "Hoffmann",
-              ["audiobookAmountRequested"]: 26,
+              ["audiobookAmountRequested"]: 32,
             });
       });
       getAsyncData("author&GenrePickerSearchbarDisableBools").then(
@@ -52,7 +51,7 @@ function Search() {
             : setStatusOfPickers({
                 authorSelected: false,
                 genreSelected: false,
-                isSearchDisabled: false,
+                isSearchDisabled: true,
               });
         }
       );
@@ -108,8 +107,10 @@ function Search() {
 
   function searchBarPlaceholder() {
     switch (apiSettings["searchBy"]) {
+      case "recent":
+        return "Latest Releases";
       case "title":
-        return "Title: ";
+        return "Search by title";
       case "author":
         return `Author: ${apiSettings["authorLastName"]}`;
       case "genre":
@@ -162,6 +163,20 @@ function Search() {
                 ["searchBy"]: titleOrGenreOrAuthor,
               });
               switch (titleOrGenreOrAuthor) {
+                case "recent":
+                  refToSearchbar.current.clear();
+                  setStatusOfPickers({
+                    ...statusOfPickers,
+                    authorSelected: false,
+                    genreSelected: false,
+                    isSearchDisabled: true,
+                  });
+                  storeAuthorGenreEnablePickers({
+                    authorSelected: false,
+                    genreSelected: false,
+                    isSearchDisabled: true,
+                  });
+                  break;
                 case "title":
                   setStatusOfPickers({
                     ...statusOfPickers,
@@ -206,6 +221,7 @@ function Search() {
               }
             }}
           >
+            <Picker.Item label="Latest Releases" value="recent" />
             <Picker.Item label="Title" value="title" />
             <Picker.Item label="Author" value="author" />
             <Picker.Item label="Genre" value="genre" />

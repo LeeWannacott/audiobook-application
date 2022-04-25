@@ -22,7 +22,7 @@ const db = openDatabase();
 
 export default function Audiobooks(props) {
   const [loadingAudioBooks, setLoadingAudioBooks] = useState(true);
-  const [data, setData] = useState([]);
+  const [data, setAudiobooks] = useState([]);
   const [bookCovers, setBookCovers] = useState([]);
   const [reviewsUrlList, setReviewsUrlList] = useState([]);
   const [avatarOnPressEnabled, setAvatarOnPressEnabled] = useState(true);
@@ -55,6 +55,13 @@ export default function Audiobooks(props) {
       "id,title,url_text_source,language,copyright_year,num_sections,url_rss,url_zip_file,url_project,url_librivox,url_iarchive,url_other,totaltime,totaltimesecs,authors,genres";
     let apiFetchQuery;
     switch (props.apiSettings["searchBy"]) {
+      case "recent":
+        const twoMonthsAgoInUnixTime =
+          (new Date().getTime() - 60 * 24 * 60 * 60 * 1000) / 1000;
+        apiFetchQuery = encodeURI(
+          `${librivoxAudiobooksAPI}/?since=${twoMonthsAgoInUnixTime}&fields={${fields}}&extended=1&format=json&limit=${amountOfAudiobooks}`
+        );
+        break;
       case "title":
         apiFetchQuery = encodeURI(
           `${librivoxAudiobooksAPI}/?title=${carot}${searchQuery}&fields={${fields}}&extended=1&format=json&limit=${amountOfAudiobooks}`
@@ -76,7 +83,7 @@ export default function Audiobooks(props) {
     if (props.apiSettings["searchBy"]) {
       fetch(apiFetchQuery)
         .then((response) => response.json())
-        .then((json) => setData(json))
+        .then((json) => setAudiobooks(json))
         .catch((error) => console.error(error))
         .finally(() => {
           setLoadingAudioBooks(false);
