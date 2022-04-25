@@ -21,12 +21,50 @@ const UserSettings = () => {
   const [switchValue, setColorToggle] = useState(false);
   const [switchValue2, setSwitchValue2] = useState(false);
 
+  const [switches, setSwitches] = useState({
+    switchValue: false,
+    switchValue2: false,
+    switchValue3: true,
+    switchValue4: true,
+    switchValue5: true,
+  });
+  const [audioModeSettings, setAudioModeSettings] = useState({
+    staysActiveInBackground: true,
+    // interruptionModeAndroid: Audio.INTERRUPTION_MODE_ANDROID_DO_NOT_MIX,
+    shouldDuckAndroid: true,
+    playThroughEarpieceAndroid: true,
+  });
+
   function onValueChange() {
-    setColorToggle(!switchValue);
+    setSwitches({ ...switches, switchValue: !switches.switchValue });
   }
-  function onValueChange2() {
-    setSwitchValue2(!switchValue2);
+  function onValueChange2(switchstate) {
+    console.log(switchstate)
+    setSwitches({ ...switches, switchValue2: !switches.switchValue2 });
   }
+
+  function staysActiveInBackgroundToggle() {
+    setSwitches({ ...switches, switchValue3: !switches.switchValue3 });
+    setAudioModeSettings({
+      ...audioModeSettings,
+      staysActiveInBackground: !audioModeSettings.staysActiveInBackground,
+    });
+  }
+  function shouldDuckAndroidToggle() {
+    setSwitches({ ...switches, switchValue4: !switches.switchValue4 });
+    setAudioModeSettings({
+      ...audioModeSettings,
+      staysActiveInBackground: !audioModeSettings.shouldDuckAndroid,
+    });
+  }
+  function playThroughEarpieceAndroidToggle() {
+    setAudioModeSettings({
+      ...audioModeSettings,
+      staysActiveInBackground: !audioModeSettings.playThroughEarpieceAndroid,
+    });
+    setSwitches({ ...switches, switchValue5: !switches.switchValue5 });
+  }
+
   const deleteAudiobookHistory = (db) => {
     deleteAudiobookHistoryDB(db);
   };
@@ -59,17 +97,73 @@ const UserSettings = () => {
           />
           <SettingsList.Item
             icon={
-              <MaterialIconCommunity name="wifi" size={50} color={"black"} />
+              <MaterialIconCommunity name="" size={50} color={"black"} />
             }
-            itemWidth={50}
-            title="wifi"
             hasNavArrow={false}
-            switchState={switchValue2}
-            switchOnValueChange={onValueChange2}
+            title="Stays active in background."
+            itemWidth={50}
+            switchState={switches.switchValue3}
+            switchOnValueChange={staysActiveInBackgroundToggle}
             hasSwitch={true}
+            onPress={() =>
+              Alert.alert(
+                "Stays active in background.",
+                "Select if the audio session (playback or recording) should stay active even when the app goes into the background.",
+                [
+                  {
+                    text: "Close",
+                    style: "cancel",
+                  },
+                ]
+              )
+            }
           />
-          <SettingsList.Item hasNavArrow={false} title="Switch Example" />
-          <SettingsList.Item hasNavArrow={false} title="Switch Example" />
+          <SettingsList.Item
+            icon={
+              <MaterialIconCommunity name="duck" size={50} color={"black"} />
+            }
+            hasNavArrow={false}
+            title="Duck Audio"
+            itemWidth={50}
+            switchState={switches.switchValue4}
+            switchOnValueChange={shouldDuckAndroidToggle}
+            hasSwitch={true}
+            onPress={() =>
+              Alert.alert(
+                "Duck Audio",
+                "Select if your experience's audio should automatically be lowered in volume (duck), if audio from another app interrupts your experience. If false, audio from other apps will pause your audio.",
+                [
+                  {
+                    text: "Close",
+                    style: "cancel",
+                  },
+                ]
+              )
+            }
+          />
+          <SettingsList.Item
+            icon={
+              <MaterialIconCommunity name="headset" size={50} color={"black"} />
+            }
+            hasNavArrow={false}
+            title="Play through earpiece"
+            itemWidth={50}
+            switchState={switches.switchValue5}
+            switchOnValueChange={playThroughEarpieceAndroidToggle}
+            hasSwitch={true}
+            onPress={() =>
+              Alert.alert(
+                "Play through earpiece",
+                "selecting if the audio is routed to earpiece.",
+                [
+                  {
+                    text: "Close",
+                    style: "cancel",
+                  },
+                ]
+              )
+            }
+          />
           <SettingsList.Item
             icon={
               <MaterialIconCommunity name="history" size={50} color={"black"} />
@@ -98,7 +192,7 @@ const UserSettings = () => {
           />
           <SettingsList.Header
             headerText="About"
-            headerStyle={styles.sectionHeadings}
+            headerStyle={styles.audiobookSettingsSubHeading}
           />
           <SettingsList.Item
             icon={
