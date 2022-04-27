@@ -3,24 +3,18 @@ import {
   StyleSheet,
   Text,
   View,
-  SafeAreaView,
-  SectionList,
   StatusBar,
-  Image,
   Alert,
   Linking,
 } from "react-native";
 import SettingsList from "react-native-settings-list";
-import MaterialIcon from "react-native-vector-icons/MaterialIcons.js";
 import MaterialIconCommunity from "react-native-vector-icons/MaterialCommunityIcons.js";
-import { openDatabase } from "../utils";
-const db = openDatabase();
-import { deleteAudiobookHistoryDB } from "../database_functions";
+import {
+  deleteAudiobookHistoryDB,
+  storeAsyncData,
+} from "../database_functions";
 
 const UserSettings = () => {
-  const [switchValue, setColorToggle] = useState(false);
-  const [switchValue2, setSwitchValue2] = useState(false);
-
   const [switches, setSwitches] = useState({
     switchValue: false,
     switchValue2: false,
@@ -29,8 +23,8 @@ const UserSettings = () => {
     switchValue5: true,
   });
   const [audioModeSettings, setAudioModeSettings] = useState({
+    interruptionModeAndroid: 1,
     staysActiveInBackground: true,
-    // interruptionModeAndroid: Audio.INTERRUPTION_MODE_ANDROID_DO_NOT_MIX,
     shouldDuckAndroid: true,
     playThroughEarpieceAndroid: true,
   });
@@ -38,10 +32,10 @@ const UserSettings = () => {
   function onValueChange() {
     setSwitches({ ...switches, switchValue: !switches.switchValue });
   }
-  function onValueChange2(switchstate) {
-    console.log(switchstate)
-    setSwitches({ ...switches, switchValue2: !switches.switchValue2 });
-  }
+
+  const storeAudioModeSettings = (tempApiSettings) => {
+    storeAsyncData("audioModeSettings", tempApiSettings);
+  };
 
   function staysActiveInBackgroundToggle() {
     setSwitches({ ...switches, switchValue3: !switches.switchValue3 });
@@ -49,20 +43,34 @@ const UserSettings = () => {
       ...audioModeSettings,
       staysActiveInBackground: !audioModeSettings.staysActiveInBackground,
     });
+    storeAudioModeSettings({
+      ...audioModeSettings,
+      staysActiveInBackground: !audioModeSettings.staysActiveInBackground,
+    });
   }
+
   function shouldDuckAndroidToggle() {
     setSwitches({ ...switches, switchValue4: !switches.switchValue4 });
     setAudioModeSettings({
       ...audioModeSettings,
-      staysActiveInBackground: !audioModeSettings.shouldDuckAndroid,
+      shouldDuckAndroid: !audioModeSettings.shouldDuckAndroid,
+    });
+    storeAudioModeSettings("audioModeSettings", {
+      ...audioModeSettings,
+      shouldDuckAndroid: !audioModeSettings.shouldDuckAndroid,
     });
   }
+
   function playThroughEarpieceAndroidToggle() {
+    setSwitches({ ...switches, switchValue5: !switches.switchValue5 });
     setAudioModeSettings({
       ...audioModeSettings,
-      staysActiveInBackground: !audioModeSettings.playThroughEarpieceAndroid,
+      playThroughEarpieceAndroid: !audioModeSettings.playThroughEarpieceAndroid,
     });
-    setSwitches({ ...switches, switchValue5: !switches.switchValue5 });
+    storeAudioModeSettings("audioModeSettings", {
+      ...audioModeSettings,
+      playThroughEarpieceAndroid: !audioModeSettings.playThroughEarpieceAndroid,
+    });
   }
 
   const deleteAudiobookHistory = (db) => {
@@ -91,14 +99,12 @@ const UserSettings = () => {
             itemWidth={50}
             title="Color scheme"
             hasNavArrow={false}
-            switchState={switchValue}
+            switchState={switches.switchValue}
             switchOnValueChange={onValueChange}
             hasSwitch={true}
           />
           <SettingsList.Item
-            icon={
-              <MaterialIconCommunity name="" size={50} color={"black"} />
-            }
+            icon={<MaterialIconCommunity name="" size={50} color={"black"} />}
             hasNavArrow={false}
             title="Stays active in background."
             itemWidth={50}
@@ -108,7 +114,7 @@ const UserSettings = () => {
             onPress={() =>
               Alert.alert(
                 "Stays active in background.",
-                "Select if the audio session (playback or recording) should stay active even when the app goes into the background.",
+                "Select if the audio session playback should stay active even when the app goes into the background.",
                 [
                   {
                     text: "Close",

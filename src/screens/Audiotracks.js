@@ -58,7 +58,7 @@ function Audiotracks(props) {
   const [audioTrackChapterPlayingTitle, setAudioTrackChapterPlayingTitle] =
     useState("");
   const [audioTrackReader, setAudioTrackReader] = useState("");
-  const [currentSliderPosition, setCurrentSliderPosition] = React.useState(0);
+  const [currentSliderPosition, setCurrentSliderPosition] = React.useState(0.0);
 
   const [linearProgessBars, setlinearProgressBars] = useState([]);
   const [currentAudiotrackPositionsMs, setCurrentAudiotrackPositionsMs] =
@@ -140,6 +140,13 @@ function Audiotracks(props) {
             : console.log("no settings stored");
         }
       );
+
+      getAsyncData("audioModeSettings").then((audioModeSettings) => {
+        audioModeSettings
+          ? (setAudioModeSettings(audioModeSettings),
+            console.log("yo", audioModeSettings))
+          : console.log("no modes");
+      });
     } catch (err) {
       console.log(err);
     }
@@ -231,9 +238,10 @@ function Audiotracks(props) {
   useEffect(() => {
     async function setAudioMode() {
       try {
+        console.log(audioModeSettings, "testing");
         await Audio.setAudioModeAsync({
           staysActiveInBackground: audioModeSettings.staysActiveInBackground,
-          interruptionModeAndroid: audioModeSettings.interruptionModeAndroid,
+          interruptionModeAndroid: Audio.INTERRUPTION_MODE_ANDROID_DO_NOT_MIX,
           shouldDuckAndroid: audioModeSettings.shouldDuckAndroid,
           playThroughEarpieceAndroid:
             audioModeSettings.playThroughEarpieceAndroid,
@@ -246,7 +254,7 @@ function Audiotracks(props) {
       }
     }
     setAudioMode();
-  }, []);
+  }, [audioModeSettings]);
   const sound = React.useRef(new Audio.Sound());
 
   useEffect(() => {
@@ -507,7 +515,7 @@ function Audiotracks(props) {
         const unloadSound = await sound.current.unloadAsync();
         if (unloadSound.isLoaded === false) {
           currentAudioTrackIndex.current += 1;
-          setCurrentSliderPosition(0);
+          setCurrentSliderPosition(0.0);
           // ResetPlayer();
           await LoadAudio(
             currentAudioTrackIndex.current,
@@ -521,7 +529,7 @@ function Audiotracks(props) {
         const unloadSound = await sound.current.unloadAsync();
         if (unloadSound.isLoaded === false) {
           currentAudioTrackIndex.current = 0;
-          setCurrentSliderPosition(0);
+          setCurrentSliderPosition(0.0);
           await ResetPlayer();
           await LoadAudio(
             currentAudioTrackIndex.current,
@@ -589,7 +597,7 @@ function Audiotracks(props) {
     try {
       const unloadSound = await sound.current.unloadAsync();
       if (unloadSound.isLoaded === false) {
-        setCurrentSliderPosition(0);
+        setCurrentSliderPosition(0.0);
         await ResetPlayer();
         await LoadAudio(index, currentAudiotrackPositionsMs[index]);
       }
@@ -870,8 +878,8 @@ function Audiotracks(props) {
             <Slider
               value={audioPlayerSettings.volume}
               style={{ width: 200, height: 40 }}
-              minimumValue={0}
-              maximumValue={1}
+              minimumValue={0.0}
+              maximumValue={2.0}
               minimumTrackTintColor="green"
               maximumTrackTintColor="grey"
               step={0.25}
@@ -980,8 +988,8 @@ function Audiotracks(props) {
           <Slider
             value={currentSliderPosition}
             allowTouchTrack={true}
-            minimumValue={0}
-            maximumValue={100}
+            minimumValue={0.0}
+            maximumValue={100.0}
             onSlidingComplete={(data) => SeekUpdate(data)}
           />
           <View style={styles.AudiobookTime}>
