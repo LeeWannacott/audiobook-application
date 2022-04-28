@@ -19,7 +19,6 @@ const db = openDatabase();
 
 function Bookshelf() {
   const [shelvedHistory, setShelvedHistory] = useState("");
-  const [audiobooksdata, setaudiobooksdata] = useState("");
   const [loadingHistory, setLoadingHistory] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [avatarOnPressEnabled, setAvatarOnPressEnabled] = useState(true);
@@ -39,28 +38,23 @@ function Bookshelf() {
     getShelvedBooks();
   }, []);
 
+const waitForRefresh = (timeout) => {
+  return new Promise(resolve => setTimeout(resolve, timeout));
+}
   function refreshBookshelveOnPull() {
     setIsRefreshing(true);
     getShelvedBooks();
-    setIsRefreshing(false);
+     waitForRefresh(2000).then(() => setIsRefreshing(false));
   }
 
-  // console.log(2,shelvedHistory)
-
-  // console.log(typeof shelvedHistory, shelvedHistory);
-
-  useEffect(() => {
-    console.log("useEffect");
-  }, []);
-
   const keyExtractor = (item, index) => item.audiobook_id.toString();
-
   const windowWidth = Dimensions.get("window").width;
   const windowHeight = Dimensions.get("window").height;
   const resizeCoverImageHeight = windowHeight / 5;
   const resizeCoverImageWidth = windowWidth / 2 - 42;
   const navigation = useNavigation();
   const renderBookshelve = ({ item, index }) => (
+
     <View>
       <ListItem topDivider containerStyle={styles.AudioBookListView}>
         <View style={styles.ImageContainer}>
@@ -130,7 +124,6 @@ function Bookshelf() {
   );
 
   if (!loadingHistory) {
-    // console.log(shelvedHistory, "hisotry");
     return (
       <View>
         <View style={styles.audiobookImagesContainer}>

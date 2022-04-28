@@ -75,10 +75,13 @@ function History() {
     getShelvedBooks();
   }, []);
 
+const waitForRefresh = (timeout) => {
+  return new Promise(resolve => setTimeout(resolve, timeout));
+}
   function refreshBookshelveOnPull() {
     setIsRefreshing(true);
     getShelvedBooks();
-    setIsRefreshing(false);
+     waitForRefresh(2000).then(() => setIsRefreshing(false));
   }
 
   useEffect(() => {
