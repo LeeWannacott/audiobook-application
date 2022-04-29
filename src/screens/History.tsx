@@ -14,7 +14,7 @@ import {
 } from "react-native";
 import { Button } from "react-native-paper";
 import MaterialIconCommunity from "react-native-vector-icons/MaterialCommunityIcons.js";
-import AudiobookAccordionList from "../components/audiobookAccordionList.js";
+import AudiobookAccordionList from "../components/audiobookAccordionList";
 
 import { Picker } from "@react-native-picker/picker";
 
@@ -23,13 +23,13 @@ import { openDatabase } from "../utils";
 const db = openDatabase();
 
 function History() {
-  const [audiobookHistory, setAudiobookHistory] = useState("");
+  const [audiobookHistory, setAudiobookHistory] = useState<any[]>([]);
   const [loadingHistory, setLoadingHistory] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [orderBy, setOrderBy] = useState("order by id");
   const [avatarOnPressEnabled, setAvatarOnPressEnabled] = useState(true);
 
-  const [aescOrDesc, setAescOrDesc] = useState({
+  const [aescOrDesc, setAescOrDesc] = useState<any>({
     toggle: 0,
     SQLOrder: "ASC",
     icon: "transfer-up",
@@ -75,7 +75,7 @@ function History() {
     getShelvedBooks();
   }, []);
 
-const waitForRefresh = (timeout) => {
+  const waitForRefresh = (timeout:number) => {
   return new Promise(resolve => setTimeout(resolve, timeout));
 }
   function refreshBookshelveOnPull() {
@@ -108,7 +108,7 @@ const waitForRefresh = (timeout) => {
   }
   const resizeCoverImageHeight = windowHeight / 5;
   const resizeCoverImageWidth = windowWidth / 2 - 42;
-  const renderItem = ({ item, index }) => (
+  const renderItem = ({ item, index }:any) => (
     <View>
       <ListItem topDivider containerStyle={styles.AudioBookListView}>
         <View style={styles.ImageContainer}>

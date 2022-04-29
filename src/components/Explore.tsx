@@ -60,15 +60,15 @@ function Search() {
     }
   }, []);
 
-  const storeApiSettings = (tempApiSettings) => {
+  const storeApiSettings = (tempApiSettings:any) => {
     storeAsyncData("apiSettings", tempApiSettings);
   };
 
-  const storeAuthorGenreEnablePickers = (dropdownPickers) => {
+  const storeAuthorGenreEnablePickers = (dropdownPickers:object) => {
     storeAsyncData("author&GenrePickerSearchbarDisableBools", dropdownPickers);
   };
 
-  function changeAudiobookAmountRequested(amount) {
+  function changeAudiobookAmountRequested(amount:number) {
     setApiSettings((prevState) => ({
       ...prevState,
       ["audiobookAmountRequested"]: amount,
@@ -93,7 +93,7 @@ function Search() {
   );
 
   const AuthorsListRender = React.useCallback(
-    authorsListJson["authors"].map((author, i) => {
+    authorsListJson["authors"].map((author, i:number) => {
       return (
         <Picker.Item
           key={`${authorsListJson["authors"][i].id}`}
@@ -126,7 +126,7 @@ function Search() {
             ref={(searchbar) => (refToSearchbar.current = searchbar)}
             placeholder={searchBarPlaceholder()}
             disabled={statusOfPickers.isSearchDisabled}
-            onChangeText={(val) => {
+            onChangeText={(val:string) => {
               updateSearch(val);
             }}
             onSubmitEditing={() => setUserInputEntered(search)}
@@ -315,17 +315,16 @@ const styles = StyleSheet.create({
   searchBarAndSettingsIcon: {
     display: "flex",
     flexDirection: "row",
-    width: windowWidth - 20,
+    width: windowWidth,
     top: 20,
-    backgroundColor: "rgb(57, 62, 66)",
-    borderTopLeftRadius: 4,
-    borderTopRightRadius: 4,
+    marginLeft:0,
     backgroundColor: "black",
+    paddingLeft:0,
+    left:-10,
   },
   searchStyle: {
-    width: windowWidth - 100,
-    top: -1,
-    backgroundColor: "darkgreen",
+    left:5,
+    width: windowWidth - 80,
   },
   settingsIcon: {
     backgroundColor: "black",

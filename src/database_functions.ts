@@ -1,29 +1,29 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-export function createTablesDB(db) {
-  db.transaction((tx) => {
+export function createTablesDB(db:any) {
+  db.transaction((tx:any) => {
     tx.executeSql(
       "create table if not exists testshelve24 (id integer primary key not null, audiobook_rss_url text not null unique, audiobook_id text not null unique, audiobook_image text, audiobook_title text, audiobook_author_first_name text, audiobook_author_last_name text, audiobook_total_time text, audiobook_copyright_year text, audiobook_genres text, audiobook_rating text, audiobook_review_url text, audiobook_num_sections text, audiobook_ebook_url text, audiobook_zip text, audiobook_language text);"
     );
   });
 
-  db.transaction((tx) => {
+  db.transaction((tx:any) => {
     tx.executeSql(
       "create table if not exists testaudio14 (id integer primary key not null, audiobook_id text not null unique, audiotrack_progress_bars text, current_audiotrack_positions text, audiobook_shelved int, audiobook_rating int);"
     );
   });
 }
 
-export function createHistoryTableDB(db) {
-  db.transaction((tx) => {
+export function createHistoryTableDB(db:any) {
+  db.transaction((tx:any) => {
     tx.executeSql(
       "create table if not exists testHistory14 (id integer primary key not null, audiobook_rss_url text not null unique, audiobook_id text not null unique, audiobook_image text, audiobook_title text, audiobook_author_first_name text, audiobook_author_last_name text, audiobook_total_time text, audiobook_copyright_year text, audiobook_genres text, audiobook_rating text, audiobook_review_url text, audiobook_num_sections text, audiobook_ebook_url text, audiobook_zip text, audiobook_language text);"
     );
   });
 }
 
-export function addAudiobookToHistoryDB(db, bookDataForHistory) {
-  db.transaction((tx) => {
+export function addAudiobookToHistoryDB(db:any, bookDataForHistory:any) {
+  db.transaction((tx:any) => {
     tx.executeSql(
       "insert into testHistory14 (audiobook_rss_url, audiobook_id, audiobook_image, audiobook_title, audiobook_author_first_name, audiobook_author_last_name, audiobook_total_time, audiobook_copyright_year, audiobook_genres, audiobook_rating, audiobook_review_url, audiobook_num_sections, audiobook_ebook_url, audiobook_zip, audiobook_language) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
       [
@@ -47,14 +47,14 @@ export function addAudiobookToHistoryDB(db, bookDataForHistory) {
   }, null);
 }
 
-export function deleteAudiobookHistoryDB(db) {
-  db.transaction((tx) => {
+export function deleteAudiobookHistoryDB(db:any) {
+  db.transaction((tx:any) => {
     tx.executeSql("delete from testHistory14");
   }, null);
 }
 
-export function shelveAudiobookDB(db, shelveData) {
-  db.transaction((tx) => {
+export function shelveAudiobookDB(db:any, shelveData:any) {
+  db.transaction((tx:any) => {
     tx.executeSql(
       "insert into testshelve24 (audiobook_rss_url, audiobook_id, audiobook_image, audiobook_title, audiobook_author_first_name, audiobook_author_last_name, audiobook_total_time, audiobook_copyright_year, audiobook_genres, audiobook_rating, audiobook_review_url, audiobook_num_sections, audiobook_ebook_url, audiobook_zip, audiobook_language) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
       [
@@ -76,19 +76,19 @@ export function shelveAudiobookDB(db, shelveData) {
       ]
     );
     tx.executeSql("select * from testshelve24", [], (_, { rows }) => {
-      console.log(JSON.stringify(rows));
-      console.log(rows);
+      // console.log(JSON.stringify(rows));
+      // console.log(rows);
     });
   }, null);
 }
 
 export function updateAudioTrackPositionsDB(
-  db,
-  audiotrack_progress_bars,
-  current_audiotrack_positions,
-  audiobook_id
+  db:any,
+  audiotrack_progress_bars:any,
+  current_audiotrack_positions:any,
+  audiobook_id:any
 ) {
-  db.transaction((tx) => {
+  db.transaction((tx:any) => {
     tx.executeSql(
       `update testaudio14 set audiotrack_progress_bars=?,current_audiotrack_positions=? where audiobook_id=?;`,
       [audiotrack_progress_bars, current_audiotrack_positions, audiobook_id]
@@ -96,8 +96,8 @@ export function updateAudioTrackPositionsDB(
   });
 }
 
-export function updateBookShelveDB(db, audiobook_id, audiobook_shelved) {
-  db.transaction((tx) => {
+export function updateBookShelveDB(db:any, audiobook_id:any, audiobook_shelved:any) {
+  db.transaction((tx:any) => {
     tx.executeSql(
       `update testaudio14 set audiobook_shelved=? where audiobook_id=?;`,
       [audiobook_shelved, audiobook_id]
@@ -105,8 +105,8 @@ export function updateBookShelveDB(db, audiobook_id, audiobook_shelved) {
   });
 }
 
-export function updateRatingForHistory(db, audiobook_id, audiobook_rating) {
-  db.transaction((tx) => {
+export function updateRatingForHistory(db:any, audiobook_id:any, audiobook_rating:any) {
+  db.transaction((tx:any) => {
     tx.executeSql(
       `update testHistory14 set audiobook_rating=? where audiobook_id=?;`,
       [audiobook_rating, audiobook_id]
@@ -114,22 +114,22 @@ export function updateRatingForHistory(db, audiobook_id, audiobook_rating) {
   });
 }
 
-export function updateAudiobookRatingDB(db, audiobook_id, audiobook_rating) {
-  db.transaction((tx) => {
+export function updateAudiobookRatingDB(db:any, audiobook_id:any, audiobook_rating:any) {
+  db.transaction((tx:any) => {
     tx.executeSql(
       `update testaudio14 set audiobook_rating=? where audiobook_id=?;`,
       [audiobook_rating, audiobook_id]
     );
   });
-  db.transaction((tx) => {
+  db.transaction((tx:any) => {
     tx.executeSql("select * from testaudio14", [], (_, { rows }) => {
       console.log(rows);
     });
   });
 }
 
-export function initialAudioBookStoreDB(db, initAudioBookData) {
-  db.transaction((tx) => {
+export function initialAudioBookStoreDB(db:any, initAudioBookData:any) {
+  db.transaction((tx:any) => {
     tx.executeSql(
       "insert into testaudio14(audiobook_id, audiotrack_progress_bars, current_audiotrack_positions,audiobook_shelved,audiobook_rating) values(?,?,?,?,?)",
       [
@@ -142,23 +142,23 @@ export function initialAudioBookStoreDB(db, initAudioBookData) {
     );
   });
 
-  db.transaction((tx) => {
+  db.transaction((tx:any) => {
     tx.executeSql("select * from testaudio14", [], (_, { rows }) => {});
   });
 }
 
-export function removeShelvedAudiobookDB(db, audiobook_id) {
+export function removeShelvedAudiobookDB(db:any, audiobook_id:any) {
   if (audiobook_id === null || audiobook_id === "") {
     return false;
   }
-  db.transaction((tx) => {
+  db.transaction((tx:any) => {
     tx.executeSql("delete from testshelve24 where audiobook_id=?", [
       audiobook_id,
     ]);
   }, null);
 }
 
-export const storeAsyncData = async (key, value) => {
+export const storeAsyncData = async (key:any, value:any) => {
   try {
     const jsonValue = JSON.stringify(value);
     await AsyncStorage.setItem(key, jsonValue);
@@ -167,7 +167,7 @@ export const storeAsyncData = async (key, value) => {
   }
 };
 
-export const getAsyncData = async (key) => {
+export const getAsyncData = async (key:any) => {
   try {
     const jsonValue = await AsyncStorage.getItem(key);
     return jsonValue != null ? JSON.parse(jsonValue) : null;

@@ -11,14 +11,7 @@ import * as rssParser from "react-native-rss-parser";
 import { Audio } from "expo-av";
 import Slider from "@react-native-community/slider";
 import { MaterialIcons } from "@expo/vector-icons";
-import {
-  StyleSheet,
-  Text,
-  View,
-  FlatList,
-  SectionList,
-  Image,
-} from "react-native";
+import { StyleSheet, Text, View, SectionList, Image } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons.js";
 
 import { Button, List, Colors, Switch } from "react-native-paper";
@@ -39,10 +32,10 @@ import {
 
 import { getAsyncData, storeAsyncData } from "../database_functions";
 
-function Audiotracks(props) {
+function Audiotracks(props: any) {
   const [chapters, setChapters] = useState([]);
-  const [dataRSS, setDataRSS] = useState([]);
-  const [URLSToPlayAudiotracks, setURLSToPlayAudiotracks] = useState([]);
+  const [dataRSS, setDataRSS] = useState<any[]>([]);
+  const [URLSToPlayAudiotracks, setURLSToPlayAudiotracks] = useState<any[]>([]);
   const [reviews, setAudiobookReviews] = useState([]);
   const [AudioBookDescription, setAudioBookDescription] = useState("");
   const currentAudioTrackIndex = useRef(0);
@@ -60,9 +53,11 @@ function Audiotracks(props) {
   const [audioTrackReader, setAudioTrackReader] = useState("");
   const [currentSliderPosition, setCurrentSliderPosition] = React.useState(0.0);
 
-  const [linearProgessBars, setlinearProgressBars] = useState([]);
+  const [linearProgessBars, setlinearProgressBars] = useState<Array<number>>(
+    []
+  );
   const [currentAudiotrackPositionsMs, setCurrentAudiotrackPositionsMs] =
-    useState([]);
+    useState<Array<number>>([]);
   const [shelveIconToggle, setShelveIconToggle] = useState(0);
   const [audiobookRating, setAudiobookRating] = useState(0);
   const [controlPanelButtonSize] = useState(30);
@@ -113,7 +108,7 @@ function Audiotracks(props) {
   React.useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <Button size={40} mode={"outlined"} onPress={() => toggleOverlay()}>
+        <Button mode={"outlined"} onPress={() => toggleOverlay()}>
           <MaterialIcons
             name="settings"
             size={controlPanelButtonSize}
@@ -140,7 +135,6 @@ function Audiotracks(props) {
             : console.log("no settings stored");
         }
       );
-
       getAsyncData("audioModeSettings").then((audioModeSettings) => {
         audioModeSettings
           ? (setAudioModeSettings(audioModeSettings),
@@ -152,7 +146,7 @@ function Audiotracks(props) {
     }
   }, []);
 
-  const storeAudioTrackSettings = (settings) => {
+  const storeAudioTrackSettings = (settings: object) => {
     storeAsyncData("audioTrackSettingsTest", settings);
   };
 
@@ -165,9 +159,9 @@ function Audiotracks(props) {
   }, []);
 
   const updateAudioBookPosition = async (
-    audiobook_id,
-    audiotrack_progress_bars,
-    current_audiotrack_positions
+    audiobook_id:any,
+    audiotrack_progress_bars:any,
+    current_audiotrack_positions:any
   ) => {
     console.log("updating audiobook position");
     try {
@@ -186,13 +180,15 @@ function Audiotracks(props) {
     }
   };
 
-  const updateBookShelve = (audiobook_id, audiobook_shelved) => {
-    console.log("updating audiobook position", audiobook_shelved);
-    console.log("audiobook shelve value", audiobook_shelved);
+  const updateBookShelve = (
+    audiobook_id: number | string,
+    audiobook_shelved: boolean
+  ) => {
     updateBookShelveDB(db, audiobook_id, audiobook_shelved);
   };
 
-  const initialAudioBookStore = (initAudioBookData) => {
+  const initialAudioBookStore = (initAudioBookData: any) => {
+    console.log(typeof initAudioBookData);
     initAudioBookData.audiotrack_progress_bars = JSON.stringify(
       initAudioBookData.audiotrack_progress_bars
     );
@@ -225,20 +221,19 @@ function Audiotracks(props) {
     }, null);
   };
 
-  const shelveAudiobook = (bookBeingShelved) => {
+  const shelveAudiobook = (bookBeingShelved: any) => {
     bookBeingShelved.audiobook_genres = JSON.stringify(
       bookBeingShelved.audiobook_genres
     );
     shelveAudiobookDB(db, bookBeingShelved);
   };
-  const removeShelvedAudiobook = (audiobook_id) => {
+  const removeShelvedAudiobook = (audiobook_id: number) => {
     removeShelvedAudiobookDB(db, audiobook_id);
   };
 
   useEffect(() => {
     async function setAudioMode() {
       try {
-        console.log(audioModeSettings, "testing");
         await Audio.setAudioModeAsync({
           staysActiveInBackground: audioModeSettings.staysActiveInBackground,
           interruptionModeAndroid: Audio.INTERRUPTION_MODE_ANDROID_DO_NOT_MIX,
@@ -302,7 +297,7 @@ function Audiotracks(props) {
     try {
       if (reviews.length > 0 && reviews) {
         const initialValue = 0;
-        let starsFromReviews = reviews?.map((review) => Number(review.stars));
+        let starsFromReviews = reviews?.map((review:any) => Number(review?.stars));
         const sumOfStarsFromReviews = starsFromReviews?.reduce(
           (previousValue, currentValue) => previousValue + currentValue,
           initialValue
@@ -354,23 +349,23 @@ function Audiotracks(props) {
     }
   }, [sound.current]);
 
-  function sliderPositionCalculation(progress) {
+  function sliderPositionCalculation(progress: number) {
     let sliderPositionCalculate = progress * 100;
     return sliderPositionCalculate;
   }
-  async function updateLinearProgressBars(progress) {
+  async function updateLinearProgressBars(progress: number) {
     let updatedLinearProgessBarPositions = [...linearProgessBars];
     updatedLinearProgessBarPositions[currentAudioTrackIndex.current] =
       linearProgessBars[currentAudioTrackIndex.current] = progress;
   }
-  async function updateAudiotrackPositions(dataPosition) {
+  async function updateAudiotrackPositions(dataPosition:number) {
     let updatedCurrentAudiotrackPositions = [...currentAudiotrackPositionsMs];
     updatedCurrentAudiotrackPositions[currentAudioTrackIndex.current] =
       currentAudiotrackPositionsMs[currentAudioTrackIndex.current] =
         dataPosition;
   }
 
-  async function updateAndStoreAudiobookPositions(data) {
+  async function updateAndStoreAudiobookPositions(data:any) {
     try {
       let currentAudiotrackProgress = data.positionMillis / data.durationMillis;
       updateLinearProgressBars(currentAudiotrackProgress);
@@ -390,12 +385,12 @@ function Audiotracks(props) {
     }
   }
 
-  const UpdateStatus = async (data) => {
+  const UpdateStatus = async (data: any) => {
     try {
       if (data.didJustFinish) {
         updateAndStoreAudiobookPositions(data);
         if (audioPlayerSettings.isLooping === false) {
-          return HandleNext(currentAudioTrackIndex.current);
+          return HandleNext();
         }
       } else if (data.positionMillis && data.durationMillis) {
         console.log(data);
@@ -406,7 +401,7 @@ function Audiotracks(props) {
     }
   };
 
-  const SeekUpdate = async (data) => {
+  const SeekUpdate = async (data: any) => {
     try {
       const result = await sound.current.getStatusAsync();
       if (result.isLoaded === true) {
@@ -431,7 +426,7 @@ function Audiotracks(props) {
     }
   };
 
-  const LoadAudio = async (index, audiotrackPositions = 0) => {
+  const LoadAudio = async (index: number, audiotrackPositions = 0) => {
     currentAudioTrackIndex.current = index;
     setLoadingCurrentAudiotrack(true);
     console.log(index, "Playing");
@@ -559,7 +554,7 @@ function Audiotracks(props) {
     }
   };
 
-  const GetDurationFormat = (duration) => {
+  const GetDurationFormat = (duration: number) => {
     try {
       if (typeof duration === "number") {
         const time = duration / 1000;
@@ -575,7 +570,7 @@ function Audiotracks(props) {
     }
   };
 
-  const FormatChapterDurations = (chapterTimeInSeconds) => {
+  const FormatChapterDurations = (chapterTimeInSeconds: number) => {
     try {
       if (chapterTimeInSeconds !== undefined) {
         if (chapterTimeInSeconds < 3600) {
@@ -593,7 +588,7 @@ function Audiotracks(props) {
     }
   };
 
-  const PlayFromListenButton = async (index) => {
+  const PlayFromListenButton = async (index: number) => {
     try {
       const unloadSound = await sound.current.unloadAsync();
       if (unloadSound.isLoaded === false) {
@@ -606,7 +601,7 @@ function Audiotracks(props) {
     }
   };
 
-  const renderAudiotracks = ({ item, index }) => (
+  const renderAudiotracks = ({ item, index }: any) => (
     <ListItem bottomDivider>
       <ListItem.Content>
         <ListItem.Title>
@@ -644,7 +639,7 @@ function Audiotracks(props) {
     </ListItem>
   );
 
-  const renderReviews = ({ item, index }) => (
+  const renderReviews = ({ item, index }:any) => (
     <Card>
       <ListItem.Title>{item?.reviewtitle}</ListItem.Title>
       <Card.Divider />
@@ -681,7 +676,7 @@ function Audiotracks(props) {
     }
   }, [dataRSS]);
 
-  function pressedToShelveBook(bookBeingShelved) {
+  function pressedToShelveBook(bookBeingShelved: any) {
     switch (shelveIconToggle) {
       case 0:
         setShelveIconToggle(1);
@@ -701,7 +696,7 @@ function Audiotracks(props) {
     setVisible(!visible);
   };
 
-  async function onTogglePitchSwitch(value) {
+  async function onTogglePitchSwitch(value: boolean) {
     try {
       const result = await sound.current.getStatusAsync();
       setAudioPlayerSettings({
@@ -726,7 +721,7 @@ function Audiotracks(props) {
     }
   }
 
-  async function onToggleMuteSwitch(value) {
+  async function onToggleMuteSwitch(value:boolean) {
     try {
       const result = await sound.current.getStatusAsync();
       setAudioPlayerSettings({
@@ -751,7 +746,7 @@ function Audiotracks(props) {
     }
   }
 
-  async function onToggleLoopSwitch(value) {
+  async function onToggleLoopSwitch(value: boolean) {
     try {
       const result = await sound.current.getStatusAsync();
       setAudioPlayerSettings({
@@ -840,10 +835,10 @@ function Audiotracks(props) {
       );
     };
 
-    const audiotracksKeyExtractor = (item) => {
+    const audiotracksKeyExtractor = (item: any) => {
       return item?.id;
     };
-    const reviewsKeyExtractor = (item) => {
+    const reviewsKeyExtractor = (item: any) => {
       return item?.createdate;
     };
 
@@ -987,7 +982,7 @@ function Audiotracks(props) {
         <View style={styles.SliderStyle}>
           <Slider
             value={currentSliderPosition}
-            allowTouchTrack={true}
+            disabled={false}
             minimumValue={0.0}
             maximumValue={100.0}
             onSlidingComplete={(data) => SeekUpdate(data)}
@@ -1086,7 +1081,7 @@ function Audiotracks(props) {
                 style={styles.control}
               />
             </Button>
-            <Button mode="outlined" onPress={toggleOverlay} size={20}>
+            <Button mode="outlined" onPress={toggleOverlay}>
               <MaterialIcons
                 name="list"
                 size={controlPanelButtonSize}

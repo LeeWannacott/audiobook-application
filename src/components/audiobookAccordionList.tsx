@@ -4,7 +4,7 @@ import { List, Divider } from "react-native-paper";
 import { ListItem } from "react-native-elements";
 import MaterialIconCommunity from "react-native-vector-icons/MaterialCommunityIcons.js";
 
-function AudiobookAccordionList(props) {
+function AudiobookAccordionList(props:any) {
   return (
     <List.Accordion
       titleStyle={styles.accordionTitleStyle}

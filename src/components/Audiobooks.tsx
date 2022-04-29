@@ -10,7 +10,7 @@ import {
 import { ListItem, Avatar, Icon } from "react-native-elements";
 import { useNavigation } from "@react-navigation/native";
 import React, { useState, useEffect } from "react";
-import AudiobookAccordionList from "../components/audiobookAccordionList.js";
+import AudiobookAccordionList from "../components/audiobookAccordionList";
 
 import { openDatabase } from "../utils";
 import {
@@ -20,18 +20,18 @@ import {
 
 const db = openDatabase();
 
-export default function Audiobooks(props) {
+export default function Audiobooks(props:any) {
   const [loadingAudioBooks, setLoadingAudioBooks] = useState(true);
-  const [data, setAudiobooks] = useState([]);
-  const [bookCovers, setBookCovers] = useState([]);
-  const [reviewsUrlList, setReviewsUrlList] = useState([]);
+  const [data, setAudiobooks] = useState<any>([]);
+  const [bookCovers, setBookCovers] = useState<any[]>([]);
+  const [reviewsUrlList, setReviewsUrlList] = useState<any[]>([]);
   const [avatarOnPressEnabled, setAvatarOnPressEnabled] = useState(true);
 
   React.useEffect(() => {
     createHistoryTableDB(db);
   }, []);
 
-  const addAudiobookToHistory = (bookDataForHistory) => {
+  const addAudiobookToHistory = (bookDataForHistory:{audiobook_genres:string}) => {
     bookDataForHistory.audiobook_genres = JSON.stringify(
       bookDataForHistory.audiobook_genres
     );
@@ -95,15 +95,13 @@ export default function Audiobooks(props) {
     props.apiSettingsHaveBeenSet,
   ]);
 
-  const bookCoverURL = [];
-  const reviewsURL = [];
+  const bookCoverURL:any[] = [];
+  const reviewsURL:any[] = [];
   useEffect(() => {
-    // console.log(data.books);
     if (data.books) {
       const dataKeys = Object.values(data.books);
       let bookCoverImagePath;
-      // console.log(dataKeys);
-      dataKeys.forEach((bookCoverURLPath) => {
+      dataKeys.forEach((bookCoverURLPath:any) => {
         bookCoverImagePath = bookCoverURLPath.url_zip_file.split("/");
         bookCoverImagePath = bookCoverImagePath[bookCoverImagePath.length - 2];
         const reviewUrl = encodeURI(
@@ -126,7 +124,7 @@ export default function Audiobooks(props) {
   const resizeCoverImageHeight = windowHeight / 5;
   const resizeCoverImageWidth = windowWidth / 2 - 42;
   const navigation = useNavigation();
-  const keyExtractor = (item, index) => index.toString();
+  const keyExtractor = (item:any, index:any) => index.toString();
   const renderItem = ({ item, index }) => (
     <View>
       <ListItem
@@ -199,7 +197,6 @@ export default function Audiobooks(props) {
     </View>
   );
 
-  // {console.log(data.books)}
   if (!loadingAudioBooks) {
     return (
       <View style={styles.audiobookContainer}>

@@ -11,14 +11,14 @@ import {
   Dimensions,
   Image,
 } from "react-native";
-import AudiobookAccordionList from "../components/audiobookAccordionList.js";
+import AudiobookAccordionList from "../components/audiobookAccordionList";
 
 import { openDatabase } from "../utils";
 
 const db = openDatabase();
 
 function Bookshelf() {
-  const [shelvedHistory, setShelvedHistory] = useState("");
+  const [shelvedHistory, setShelvedHistory] = useState<any[]>([]);
   const [loadingHistory, setLoadingHistory] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [avatarOnPressEnabled, setAvatarOnPressEnabled] = useState(true);
@@ -38,7 +38,7 @@ function Bookshelf() {
     getShelvedBooks();
   }, []);
 
-const waitForRefresh = (timeout) => {
+  const waitForRefresh = (timeout:number) => {
   return new Promise(resolve => setTimeout(resolve, timeout));
 }
   function refreshBookshelveOnPull() {
@@ -47,13 +47,13 @@ const waitForRefresh = (timeout) => {
      waitForRefresh(2000).then(() => setIsRefreshing(false));
   }
 
-  const keyExtractor = (item, index) => item.audiobook_id.toString();
+  const keyExtractor = (item:any, index:number) => item.audiobook_id.toString();
   const windowWidth = Dimensions.get("window").width;
   const windowHeight = Dimensions.get("window").height;
   const resizeCoverImageHeight = windowHeight / 5;
   const resizeCoverImageWidth = windowWidth / 2 - 42;
   const navigation = useNavigation();
-  const renderBookshelve = ({ item, index }) => (
+  const renderBookshelve = ({ item, index }:any) => (
 
     <View>
       <ListItem topDivider containerStyle={styles.AudioBookListView}>
@@ -101,7 +101,6 @@ const waitForRefresh = (timeout) => {
         </View>
       </ListItem>
       <Rating
-        showRating
         imageSize={20}
         ratingCount={5}
         startingValue={item.audiobook_rating}
@@ -132,7 +131,6 @@ const waitForRefresh = (timeout) => {
             keyExtractor={keyExtractor}
             renderItem={renderBookshelve}
             numColumns={2}
-            containerStyle={{ bottom: 10 }}
             onRefresh={() => refreshBookshelveOnPull()}
             refreshing={isRefreshing}
           />
