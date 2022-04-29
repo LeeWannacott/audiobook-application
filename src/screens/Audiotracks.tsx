@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { ActivityIndicator, Dimensions } from "react-native";
+import { ActivityIndicator, Dimensions, Switch } from "react-native";
 import {
   ListItem,
   LinearProgress,
@@ -13,8 +13,8 @@ import Slider from "@react-native-community/slider";
 import { MaterialIcons } from "@expo/vector-icons";
 import { StyleSheet, Text, View, SectionList, Image } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons.js";
-
-import { Button, List, Colors, Switch } from "react-native-paper";
+import AudioTrackControls from "../components/audioTrackControls";
+import { Button, List, Colors } from "react-native-paper";
 
 import { openDatabase } from "../utils";
 import { useNavigation } from "@react-navigation/native";
@@ -124,28 +124,28 @@ function Audiotracks(props: any) {
     });
   }, []);
 
-  React.useState(() => {
+  React.useEffect(() => {
     try {
+      getAsyncData("audioModeSettings").then((audioModeSettingsRetrieved) => {
+        audioModeSettingsRetrieved
+        if (audioModeSettingsRetrieved) {
+          return setAudioModeSettings(audioModeSettingsRetrieved);
+        }
+      });
       getAsyncData("audioTrackSettingsTest").then(
         (audioTrackSettingsRetrieved) => {
-          audioTrackSettingsRetrieved
-            ? setAudioPlayerSettings(audioTrackSettingsRetrieved)
-            : console.log("no settings stored");
+          if (audioTrackSettingsRetrieved) {
+            return setAudioPlayerSettings(audioTrackSettingsRetrieved);
+          }
         }
       );
-      getAsyncData("audioModeSettings").then((audioModeSettings) => {
-        audioModeSettings
-          ? (setAudioModeSettings(audioModeSettings),
-            console.log("yo", audioModeSettings))
-          : console.log("no modes");
-      });
     } catch (err) {
       console.log(err);
     }
   }, []);
 
-  const storeAudioTrackSettings = (settings: object) => {
-    storeAsyncData("audioTrackSettingsTest", settings);
+  const storeAudioTrackSettings = async (settings: object) => {
+    await storeAsyncData("audioTrackSettingsTest", settings);
   };
 
   useEffect(() => {
@@ -726,23 +726,23 @@ function Audiotracks(props: any) {
     setVisible(!visible);
   };
 
-  async function onTogglePitchSwitch(value: boolean) {
+  async function onTogglePitchSwitch(pitchToggled: boolean) {
     try {
-      const result = await sound.current.getStatusAsync();
       setAudioPlayerSettings({
         ...audioPlayerSettings,
         shouldCorrectPitch: !audioPlayerSettings.shouldCorrectPitch,
       });
-      if (value) {
+      const result = await sound.current.getStatusAsync();
+      if (pitchToggled) {
         if (result.isLoaded === true) {
           await sound.current.setRateAsync(audioPlayerSettings.rate, true);
         }
-      } else if (!value) {
+      } else if (!pitchToggled) {
         if (result.isLoaded === true) {
           await sound.current.setRateAsync(audioPlayerSettings.rate, false);
         }
       }
-      storeAudioTrackSettings({
+      await storeAudioTrackSettings({
         ...audioPlayerSettings,
         shouldCorrectPitch: !audioPlayerSettings.shouldCorrectPitch,
       });
@@ -751,23 +751,23 @@ function Audiotracks(props: any) {
     }
   }
 
-  async function onToggleMuteSwitch(value: boolean) {
+  async function onToggleMuteSwitch(muteToggled: boolean) {
     try {
-      const result = await sound.current.getStatusAsync();
       setAudioPlayerSettings({
         ...audioPlayerSettings,
         isMuted: !audioPlayerSettings.isMuted,
       });
-      if (value) {
+      const result = await sound.current.getStatusAsync();
+      if (muteToggled) {
         if (result.isLoaded === true) {
           await sound.current.setIsMutedAsync(true);
         }
-      } else if (!value) {
+      } else if (!muteToggled) {
         if (result.isLoaded === true) {
           await sound.current.setIsMutedAsync(false);
         }
       }
-      storeAudioTrackSettings({
+      await storeAudioTrackSettings({
         ...audioPlayerSettings,
         isMuted: !audioPlayerSettings.isMuted,
       });
@@ -776,23 +776,23 @@ function Audiotracks(props: any) {
     }
   }
 
-  async function onToggleLoopSwitch(value: boolean) {
+  async function onToggleLoopSwitch(loopToggled: boolean) {
     try {
-      const result = await sound.current.getStatusAsync();
       setAudioPlayerSettings({
         ...audioPlayerSettings,
         isLooping: !audioPlayerSettings.isLooping,
       });
-      if (value) {
+      const result = await sound.current.getStatusAsync();
+      if (loopToggled) {
         if (result.isLoaded === true) {
           await sound.current.setIsLoopingAsync(true);
         }
-      } else if (!value) {
+      } else if (!loopToggled) {
         if (result.isLoaded === true) {
           await sound.current.setIsLoopingAsync(false);
         }
       }
-      storeAudioTrackSettings({
+      await storeAudioTrackSettings({
         ...audioPlayerSettings,
         isLooping: !audioPlayerSettings.isLooping,
       });
@@ -906,7 +906,7 @@ function Audiotracks(props: any) {
               value={audioPlayerSettings.volume}
               style={{ width: 200, height: 40 }}
               minimumValue={0.0}
-              maximumValue={2.0}
+              maximumValue={1.0}
               minimumTrackTintColor="green"
               maximumTrackTintColor="grey"
               step={0.25}
@@ -920,7 +920,7 @@ function Audiotracks(props: any) {
                   if (result.isLoaded === true) {
                     await sound.current.setVolumeAsync(volumeLevel);
                   }
-                  storeAudioTrackSettings({
+                  await storeAudioTrackSettings({
                     ...audioPlayerSettings,
                     volume: volumeLevel,
                   });
@@ -963,7 +963,7 @@ function Audiotracks(props: any) {
               value={audioPlayerSettings.rate}
               style={{ width: 200, height: 40 }}
               minimumValue={0.5}
-              maximumValue={2.5}
+              maximumValue={2.0}
               minimumTrackTintColor="green"
               maximumTrackTintColor="grey"
               step={0.25}
@@ -980,7 +980,7 @@ function Audiotracks(props: any) {
                       audioPlayerSettings.shouldCorrectPitch
                     );
                   }
-                  storeAudioTrackSettings({
+                  await storeAudioTrackSettings({
                     ...audioPlayerSettings,
                     rate: speed,
                   });
@@ -1051,6 +1051,7 @@ function Audiotracks(props: any) {
             </View>
           </View>
         </View>
+
         <View style={styles.controlsVert}>
           <View style={styles.controls}>
             <Button mode="outlined">
@@ -1123,6 +1124,20 @@ function Audiotracks(props: any) {
             </Button>
           </View>
         </View>
+
+        {/*<AudioTrackControls
+          HandlePrev={HandlePrev}
+          HandleNext={HandleNext}
+          LoadAudio={LoadAudio}
+          PlayAudio={PlayAudio}
+          Playing={Playing}
+          PauseAudio={PauseAudio}
+          audioPaused={audioPaused}
+          loadingCurrentAudiotrack={loadingCurrentAudiotrack}
+          loadedCurrentAudiotrack={loadedCurrentAudiotrack}
+          currentAudioTrackIndex={currentAudioTrackIndex}
+          toggleOverlay={toggleOverlay}
+          /> */}
       </View>
     );
   } else {
@@ -1216,9 +1231,8 @@ const styles = StyleSheet.create({
   },
   control: {
     height: 50,
-    backgroundColor: "black",
     borderRadius: 25,
-    color: "purple",
+    color: "black",
     margin: 30,
   },
   shelveButtons: {
