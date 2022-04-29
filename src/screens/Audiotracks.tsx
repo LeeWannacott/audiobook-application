@@ -52,14 +52,6 @@ function Audiotracks(props: any) {
     useState("");
   const [audioTrackReader, setAudioTrackReader] = useState("");
   const [currentSliderPosition, setCurrentSliderPosition] = React.useState(0.0);
-
-  const [linearProgessBars, setlinearProgressBars] = useState<Array<number>>(
-    []
-  );
-  const [currentAudiotrackPositionsMs, setCurrentAudiotrackPositionsMs] =
-    useState<Array<number>>([]);
-  const [shelveIconToggle, setShelveIconToggle] = useState(0);
-  const [audiobookRating, setAudiobookRating] = useState(0);
   const [controlPanelButtonSize] = useState(30);
   const [visible, setVisible] = useState(false);
   // const [pitchCorrection, setPitchCorrection] = useState(true);
@@ -70,6 +62,12 @@ function Audiotracks(props: any) {
     isMuted: false,
     isLooping: false,
     shouldPlay: false,
+  });
+  const [audiotracksData, setAudiotracksData] = useState<any>({
+    linearProgessBars: [],
+    currentAudiotrackPositionsMs: [],
+    shelveIconToggle: 0,
+    audiobookRating: 0,
   });
 
   const [audioModeSettings, setAudioModeSettings] = useState({
@@ -159,9 +157,9 @@ function Audiotracks(props: any) {
   }, []);
 
   const updateAudioBookPosition = async (
-    audiobook_id:any,
-    audiotrack_progress_bars:any,
-    current_audiotrack_positions:any
+    audiobook_id: any,
+    audiotrack_progress_bars: any,
+    current_audiotrack_positions: any
   ) => {
     console.log("updating audiobook position");
     try {
@@ -188,7 +186,6 @@ function Audiotracks(props: any) {
   };
 
   const initialAudioBookStore = (initAudioBookData: any) => {
-    console.log(typeof initAudioBookData);
     initAudioBookData.audiotrack_progress_bars = JSON.stringify(
       initAudioBookData.audiotrack_progress_bars
     );
@@ -202,16 +199,17 @@ function Audiotracks(props: any) {
         tx.executeSql("select * from testaudio14", [], (_, { rows }) => {
           rows["_array"].forEach((element) => {
             if (initAudioBookData.audiobook_id === element.audiobook_id) {
-              let audiobook_positions_temp = JSON.parse(
-                element?.audiotrack_progress_bars
-              );
-              let audiotrack_positionsMS = JSON.parse(
-                element?.current_audiotrack_positions
-              );
-              setlinearProgressBars(audiobook_positions_temp);
-              setCurrentAudiotrackPositionsMs(audiotrack_positionsMS);
-              setShelveIconToggle(element?.audiobook_shelved);
-              setAudiobookRating(element?.audiobook_rating);
+              setAudiotracksData({
+                ...audiotracksData,
+                linearProgessBars: JSON.parse(
+                  element?.audiotrack_progress_bars
+                ),
+                currentAudiotrackPositionsMs: JSON.parse(
+                  element?.current_audiotrack_positions
+                ),
+                shelveIconToggle: element?.audiobook_shelved,
+                audiobookRating: element?.audiobook_rating,
+              });
             }
           });
         });
@@ -297,7 +295,9 @@ function Audiotracks(props: any) {
     try {
       if (reviews.length > 0 && reviews) {
         const initialValue = 0;
-        let starsFromReviews = reviews?.map((review:any) => Number(review?.stars));
+        let starsFromReviews = reviews?.map((review: any) =>
+          Number(review?.stars)
+        );
         const sumOfStarsFromReviews = starsFromReviews?.reduce(
           (previousValue, currentValue) => previousValue + currentValue,
           initialValue
@@ -309,7 +309,10 @@ function Audiotracks(props: any) {
           averageAudiobookRating =
             sumOfStarsFromReviews / starsFromReviews.length;
         }
-        setAudiobookRating(averageAudiobookRating);
+        setAudiotracksData({
+          ...audiotracksData,
+          audiobookRating: averageAudiobookRating,
+        });
         updateRatingForHistory(db, audioBookId, averageAudiobookRating);
       }
     } catch (e) {
@@ -320,16 +323,19 @@ function Audiotracks(props: any) {
   useEffect(() => {
     try {
       let initialAudioBookSections = new Array(numberBookSections).fill(0);
-      setlinearProgressBars(initialAudioBookSections);
-      setCurrentAudiotrackPositionsMs(initialAudioBookSections);
+      setAudiotracksData({
+        ...audiotracksData,
+        linearProgessBars: initialAudioBookSections,
+        currentAudiotrackPositionsMs: initialAudioBookSections,
+      });
       // will only happen if no entry in db already.
 
       initialAudioBookStore({
         audiobook_id: audioBookId,
         audiotrack_progress_bars: initialAudioBookSections,
         current_audiotrack_positions: initialAudioBookSections,
-        audiobook_shelved: shelveIconToggle,
-        audiotrack_rating: audiobookRating,
+        audiobook_shelved: audiotracksData.shelveIconToggle,
+        audiotrack_rating: audiotracksData.audiobookRating,
       });
     } catch (err) {
       console.log(err);
@@ -354,18 +360,24 @@ function Audiotracks(props: any) {
     return sliderPositionCalculate;
   }
   async function updateLinearProgressBars(progress: number) {
-    let updatedLinearProgessBarPositions = [...linearProgessBars];
+    let updatedLinearProgessBarPositions = [
+      ...audiotracksData.linearProgessBars,
+    ];
     updatedLinearProgessBarPositions[currentAudioTrackIndex.current] =
-      linearProgessBars[currentAudioTrackIndex.current] = progress;
+      audiotracksData.linearProgessBars[currentAudioTrackIndex.current] =
+        progress;
   }
-  async function updateAudiotrackPositions(dataPosition:number) {
-    let updatedCurrentAudiotrackPositions = [...currentAudiotrackPositionsMs];
+  async function updateAudiotrackPositions(dataPosition: number) {
+    let updatedCurrentAudiotrackPositions = [
+      ...audiotracksData.currentAudiotrackPositionsMs,
+    ];
     updatedCurrentAudiotrackPositions[currentAudioTrackIndex.current] =
-      currentAudiotrackPositionsMs[currentAudioTrackIndex.current] =
-        dataPosition;
+      audiotracksData.currentAudiotrackPositionsMs[
+        currentAudioTrackIndex.current
+      ] = dataPosition;
   }
 
-  async function updateAndStoreAudiobookPositions(data:any) {
+  async function updateAndStoreAudiobookPositions(data: any) {
     try {
       let currentAudiotrackProgress = data.positionMillis / data.durationMillis;
       updateLinearProgressBars(currentAudiotrackProgress);
@@ -377,8 +389,8 @@ function Audiotracks(props: any) {
       setCurrentSliderPosition(sliderPositionCalculated);
       updateAudioBookPosition(
         audioBookId,
-        linearProgessBars,
-        currentAudiotrackPositionsMs
+        audiotracksData.linearProgessBars,
+        audiotracksData.currentAudiotrackPositionsMs
       );
     } catch (err) {
       console.log(err);
@@ -514,7 +526,9 @@ function Audiotracks(props: any) {
           // ResetPlayer();
           await LoadAudio(
             currentAudioTrackIndex.current,
-            currentAudiotrackPositionsMs[currentAudioTrackIndex.current]
+            audiotracksData.currentAudiotrackPositionsMs[
+              currentAudioTrackIndex.current
+            ]
           );
         }
       } else if (
@@ -528,7 +542,9 @@ function Audiotracks(props: any) {
           await ResetPlayer();
           await LoadAudio(
             currentAudioTrackIndex.current,
-            currentAudiotrackPositionsMs[currentAudioTrackIndex.current]
+            audiotracksData.currentAudiotrackPositionsMs[
+              currentAudioTrackIndex.current
+            ]
           );
         }
       }
@@ -544,7 +560,9 @@ function Audiotracks(props: any) {
         if (unloadSound.isLoaded === false) {
           await LoadAudio(
             currentAudioTrackIndex.current - 1,
-            currentAudiotrackPositionsMs[currentAudioTrackIndex.current - 1]
+            audiotracksData.currentAudiotrackPositionsMs[
+              currentAudioTrackIndex.current - 1
+            ]
           );
           currentAudioTrackIndex.current -= 1;
         }
@@ -594,7 +612,10 @@ function Audiotracks(props: any) {
       if (unloadSound.isLoaded === false) {
         setCurrentSliderPosition(0.0);
         await ResetPlayer();
-        await LoadAudio(index, currentAudiotrackPositionsMs[index]);
+        await LoadAudio(
+          index,
+          audiotracksData.currentAudiotrackPositionsMs[index]
+        );
       }
     } catch (e) {
       console.log(e);
@@ -609,14 +630,17 @@ function Audiotracks(props: any) {
         </ListItem.Title>
         <ListItem.Subtitle>
           <Text numberOfLines={1} ellipsizeMode="tail">
-            Playtime: {GetDurationFormat(currentAudiotrackPositionsMs[index])}
+            Playtime:{" "}
+            {GetDurationFormat(
+              audiotracksData.currentAudiotrackPositionsMs[index]
+            )}
             {" | "}
             {FormatChapterDurations(chapters[index]?.playtime)}
           </Text>
         </ListItem.Subtitle>
         <LinearProgress
           color="primary"
-          value={linearProgessBars[index]}
+          value={audiotracksData.linearProgessBars[index]}
           variant="determinate"
           trackColor="lightblue"
           width={190}
@@ -639,7 +663,7 @@ function Audiotracks(props: any) {
     </ListItem>
   );
 
-  const renderReviews = ({ item, index }:any) => (
+  const renderReviews = ({ item, index }: any) => (
     <Card>
       <ListItem.Title>{item?.reviewtitle}</ListItem.Title>
       <Card.Divider />
@@ -668,25 +692,31 @@ function Audiotracks(props: any) {
   useEffect(() => {
     if (dataRSS.length > 0) {
       console.log(dataRSS);
-      const dataRSSDict = Object.entries(dataRSS);
-      const listRSSURLSTemp = dataRSSDict.map(([key, value]) => {
+      const RSSDict = Object.entries(dataRSS);
+      const RSSURLS = RSSDict.map(([key, value]) => {
         return value?.enclosures[0]?.url;
       });
-      setURLSToPlayAudiotracks(listRSSURLSTemp);
+      setURLSToPlayAudiotracks(RSSURLS);
     }
   }, [dataRSS]);
 
   function pressedToShelveBook(bookBeingShelved: any) {
-    switch (shelveIconToggle) {
+    switch (audiotracksData.shelveIconToggle) {
       case 0:
-        setShelveIconToggle(1);
+        setAudiotracksData({ ...audiotracksData, shelveIconToggle: 1 });
         shelveAudiobook(bookBeingShelved);
-        updateBookShelve(bookBeingShelved.audiobook_id, !shelveIconToggle);
+        updateBookShelve(
+          bookBeingShelved.audiobook_id,
+          !audiotracksData.shelveIconToggle
+        );
         break;
       case 1:
         // remove from db
-        setShelveIconToggle(0);
-        updateBookShelve(bookBeingShelved.audiobook_id, !shelveIconToggle);
+        setAudiotracksData({ ...audiotracksData, shelveIconToggle: 0 });
+        updateBookShelve(
+          bookBeingShelved.audiobook_id,
+          !audiotracksData.shelveIconToggle
+        );
         removeShelvedAudiobook(bookBeingShelved.audiobook_id);
         break;
     }
@@ -721,7 +751,7 @@ function Audiotracks(props: any) {
     }
   }
 
-  async function onToggleMuteSwitch(value:boolean) {
+  async function onToggleMuteSwitch(value: boolean) {
     try {
       const result = await sound.current.getStatusAsync();
       setAudioPlayerSettings({
@@ -795,7 +825,7 @@ function Audiotracks(props: any) {
             <Rating
               showRating
               ratingCount={5}
-              startingValue={audiobookRating}
+              startingValue={audiotracksData.audiobookRating}
               fractions={1}
               readonly={true}
               style={{ paddingVertical: 10 }}
@@ -814,7 +844,7 @@ function Audiotracks(props: any) {
                     audiobook_total_time: audiobookTotalTime,
                     audiobook_copyright_year: audiobookCopyrightYear,
                     audiobook_genres: audiobookGenres,
-                    audiobook_rating: audiobookRating,
+                    audiobook_rating: audiotracksData.audiobookRating,
                     audiobook_review_url: audiobookReviewUrl,
                     audiobook_num_sections: numberBookSections,
                     audiobook_ebook_url: ebookTextSource,
@@ -824,9 +854,11 @@ function Audiotracks(props: any) {
                 }}
               >
                 <MaterialCommunityIcons
-                  name={shelveIconToggle ? "book" : "book-outline"}
+                  name={
+                    audiotracksData.shelveIconToggle ? "book" : "book-outline"
+                  }
                   size={50}
-                  color={shelveIconToggle ? "black" : "black"}
+                  color={audiotracksData.shelveIconToggle ? "black" : "black"}
                 />
               </Button>
             </View>
