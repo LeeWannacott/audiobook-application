@@ -1,47 +1,43 @@
 import React, { useState } from "react";
-import {
-  StyleSheet,
-  Text,
-  View,
-  Alert,
-  Linking,
-} from "react-native";
+import { StyleSheet, Text, View, Alert, Linking } from "react-native";
 import SettingsList from "react-native-settings-list";
 import MaterialIconCommunity from "react-native-vector-icons/MaterialCommunityIcons.js";
 import {
   deleteAudiobookHistoryDB,
   storeAsyncData,
+  getAsyncData,
 } from "../database_functions";
-import {openDatabase} from "../utils"
-
+import { openDatabase } from "../utils";
 
 const db = openDatabase();
 
 const UserSettings = () => {
-  const [switches, setSwitches] = useState({
-    switchValue: false,
-    staysActiveToggle: true,
-    shouldDuckSwitch: true,
-    playEarpieceSwitch: true,
-  });
 
   const [audioModeSettings, setAudioModeSettings] = useState({
     interruptionModeAndroid: 1,
     staysActiveInBackground: true,
     shouldDuckAndroid: true,
-    playThroughEarpieceAndroid: true,
+    playThroughEarpieceAndroid: false,
   });
 
-  function onValueChange() {
-    setSwitches({ ...switches, switchValue: !switches.switchValue });
-  }
 
-  const storeAudioModeSettings = (tempApiSettings:object) => {
+  React.useEffect(() => {
+    getAsyncData("audioModeSettings").then(
+      (audioModeSettingsRetrieved: any) => {
+        audioModeSettingsRetrieved;
+        if (audioModeSettingsRetrieved) {
+          console.log("yup")
+          return setAudioModeSettings(audioModeSettingsRetrieved);
+        }else{console.log("nope")}
+      }
+    );
+  }, []);
+
+  const storeAudioModeSettings = (tempApiSettings: object) => {
     storeAsyncData("audioModeSettings", tempApiSettings);
   };
 
   function staysActiveInBackgroundToggle() {
-    setSwitches({ ...switches, staysActiveToggle: !switches.staysActiveToggle });
     setAudioModeSettings({
       ...audioModeSettings,
       staysActiveInBackground: !audioModeSettings.staysActiveInBackground,
@@ -53,7 +49,6 @@ const UserSettings = () => {
   }
 
   function shouldDuckAndroidToggle() {
-    setSwitches({ ...switches, shouldDuckSwitch: !switches.shouldDuckSwitch });
     setAudioModeSettings({
       ...audioModeSettings,
       shouldDuckAndroid: !audioModeSettings.shouldDuckAndroid,
@@ -65,7 +60,6 @@ const UserSettings = () => {
   }
 
   function playThroughEarpieceAndroidToggle() {
-    setSwitches({ ...switches, playEarpieceSwitch: !switches.playEarpieceSwitch });
     setAudioModeSettings({
       ...audioModeSettings,
       playThroughEarpieceAndroid: !audioModeSettings.playThroughEarpieceAndroid,
@@ -76,7 +70,7 @@ const UserSettings = () => {
     });
   }
 
-  const deleteAudiobookHistory = (db:any) => {
+  const deleteAudiobookHistory = (db: any) => {
     deleteAudiobookHistoryDB(db);
   };
 
@@ -102,16 +96,20 @@ const UserSettings = () => {
             itemWidth={50}
             title="Color scheme"
             hasNavArrow={false}
-            switchState={switches.switchValue}
-            switchOnValueChange={onValueChange}
             hasSwitch={false}
           />
           <SettingsList.Item
-            icon={<MaterialIconCommunity name="run-fast" size={50} color={"black"} />}
+            icon={
+              <MaterialIconCommunity
+                name="run-fast"
+                size={50}
+                color={"black"}
+              />
+            }
             hasNavArrow={false}
             title="Stays active in background."
             itemWidth={50}
-            switchState={switches.staysActiveToggle}
+            switchState={audioModeSettings.staysActiveInBackground}
             switchOnValueChange={staysActiveInBackgroundToggle}
             hasSwitch={true}
             onPress={() =>
@@ -134,7 +132,7 @@ const UserSettings = () => {
             hasNavArrow={false}
             title="Duck Audio"
             itemWidth={50}
-            switchState={switches.shouldDuckSwitch}
+            switchState={audioModeSettings.shouldDuckAndroid}
             switchOnValueChange={shouldDuckAndroidToggle}
             hasSwitch={true}
             onPress={() =>
@@ -157,7 +155,7 @@ const UserSettings = () => {
             hasNavArrow={false}
             title="Play through earpiece"
             itemWidth={50}
-            switchState={switches.playEarpieceSwitch}
+            switchState={audioModeSettings.playThroughEarpieceAndroid}
             switchOnValueChange={playThroughEarpieceAndroidToggle}
             hasSwitch={true}
             onPress={() =>
