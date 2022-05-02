@@ -13,8 +13,9 @@ import Slider from "@react-native-community/slider";
 import { MaterialIcons } from "@expo/vector-icons";
 import { StyleSheet, Text, View, SectionList, Image } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons.js";
-import AudioTrackControls from "../components/audioTrackControls";
 import { Button, List, Colors } from "react-native-paper";
+import AudioTrackControls from "../components/audioTrackControls";
+import AudioTrackSettings from "../components/audioTrackSettings";
 
 import { openDatabase } from "../utils";
 import { useNavigation } from "@react-navigation/native";
@@ -726,81 +727,6 @@ function Audiotracks(props: any) {
     setVisible(!visible);
   };
 
-  async function onTogglePitchSwitch(pitchToggled: boolean) {
-    try {
-      setAudioPlayerSettings({
-        ...audioPlayerSettings,
-        shouldCorrectPitch: !audioPlayerSettings.shouldCorrectPitch,
-      });
-      const result = await sound.current.getStatusAsync();
-      if (pitchToggled) {
-        if (result.isLoaded === true) {
-          await sound.current.setRateAsync(audioPlayerSettings.rate, true);
-        }
-      } else if (!pitchToggled) {
-        if (result.isLoaded === true) {
-          await sound.current.setRateAsync(audioPlayerSettings.rate, false);
-        }
-      }
-      await storeAudioTrackSettings({
-        ...audioPlayerSettings,
-        shouldCorrectPitch: !audioPlayerSettings.shouldCorrectPitch,
-      });
-    } catch (e) {
-      console.log(e);
-    }
-  }
-
-  async function onToggleMuteSwitch(muteToggled: boolean) {
-    try {
-      setAudioPlayerSettings({
-        ...audioPlayerSettings,
-        isMuted: !audioPlayerSettings.isMuted,
-      });
-      const result = await sound.current.getStatusAsync();
-      if (muteToggled) {
-        if (result.isLoaded === true) {
-          await sound.current.setIsMutedAsync(true);
-        }
-      } else if (!muteToggled) {
-        if (result.isLoaded === true) {
-          await sound.current.setIsMutedAsync(false);
-        }
-      }
-      await storeAudioTrackSettings({
-        ...audioPlayerSettings,
-        isMuted: !audioPlayerSettings.isMuted,
-      });
-    } catch (e) {
-      console.log(e);
-    }
-  }
-
-  async function onToggleLoopSwitch(loopToggled: boolean) {
-    try {
-      setAudioPlayerSettings({
-        ...audioPlayerSettings,
-        isLooping: !audioPlayerSettings.isLooping,
-      });
-      const result = await sound.current.getStatusAsync();
-      if (loopToggled) {
-        if (result.isLoaded === true) {
-          await sound.current.setIsLoopingAsync(true);
-        }
-      } else if (!loopToggled) {
-        if (result.isLoaded === true) {
-          await sound.current.setIsLoopingAsync(false);
-        }
-      }
-      await storeAudioTrackSettings({
-        ...audioPlayerSettings,
-        isLooping: !audioPlayerSettings.isLooping,
-      });
-    } catch (e) {
-      console.log(e);
-    }
-  }
-
   if (!loadingAudioListeningLinks && !loadingAudiobookData) {
     const getHeader = () => {
       return (
@@ -890,111 +816,17 @@ function Audiotracks(props: any) {
     ];
     return (
       <View style={styles.container}>
-        <Overlay
-          isVisible={visible}
-          onBackdropPress={toggleOverlay}
-          fullScreen={false}
-        >
-          <Text>Volume of Audiotrack: {audioPlayerSettings.volume}</Text>
-          <View style={styles.sliderWithIconsOnSides}>
-            <MaterialCommunityIcons
-              name={"volume-minus"}
-              size={30}
-              color={"black"}
-            />
-            <Slider
-              value={audioPlayerSettings.volume}
-              style={{ width: 200, height: 40 }}
-              minimumValue={0.0}
-              maximumValue={1.0}
-              minimumTrackTintColor="green"
-              maximumTrackTintColor="grey"
-              step={0.25}
-              onValueChange={async (volumeLevel) => {
-                try {
-                  const result = await sound.current.getStatusAsync();
-                  setAudioPlayerSettings({
-                    ...audioPlayerSettings,
-                    volume: volumeLevel,
-                  });
-                  if (result.isLoaded === true) {
-                    await sound.current.setVolumeAsync(volumeLevel);
-                  }
-                  await storeAudioTrackSettings({
-                    ...audioPlayerSettings,
-                    volume: volumeLevel,
-                  });
-                } catch (e) {
-                  console.log(e);
-                }
-              }}
-            />
-            <MaterialCommunityIcons
-              name={"volume-plus"}
-              size={30}
-              color={"black"}
-            />
-          </View>
-          <Text>
-            Pitch Correction: {audioPlayerSettings.shouldCorrectPitch}
-          </Text>
-          <Switch
-            value={audioPlayerSettings.shouldCorrectPitch}
-            onValueChange={onTogglePitchSwitch}
-          />
-          <Text>Mute: {audioPlayerSettings.isMuted}</Text>
-          <Switch
-            value={audioPlayerSettings.isMuted}
-            onValueChange={onToggleMuteSwitch}
-          />
-          <Text>looping: {audioPlayerSettings.isLooping}</Text>
-          <Switch
-            value={audioPlayerSettings.isLooping}
-            onValueChange={onToggleLoopSwitch}
-          />
-          <Text>Speed of Audiotrack: {audioPlayerSettings.rate}</Text>
-          <View style={styles.sliderWithIconsOnSides}>
-            <MaterialCommunityIcons
-              name={"tortoise"}
-              size={30}
-              color={"black"}
-            />
-            <Slider
-              value={audioPlayerSettings.rate}
-              style={{ width: 200, height: 40 }}
-              minimumValue={0.5}
-              maximumValue={2.0}
-              minimumTrackTintColor="green"
-              maximumTrackTintColor="grey"
-              step={0.25}
-              onValueChange={async (speed) => {
-                try {
-                  setAudioPlayerSettings({
-                    ...audioPlayerSettings,
-                    rate: speed,
-                  });
-                  const result = await sound.current.getStatusAsync();
-                  if (result.isLoaded === true) {
-                    await sound.current.setRateAsync(
-                      speed,
-                      audioPlayerSettings.shouldCorrectPitch
-                    );
-                  }
-                  await storeAudioTrackSettings({
-                    ...audioPlayerSettings,
-                    rate: speed,
-                  });
-                } catch (e) {
-                  console.log(e);
-                }
-              }}
-            />
-            <MaterialCommunityIcons name={"rabbit"} size={30} color={"black"} />
-          </View>
-        </Overlay>
+        <AudioTrackSettings
+          visible={visible}
+          toggleOverlay={toggleOverlay}
+          audioPlayerSettings={audioPlayerSettings}
+          storeAudioTrackSettings={storeAudioTrackSettings}
+          setAudioPlayerSettings={setAudioPlayerSettings}
+          sound={sound}
+        />
+
         <View style={styles.AudioTracksStyle}>
           <View style={styles.listItemHeaderStyle}>
-            <View style={styles.AudioTracksStyle2}></View>
             <SectionList
               sections={AudioTracksScreenData}
               keyExtractor={({ section: { keyExtractor } }) => {
@@ -1063,8 +895,7 @@ function Audiotracks(props: any) {
           loadingCurrentAudiotrack={loadingCurrentAudiotrack}
           loadedCurrentAudiotrack={loadedCurrentAudiotrack}
           currentAudioTrackIndex={currentAudioTrackIndex}
-          > 
-        </AudioTrackControls>
+        ></AudioTrackControls>
       </View>
     );
   } else {
