@@ -1052,80 +1052,7 @@ function Audiotracks(props: any) {
           </View>
         </View>
 
-        <View style={styles.controlsVert}>
-          <View style={styles.controls}>
-            <Button mode="outlined">
-              <MaterialIcons
-                name="reply"
-                size={controlPanelButtonSize}
-                color="black"
-                style={styles.control}
-              />
-            </Button>
-            <Button mode="outlined" onPress={() => HandlePrev()}>
-              <MaterialIcons
-                name="skip-previous"
-                size={controlPanelButtonSize}
-                color="black"
-                style={styles.control}
-              />
-            </Button>
-
-            {loadingCurrentAudiotrack ? (
-              <ActivityIndicator size={"large"} color={"dodgerblue"} />
-            ) : loadedCurrentAudiotrack === false ? (
-              <Button
-                mode="outlined"
-                onPress={() => LoadAudio(currentAudioTrackIndex.current)}
-              >
-                <MaterialIcons
-                  name="not-started"
-                  size={controlPanelButtonSize}
-                  color="black"
-                  style={styles.control}
-                />
-              </Button>
-            ) : Playing ? (
-              <Button mode="outlined" onPress={() => PauseAudio()}>
-                <MaterialIcons
-                  name="pause"
-                  size={controlPanelButtonSize}
-                  color="black"
-                  style={styles.control}
-                />
-              </Button>
-            ) : audioPaused === false ? (
-              <ActivityIndicator size={"large"} color={"dodgerblue"} />
-            ) : (
-              <Button mode="outlined" onPress={() => PlayAudio()}>
-                <MaterialIcons
-                  name="play-arrow"
-                  size={controlPanelButtonSize}
-                  color="black"
-                  style={styles.control}
-                />
-              </Button>
-            )}
-            <Button mode="outlined" onPress={() => HandleNext()}>
-              <MaterialIcons
-                name="skip-next"
-                size={controlPanelButtonSize}
-                color="black"
-                style={styles.control}
-              />
-            </Button>
-            <Button mode="outlined" onPress={toggleOverlay}>
-              <MaterialIcons
-                name="list"
-                size={controlPanelButtonSize}
-                color="black"
-                style={styles.control}
-              />
-            </Button>
-          </View>
-        </View>
-
-        {/*<AudioTrackControls
+        <AudioTrackControls
           HandlePrev={HandlePrev}
           HandleNext={HandleNext}
           LoadAudio={LoadAudio}
@@ -1137,8 +1064,7 @@ function Audiotracks(props: any) {
           loadedCurrentAudiotrack={loadedCurrentAudiotrack}
           currentAudioTrackIndex={currentAudioTrackIndex}
           > 
-        </AudioTrackControls>*/}
-
+        </AudioTrackControls>
       </View>
     );
   } else {
