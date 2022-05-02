@@ -22,6 +22,9 @@ import { openDatabase } from "../utils";
 
 const db = openDatabase();
 
+// global scope
+let lolcache = {};
+
 function History() {
   const [audiobookHistory, setAudiobookHistory] = useState<any[]>([]);
   const [loadingHistory, setLoadingHistory] = useState(true);
@@ -31,7 +34,7 @@ function History() {
 
   const [aescOrDesc, setAescOrDesc] = useState<any>({
     toggle: 0,
-    SQLOrder: "ASC",
+    order: "ASC",
     icon: "transfer-up",
   });
 
@@ -61,10 +64,24 @@ function History() {
         [],
         (_, { rows }) => {
           // if (JSON.stringify(audiobookHistory) !== JSON.stringify(rows["_array"])) {
-          setAudiobookHistory(rows["_array"].reverse());
+
+          // in your callback
+          let newHistory = [];
+          for (let row of rows._array) {
+            if (
+              Object.prototype.hasOwnProperty.call(lolcache, row.audiobook_id)
+            ) {
+              newHistory.push(lolcache[row.audiobook_id]);
+            } else {
+              lolcache[row.audiobook_id] = row;
+              newHistory.push(row);
+            }
+          }
+          setAudiobookHistory(newHistory);
+
           let end = performance.now();
           console.log("time: ", end - start);
-          // }
+
           setLoadingHistory(false);
         }
       );
@@ -75,28 +92,14 @@ function History() {
     getShelvedBooks();
   }, []);
 
-  const waitForRefresh = (timeout:number) => {
-  return new Promise(resolve => setTimeout(resolve, timeout));
-}
+  const waitForRefresh = (timeout: number) => {
+    return new Promise((resolve) => setTimeout(resolve, timeout));
+  };
   function refreshBookshelveOnPull() {
-    setIsRefreshing(true);
+    // setIsRefreshing(true);
     getShelvedBooks();
-     waitForRefresh(2000).then(() => setIsRefreshing(false));
+    waitForRefresh(0).then(() => setIsRefreshing(false));
   }
-
-  useEffect(() => {
-    db.transaction((tx) => {
-      tx.executeSql("select * from testHistory14", [], (_, { rows }) => {
-        setAudiobookHistory(rows["_array"].reverse());
-        setLoadingHistory(false);
-      });
-    }, null);
-  }, []);
-  // console.log("Audiobook_History", audiobookHistory);
-
-  useEffect(() => {
-    console.log("useEffect");
-  }, []);
 
   const keyExtractor = (item, index) => item.audiobook_id.toString();
 
@@ -104,11 +107,10 @@ function History() {
   const windowHeight = Dimensions.get("window").height;
   const navigation = useNavigation();
   {
-    // console.log(audiobookHistory[0].audiobook_image);
   }
   const resizeCoverImageHeight = windowHeight / 5;
   const resizeCoverImageWidth = windowWidth / 2 - 42;
-  const renderItem = ({ item, index }:any) => (
+  const renderItem = ({ item, index }: any) => (
     <View>
       <ListItem topDivider containerStyle={styles.AudioBookListView}>
         <View style={styles.ImageContainer}>
@@ -165,7 +167,7 @@ function History() {
         tintColor={"black"}
         ratingBackgroundColor={"purple"}
       />
-      <AudiobookAccordionList
+      {/* <AudiobookAccordionList
         audiobookTitle={item?.audiobook_title}
         audiobookAuthorFirstName={item?.audiobook_author_first_name}
         audiobookAuthorLastName={item?.audiobook_author_last_name}
@@ -173,12 +175,11 @@ function History() {
         audiobookCopyrightYear={item?.audiobook_copyright_year}
         audiobookGenres={item?.audiobook_genres}
         audiobookLanguage={item?.audiobook_language}
-      />
+      /> */}
     </View>
   );
 
   if (!loadingHistory) {
-    // console.log(audiobookHistory);
     return (
       <View>
         <View style={styles.flatListStyle}>
@@ -187,9 +188,10 @@ function History() {
               <Picker
                 selectedValue={orderBy}
                 mode={"dropdown"}
-                onValueChange={(itemValue, itemIndex) => (
-                  setOrderBy(itemValue), getShelvedBooks()
-                )}
+                onValueChange={(itemValue, itemIndex) => {
+                  setOrderBy(itemValue), getShelvedBooks();
+                  refreshBookshelveOnPull();
+                }}
               >
                 <Picker.Item label="Order Visited" value="order by id" />
                 <Picker.Item label="Title" value="order by audiobook_title" />
@@ -242,9 +244,9 @@ function History() {
             renderItem={renderItem}
             numColumns={2}
             containerStyle={{ bottom: 10 }}
-            onRefresh={() => refreshBookshelveOnPull()}
-            refreshing={isRefreshing}
-            // onEndReached={()=>refreshBookshelveOnPull()}
+            // onRefresh={() => refreshBookshelveOnPull()}
+            // refreshing={isRefreshing}
+            // onEndReached={() => refreshBookshelveOnPull()}
             // onEndReachedThreshold={0} // handle refresh
           />
         </View>

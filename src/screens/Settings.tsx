@@ -26,9 +26,8 @@ const UserSettings = () => {
       (audioModeSettingsRetrieved: any) => {
         audioModeSettingsRetrieved;
         if (audioModeSettingsRetrieved) {
-          console.log("yup")
           return setAudioModeSettings(audioModeSettingsRetrieved);
-        }else{console.log("nope")}
+        }
       }
     );
   }, []);
@@ -115,7 +114,7 @@ const UserSettings = () => {
             onPress={() =>
               Alert.alert(
                 "Stays active in background.",
-                "Select if the audio session playback should stay active even when the app goes into the background.",
+                "Select if the audio session playback should stay active even when the app goes into the background. Default: On",
                 [
                   {
                     text: "Close",
@@ -138,7 +137,7 @@ const UserSettings = () => {
             onPress={() =>
               Alert.alert(
                 "Duck Audio",
-                "Select if your experience's audio should automatically be lowered in volume (duck), if audio from another app interrupts your experience. If false, audio from other apps will pause your audio.",
+                "Select if your experience's audio should automatically be lowered in volume (duck), if audio from another app interrupts your experience. If false, audio from other apps will pause your audio. Default: On",
                 [
                   {
                     text: "Close",
@@ -161,7 +160,7 @@ const UserSettings = () => {
             onPress={() =>
               Alert.alert(
                 "Play through earpiece",
-                "selecting if the audio is routed to earpiece.",
+                "Selecting if the audio is routed to earpiece. Default: Off",
                 [
                   {
                     text: "Close",

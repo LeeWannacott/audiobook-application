@@ -12,6 +12,6 @@ export function openDatabase() {
     };
   }
 
-  const db = SQLite.openDatabase("audiobooktest9.db");
+  const db = SQLite.openDatabase("audiobooktest10.db");
   return db;
 }

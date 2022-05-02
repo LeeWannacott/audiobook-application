@@ -127,7 +127,7 @@ function Audiotracks(props: any) {
   React.useEffect(() => {
     try {
       getAsyncData("audioModeSettings").then((audioModeSettingsRetrieved) => {
-        audioModeSettingsRetrieved
+        audioModeSettingsRetrieved;
         if (audioModeSettingsRetrieved) {
           return setAudioModeSettings(audioModeSettingsRetrieved);
         }
@@ -1136,8 +1136,9 @@ function Audiotracks(props: any) {
           loadingCurrentAudiotrack={loadingCurrentAudiotrack}
           loadedCurrentAudiotrack={loadedCurrentAudiotrack}
           currentAudioTrackIndex={currentAudioTrackIndex}
-          toggleOverlay={toggleOverlay}
-          /> */}
+          > 
+        </AudioTrackControls>*/}
+
       </View>
     );
   } else {

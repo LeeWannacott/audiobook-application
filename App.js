@@ -62,6 +62,7 @@ const TabNavigation = () => {
         component={Bookshelf}
         options={{
           tabBarLabel: "Bookshelf",
+          unmountOnBlur:true,
         }}
       />
       <Tab.Screen
@@ -69,6 +70,7 @@ const TabNavigation = () => {
         component={History}
         options={{
           tabBarLabel: "History",
+          unmountOnBlur:true,
         }}
       />
       <Tab.Screen
