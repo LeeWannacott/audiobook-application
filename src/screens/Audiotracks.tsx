@@ -1,21 +1,15 @@
 import React, { useEffect, useState, useRef } from "react";
 import { ActivityIndicator, Dimensions, Switch } from "react-native";
-import {
-  ListItem,
-  LinearProgress,
-  Card,
-  Rating,
-  Overlay,
-} from "react-native-elements";
+import { ListItem, LinearProgress, Card, Rating } from "react-native-elements";
 import * as rssParser from "react-native-rss-parser";
 import { Audio } from "expo-av";
-import Slider from "@react-native-community/slider";
 import { MaterialIcons } from "@expo/vector-icons";
 import { StyleSheet, Text, View, SectionList, Image } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons.js";
-import { Button, List, Colors } from "react-native-paper";
+import { Button } from "react-native-paper";
 import AudioTrackControls from "../components/audioTrackControls";
 import AudioTrackSettings from "../components/audioTrackSettings";
+import AudiotrackSliderWithCurrentPlaying from "../components/AudiotrackSliderWithCurrentPlaying";
 
 import { openDatabase } from "../utils";
 import { useNavigation } from "@react-navigation/native";
@@ -814,6 +808,7 @@ function Audiotracks(props: any) {
         keyExtractor: reviewsKeyExtractor,
       },
     ];
+
     return (
       <View style={styles.container}>
         <AudioTrackSettings
@@ -843,46 +838,15 @@ function Audiotracks(props: any) {
           </View>
         </View>
 
-        <View style={styles.SliderStyle}>
-          <Slider
-            value={currentSliderPosition}
-            disabled={false}
-            minimumValue={0.0}
-            maximumValue={100.0}
-            onSlidingComplete={(data) => SeekUpdate(data)}
-          />
-          <View style={styles.AudiobookTime}>
-            <Text style={{ marginLeft: 10 }}>
-              {" "}
-              {GetDurationFormat((currentSliderPosition * Duration) / 100)}{" "}
-            </Text>
-            <Text style={{ marginRight: 10 }}>
-              {" "}
-              {GetDurationFormat(Duration)}
-            </Text>
-          </View>
-
-          <View style={styles.SliderContainer}>
-            <Image
-              source={{ uri: bookCoverImage }}
-              style={{
-                width: 50,
-                height: 50,
-                marginRight: 5,
-              }}
-            />
-            <View>
-              <Text numberOfLines={2} ellipsizeMode="tail" style={{}}>
-                {" "}
-                {audioTrackChapterPlayingTitle}{" "}
-              </Text>
-              <Text numberOfLines={1} ellipsizeMode="tail">
-                {" "}
-                {audioTrackReader}{" "}
-              </Text>
-            </View>
-          </View>
-        </View>
+        <AudiotrackSliderWithCurrentPlaying
+          currentSliderPosition={currentSliderPosition}
+          SeekUpdate={SeekUpdate}
+          GetDurationFormat={GetDurationFormat}
+          Duration={Duration}
+          bookCoverImage={bookCoverImage}
+          audioTrackChapterPlayingTitle={audioTrackChapterPlayingTitle}
+          audioTrackReader={audioTrackReader}
+        />
 
         <AudioTrackControls
           HandlePrev={HandlePrev}
@@ -923,18 +887,6 @@ const styles = StyleSheet.create({
   AudioTracksStyle: {
     flex: 7,
     paddingBottom: 2,
-  },
-  AudioTracksStyle2: {},
-  controlsVert: {
-    flex: 0.8,
-  },
-  controls: {
-    flex: 1,
-    // top:-100,
-    flexDirection: "row",
-    backgroundColor: "white",
-    justifyContent: "center",
-    alignItems: "center",
   },
   AudiobookTime: {
     display: "flex",
@@ -983,16 +935,6 @@ const styles = StyleSheet.create({
     paddingBottom: 0,
     padding: 2,
   },
-  albumCover: {
-    width: 250,
-    height: 250,
-  },
-  control: {
-    height: 50,
-    borderRadius: 25,
-    color: "black",
-    margin: 30,
-  },
   shelveButtons: {
     display: "flex",
     flexDirection: "row",
@@ -1012,10 +954,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     alignSelf: "center",
-  },
-  sliderWithIconsOnSides: {
-    display: "flex",
-    flexDirection: "row",
   },
 });
 
