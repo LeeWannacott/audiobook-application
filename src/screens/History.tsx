@@ -28,14 +28,13 @@ let lolcache = {};
 function History() {
   const [audiobookHistory, setAudiobookHistory] = useState<any[]>([]);
   const [loadingHistory, setLoadingHistory] = useState(true);
-  const [isRefreshing, setIsRefreshing] = useState(false);
   const [orderBy, setOrderBy] = useState("order by id");
   const [avatarOnPressEnabled, setAvatarOnPressEnabled] = useState(true);
 
   const [aescOrDesc, setAescOrDesc] = useState<any>({
     toggle: 0,
     order: "ASC",
-    icon: "transfer-up",
+    icon: "sort-descending",
   });
 
   function toggleAscOrDescSort() {
@@ -44,15 +43,17 @@ function History() {
         ...aescOrDesc,
         toggle: 1,
         order: "DESC",
-        icon: "transfer-down",
+        icon: "sort-ascending",
       });
+      getShelvedBooks();
     } else {
       setAescOrDesc({
         ...aescOrDesc,
         toggle: 0,
         order: "ASC",
-        icon: "transfer-up",
+        icon: "sort-descending",
       });
+      getShelvedBooks();
     }
   }
 
@@ -64,7 +65,6 @@ function History() {
         [],
         (_, { rows }) => {
           // if (JSON.stringify(audiobookHistory) !== JSON.stringify(rows["_array"])) {
-
           // in your callback
           let newHistory = [];
           for (let row of rows._array) {
@@ -78,10 +78,8 @@ function History() {
             }
           }
           setAudiobookHistory(newHistory);
-
           let end = performance.now();
           console.log("time: ", end - start);
-
           setLoadingHistory(false);
         }
       );
@@ -95,11 +93,6 @@ function History() {
   const waitForRefresh = (timeout: number) => {
     return new Promise((resolve) => setTimeout(resolve, timeout));
   };
-  function refreshBookshelveOnPull() {
-    // setIsRefreshing(true);
-    getShelvedBooks();
-    waitForRefresh(0).then(() => setIsRefreshing(false));
-  }
 
   const keyExtractor = (item, index) => item.audiobook_id.toString();
 
@@ -167,7 +160,7 @@ function History() {
         tintColor={"black"}
         ratingBackgroundColor={"purple"}
       />
-      {/* <AudiobookAccordionList
+      <AudiobookAccordionList
         audiobookTitle={item?.audiobook_title}
         audiobookAuthorFirstName={item?.audiobook_author_first_name}
         audiobookAuthorLastName={item?.audiobook_author_last_name}
@@ -175,7 +168,7 @@ function History() {
         audiobookCopyrightYear={item?.audiobook_copyright_year}
         audiobookGenres={item?.audiobook_genres}
         audiobookLanguage={item?.audiobook_language}
-      /> */}
+      />
     </View>
   );
 
@@ -190,7 +183,6 @@ function History() {
                 mode={"dropdown"}
                 onValueChange={(itemValue, itemIndex) => {
                   setOrderBy(itemValue), getShelvedBooks();
-                  refreshBookshelveOnPull();
                 }}
               >
                 <Picker.Item label="Order Visited" value="order by id" />
