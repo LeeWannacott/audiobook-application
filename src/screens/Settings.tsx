@@ -126,7 +126,7 @@ const UserSettings = () => {
           />
           <SettingsList.Item
             icon={
-              <MaterialIconCommunity name="duck" size={50} color={"black"} />
+            <MaterialIconCommunity name="duck" size={50} color={"black"}/>
             }
             hasNavArrow={false}
             title="Duck Audio"
@@ -232,6 +232,32 @@ const UserSettings = () => {
                     text: "github",
                     onPress: () => {
                       Linking.openURL("https://github.com/LeeWannacott");
+                    },
+                  },
+                ]
+              )
+            }
+          />
+          <SettingsList.Item
+            hasNavArrow={true}
+            icon={
+            <MaterialIconCommunity name="account-voice" size={50} color={"black"} />
+            }
+            title="LibriVox"
+            onPress={() =>
+              Alert.alert(
+                "GitHub",
+                "The audiobooks contained in this application are public domain and read by volunteers from LibriVox",
+                [
+                  {
+                    text: "Cancel",
+                    onPress: () => console.log("Cancel Pressed"),
+                    style: "cancel",
+                  },
+                  {
+                    text: "LibriVox website.",
+                    onPress: () => {
+                      Linking.openURL("https://librivox.org/");
                     },
                   },
                 ]
