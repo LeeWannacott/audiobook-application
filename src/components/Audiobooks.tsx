@@ -20,7 +20,7 @@ import {
 
 const db = openDatabase();
 
-export default function Audiobooks(props:any) {
+export default function Audiobooks(props: any) {
   const [loadingAudioBooks, setLoadingAudioBooks] = useState(true);
   const [data, setAudiobooks] = useState<any>([]);
   const [bookCovers, setBookCovers] = useState<any[]>([]);
@@ -31,7 +31,9 @@ export default function Audiobooks(props:any) {
     createHistoryTableDB(db);
   }, []);
 
-  const addAudiobookToHistory = (bookDataForHistory:{audiobook_genres:string}) => {
+  const addAudiobookToHistory = (bookDataForHistory: {
+    audiobook_genres: string;
+  }) => {
     bookDataForHistory.audiobook_genres = JSON.stringify(
       bookDataForHistory.audiobook_genres
     );
@@ -95,13 +97,13 @@ export default function Audiobooks(props:any) {
     props.apiSettingsHaveBeenSet,
   ]);
 
-  const bookCoverURL:any[] = [];
-  const reviewsURL:any[] = [];
+  const bookCoverURL: any[] = [];
+  const reviewsURL: any[] = [];
   useEffect(() => {
     if (data.books) {
       const dataKeys = Object.values(data.books);
       let bookCoverImagePath;
-      dataKeys.forEach((bookCoverURLPath:any) => {
+      dataKeys.forEach((bookCoverURLPath: any) => {
         bookCoverImagePath = bookCoverURLPath.url_zip_file.split("/");
         bookCoverImagePath = bookCoverImagePath[bookCoverImagePath.length - 2];
         const reviewUrl = encodeURI(
@@ -124,7 +126,7 @@ export default function Audiobooks(props:any) {
   const resizeCoverImageHeight = windowHeight / 5;
   const resizeCoverImageWidth = windowWidth / 2 - 42;
   const navigation = useNavigation();
-  const keyExtractor = (item:any, index:any) => index.toString();
+  const keyExtractor = (item: any, index: any) => index.toString();
   const renderItem = ({ item, index }) => (
     <View>
       <ListItem
@@ -147,6 +149,7 @@ export default function Audiobooks(props:any) {
                   audiobook_author_first_name: item?.authors[0]?.first_name,
                   audiobook_author_last_name: item?.authors[0]?.last_name,
                   audiobook_total_time: item?.totaltime,
+                  audiobook_total_time_secs: item?.totaltimesecs,
                   audiobook_copyright_year: item?.copyright_year,
                   audiobook_genres: item?.genres,
                   audiobook_review_url: reviewsUrlList[index],
@@ -163,6 +166,7 @@ export default function Audiobooks(props:any) {
                   audiobookAuthorFirstName: item?.authors[0]?.first_name,
                   audiobookAuthorLastName: item?.authors[0]?.last_name,
                   audiobookTotalTime: item?.totaltime,
+                  audiobookTimeSeconds: item?.totaltimesecs,
                   audiobookCopyrightYear: item?.copyright_year,
                   audiobookGenres: item?.genres,
                   audiobookReviewUrl: reviewsUrlList[index],
@@ -236,7 +240,7 @@ const styles = StyleSheet.create({
   audiobookContainer: {
     paddingBottom: 15,
     marginBottom: 10,
-    marginTop: 5,
+    marginTop: 2,
     borderRadius: 2,
   },
   ActivityIndicatorStyle: {

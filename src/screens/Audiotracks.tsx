@@ -1,6 +1,12 @@
 import React, { useEffect, useState, useRef } from "react";
-import { ActivityIndicator, Dimensions, Switch } from "react-native";
-import { ListItem, LinearProgress, Card, Rating } from "react-native-elements";
+import {
+  ActivityIndicator,
+  Dimensions,
+  Switch,
+  BackHandler,
+} from "react-native";
+import { ListItem, LinearProgress, Card } from "react-native-elements";
+import { Rating } from "react-native-ratings";
 import * as rssParser from "react-native-rss-parser";
 import { Audio } from "expo-av";
 import { MaterialIcons } from "@expo/vector-icons";
@@ -23,6 +29,7 @@ import {
   initialAudioBookStoreDB,
   removeShelvedAudiobookDB,
   updateRatingForHistory,
+  updateListeningProgress,
 } from "../database_functions";
 
 import { getAsyncData, storeAsyncData } from "../database_functions";
@@ -49,6 +56,7 @@ function Audiotracks(props: any) {
   const [currentSliderPosition, setCurrentSliderPosition] = React.useState(0.0);
   const [controlPanelButtonSize] = useState(30);
   const [visible, setVisible] = useState(false);
+  const [bookAmountRead, setBookAmountRead] = useState(0.0);
   // const [pitchCorrection, setPitchCorrection] = useState(true);
   const [audioPlayerSettings, setAudioPlayerSettings] = useState({
     rate: 1.0,
@@ -63,6 +71,8 @@ function Audiotracks(props: any) {
     currentAudiotrackPositionsMs: [],
     shelveIconToggle: 0,
     audiobookRating: 0,
+    totalAudioBookListeningProgress: 0,
+    totalAudioBookListeningTimeMS: 0,
   });
 
   const [audioModeSettings, setAudioModeSettings] = useState({
@@ -83,6 +93,7 @@ function Audiotracks(props: any) {
     audiobookAuthorFirstName,
     audiobookAuthorLastName,
     audiobookTotalTime,
+    audiobookTimeSeconds,
     audiobookCopyrightYear,
     audiobookGenres,
     audiobookReviewUrl,
@@ -97,6 +108,32 @@ function Audiotracks(props: any) {
       console.log(err);
     }
   }, [audiobookTitle]);
+
+  function backButtonHandler() {
+    console.log("backtest");
+  }
+
+  useEffect(() => {
+    BackHandler.addEventListener("hardwareBackPress", backButtonHandler);
+
+    return () => {
+      BackHandler.removeEventListener("hardwareBackPress", backButtonHandler);
+    };
+  }, [backButtonHandler]);
+
+  React.useEffect(() => {
+    const unsubscribe = navigation.addListener('beforeRemove', () => {
+      console.log('Screen is unfocused');
+              updateListeningProgress(
+                db,
+                audiotracksData?.totalAudioBookListeningProgress,
+                audiotracksData?.totalAudioBookListeningTimeMS,
+                audioBookId
+              );
+    });
+
+    return unsubscribe;
+  }, [navigation]);
 
   React.useLayoutEffect(() => {
     navigation.setOptions({
@@ -115,6 +152,9 @@ function Audiotracks(props: any) {
             }}
           />
         </Button>
+      ),
+      headerLeft: () => (
+      backButtonHandler()
       ),
     });
   }, []);
@@ -191,9 +231,20 @@ function Audiotracks(props: any) {
     // initial load of audiotrack data from DB.
     db.transaction((tx) => {
       try {
-        tx.executeSql("select * from testaudio14", [], (_, { rows }) => {
+        tx.executeSql("select * from testaudio15", [], (_, { rows }) => {
           rows["_array"].forEach((element) => {
             if (initAudioBookData.audiobook_id === element.audiobook_id) {
+              const initialValue = 0;
+              const currentTimeReadInBook = JSON.parse(
+                element?.current_audiotrack_positions
+              ).reduce(
+                (previousValue: any, currentValue: any) =>
+                  previousValue + Number(currentValue),
+                initialValue
+              );
+              const currentListeningProgress =
+                currentTimeReadInBook / 1000 / audiobookTimeSeconds;
+
               setAudiotracksData({
                 ...audiotracksData,
                 linearProgessBars: JSON.parse(
@@ -204,7 +255,19 @@ function Audiotracks(props: any) {
                 ),
                 shelveIconToggle: element?.audiobook_shelved,
                 audiobookRating: element?.audiobook_rating,
+                totalAudioBookListeningTimeMS: currentTimeReadInBook,
+                totalAudioBookListeningProgress: currentListeningProgress,
               });
+              setBookAmountRead(
+                currentTimeReadInBook / 1000 / audiobookTimeSeconds
+              );
+              console.log(currentListeningProgress, currentTimeReadInBook);
+              updateListeningProgress(
+                db,
+                currentListeningProgress,
+                currentTimeReadInBook,
+                audioBookId
+              );
             }
           });
         });
@@ -217,6 +280,12 @@ function Audiotracks(props: any) {
   const shelveAudiobook = (bookBeingShelved: any) => {
     bookBeingShelved.audiobook_genres = JSON.stringify(
       bookBeingShelved.audiobook_genres
+    );
+    bookBeingShelved.audiobook_total_time_secs = JSON.stringify(
+      bookBeingShelved.audiobook_total_time_secs
+    );
+    bookBeingShelved.audiobook_total_time = JSON.stringify(
+      bookBeingShelved.audiobook_total_time
     );
     shelveAudiobookDB(db, bookBeingShelved);
   };
@@ -254,6 +323,7 @@ function Audiotracks(props: any) {
           setAudioBookDescription(rss?.description);
         }
         if (rss?.items !== undefined) {
+          // console.log(rss)
           setDataRSS(rss?.items);
         }
       })
@@ -343,6 +413,22 @@ function Audiotracks(props: any) {
         ? () => {
             console.log("Unloading Sound");
             sound.current.unloadAsync();
+            const initialValue = 0;
+            const currentTimeReadInBook =
+              audiotracksData.currentAudiotrackPositionsMs.reduce(
+                (previousValue: any, currentValue: any) =>
+                  previousValue + Number(currentValue),
+                initialValue
+              );
+            const currentListeningProgress =
+              currentTimeReadInBook / 1000 / audiobookTimeSeconds;
+            console.log(currentListeningProgress, currentTimeReadInBook);
+            updateListeningProgress(
+              db,
+              currentListeningProgress,
+              currentTimeReadInBook,
+              audioBookId
+            );
           }
         : undefined;
     } catch (err) {
@@ -374,7 +460,8 @@ function Audiotracks(props: any) {
 
   async function updateAndStoreAudiobookPositions(data: any) {
     try {
-      let currentAudiotrackProgress = data.positionMillis / data.durationMillis;
+      const currentAudiotrackProgress =
+        data.positionMillis / data.durationMillis;
       updateLinearProgressBars(currentAudiotrackProgress);
       updateAudiotrackPositions(data.positionMillis);
 
@@ -400,7 +487,7 @@ function Audiotracks(props: any) {
           return HandleNext();
         }
       } else if (data.positionMillis && data.durationMillis) {
-        console.log(data);
+        // console.log(data);
         updateAndStoreAudiobookPositions(data);
       }
     } catch (error) {
@@ -443,7 +530,7 @@ function Audiotracks(props: any) {
         const result = await sound.current.loadAsync(
           { uri: URLSToPlayAudiotracks[index] },
           {
-            progressUpdateIntervalMillis: 5000,
+            progressUpdateIntervalMillis: 1000,
             positionMillis: audiotrackPositions,
             shouldPlay: audioPlayerSettings.shouldPlay,
             rate: audioPlayerSettings.rate,
@@ -639,6 +726,7 @@ function Audiotracks(props: any) {
           variant="determinate"
           trackColor="lightblue"
           width={190}
+          animation={false}
         />
         <ListItem.Subtitle>
           <Text numberOfLines={1} ellipsizeMode="tail">
@@ -686,7 +774,8 @@ function Audiotracks(props: any) {
 
   useEffect(() => {
     if (dataRSS.length > 0) {
-      console.log(dataRSS);
+      // console.log(dataRSS);
+      // console.log(dataRSS)
       const RSSDict = Object.entries(dataRSS);
       const RSSURLS = RSSDict.map(([key, value]) => {
         return value?.enclosures[0]?.url;
@@ -737,6 +826,14 @@ function Audiotracks(props: any) {
                 marginLeft: 35,
               }}
             />
+            <LinearProgress
+              color="primary"
+              value={audiotracksData?.totalAudioBookListeningProgress}
+              variant="determinate"
+              trackColor="lightblue"
+              width={100}
+              animation={false}
+            />
             <Text style={styles.bookAuthor}>
               {" "}
               Author: {audiobookAuthorFirstName} {audiobookAuthorLastName}
@@ -762,6 +859,7 @@ function Audiotracks(props: any) {
                     audiobook_author_first_name: audiobookAuthorFirstName,
                     audiobook_author_last_name: audiobookAuthorLastName,
                     audiobook_total_time: audiobookTotalTime,
+                    audiobook_total_time_secs: audiobookTimeSeconds,
                     audiobook_copyright_year: audiobookCopyrightYear,
                     audiobook_genres: audiobookGenres,
                     audiobook_rating: audiotracksData.audiobookRating,
@@ -830,9 +928,7 @@ function Audiotracks(props: any) {
               renderItem={({ section: { renderItem } }) => renderItem}
               ListHeaderComponent={getHeader()}
               renderSectionHeader={({ section: { title } }) => (
-                <View style={styles.sectionTitlesContainer}>
-                  <Text style={styles.sectionTitles}>{title}</Text>
-                </View>
+                <Text style={styles.sectionTitles}>{title}</Text>
               )}
             />
           </View>
@@ -946,14 +1042,12 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
   },
   sectionTitles: {
-    color: "white",
-    fontSize: 16,
-  },
-  sectionTitlesContainer: {
     display: "flex",
     flexDirection: "row",
     justifyContent: "center",
     alignSelf: "center",
+    color: "white",
+    fontSize: 16,
   },
 });
 
