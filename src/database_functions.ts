@@ -1,15 +1,17 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-export function createTablesDB(db: any) {
+export function createShelveTable(db: any) {
   db.transaction((tx: any) => {
     tx.executeSql(
       "create table if not exists testshelve25 (id integer primary key not null, audiobook_rss_url text not null unique, audiobook_id text not null unique, audiobook_image text, audiobook_title text, audiobook_author_first_name text, audiobook_author_last_name text, audiobook_total_time text, audiobook_total_time_secs text, audiobook_copyright_year text, audiobook_genres text, audiobook_rating text, audiobook_review_url text, audiobook_num_sections text, audiobook_ebook_url text, audiobook_zip text, audiobook_language text);"
     );
   });
+}
 
+export function createAudioBookDataTable(db: any) {
   db.transaction((tx: any) => {
     tx.executeSql(
-      "create table if not exists testaudio15 (id integer primary key not null, audiobook_id text not null unique, audiotrack_progress_bars text, current_audiotrack_positions text, audiobook_shelved int, audiobook_rating int, current_listening_progress_percent, current_listening_time text);"
+      "create table if not exists testaudio18 (id integer primary key not null, audiobook_id text not null unique, audiotrack_progress_bars text, current_audiotrack_positions text, audiobook_shelved int, audiobook_rating text, listening_progress_percent text, current_listening_time text);"
     );
   });
 }
@@ -77,37 +79,30 @@ export function shelveAudiobookDB(db: any, shelveData: any) {
         shelveData.audiobook_language,
       ]
     );
-    tx.executeSql("select * from testshelve25", [], (_, { rows }) => {
-      console.log(rows);
-    });
+    tx.executeSql("select * from testshelve25", [], (_, { rows }) => {});
   }, null);
 }
 
 export function updateAudioTrackPositionsDB(
   db: any,
-  audiotrack_progress_bars: any,
-  current_audiotrack_positions: any,
-  audiobook_id: any
+  audiotrackProgress:any,
 ) {
   db.transaction((tx: any) => {
     tx.executeSql(
-      `update testaudio15 set audiotrack_progress_bars=?,current_audiotrack_positions=? where audiobook_id=?;`,
-      [audiotrack_progress_bars, current_audiotrack_positions, audiobook_id]
+      `update testaudio18 set audiotrack_progress_bars=?,current_audiotrack_positions=?,listening_progress_percent=?,current_listening_time=? where audiobook_id=?;`,
+      [
+        audiotrackProgress.audiotrack_progress_bars,
+        audiotrackProgress.current_audiotrack_positions,
+        audiotrackProgress.listening_progress_percent,
+        audiotrackProgress.current_listening_time,
+        audiotrackProgress.audiobook_id,
+      ]
     );
   });
-}
-
-export function updateListeningProgress(
-  db: any,
-  current_listening_progress_percent: any,
-  current_listening_time: any,
-  audiobook_id: any
-) {
   db.transaction((tx: any) => {
-    tx.executeSql(
-      `update testaudio15 set current_listening_progress_percent=?, current_listening_time=?, where audiobook_id=?;`,
-      [current_listening_progress_percent, current_listening_time, audiobook_id]
-    );
+    tx.executeSql("select * from testaudio18", [], (_, { rows }) => {
+      console.log("banana", rows);
+    });
   });
 }
 
@@ -118,7 +113,7 @@ export function updateBookShelveDB(
 ) {
   db.transaction((tx: any) => {
     tx.executeSql(
-      `update testaudio15 set audiobook_shelved=? where audiobook_id=?;`,
+      `update testaudio18 set audiobook_shelved=? where audiobook_id=?;`,
       [audiobook_shelved, audiobook_id]
     );
   });
@@ -136,9 +131,40 @@ export function updateRatingForHistory(
     );
   });
 
+  // db.transaction((tx: any) => {
+  // tx.executeSql("select * from testaudio18", [], (_, { rows }) => {
+  // console.log(rows);
+  // });
+  // });
+}
+
+export function updateListeningProgressDB(
+  db: any,
+  listening_progress_percent: any,
+  current_listening_time: any,
+  audiobook_id: any
+) {
+  console.log(
+    "progress",
+    listening_progress_percent,
+    current_listening_time,
+    audiobook_id
+  );
+  console.log(
+    typeof listening_progress_percent,
+    typeof current_listening_time,
+    typeof audiobook_id
+  );
+
   db.transaction((tx: any) => {
-    tx.executeSql("select * from testaudio15", [], (_, { rows }) => {
-      console.log(rows);
+    tx.executeSql(
+      `update testaudio18 set listening_progress_percent=?,current_listening_time=? where audiobook_id=?;`,
+      [listening_progress_percent, current_listening_time, audiobook_id]
+    );
+  });
+  db.transaction((tx: any) => {
+    tx.executeSql("select * from testaudio18", [], (_, { rows }) => {
+      console.log("banana", rows);
     });
   });
 }
@@ -150,7 +176,7 @@ export function updateAudiobookRatingDB(
 ) {
   db.transaction((tx: any) => {
     tx.executeSql(
-      `update testaudio15 set audiobook_rating=? where audiobook_id=?;`,
+      `update testaudio18 set audiobook_rating=? where audiobook_id=?;`,
       [audiobook_rating, audiobook_id]
     );
   });
@@ -159,7 +185,7 @@ export function updateAudiobookRatingDB(
 export function initialAudioBookStoreDB(db: any, initAudioBookData: any) {
   db.transaction((tx: any) => {
     tx.executeSql(
-      "insert into testaudio15(audiobook_id, audiotrack_progress_bars, current_audiotrack_positions, audiobook_shelved, audiobook_rating) values(?,?,?,?,?)",
+      "insert into testaudio18(audiobook_id, audiotrack_progress_bars, current_audiotrack_positions, audiobook_shelved, audiobook_rating) values(?,?,?,?,?)",
 
       [
         initAudioBookData.audiobook_id,
@@ -172,7 +198,7 @@ export function initialAudioBookStoreDB(db: any, initAudioBookData: any) {
   });
 
   // db.transaction((tx:any) => {
-  // tx.executeSql("select * from testaudio15", [], (_, { rows }) => {});
+  // tx.executeSql("select * from testaudio18", [], (_, { rows }) => {});
   // console.log(rows)
   // });
 }

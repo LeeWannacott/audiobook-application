@@ -22,14 +22,14 @@ import { useNavigation } from "@react-navigation/native";
 
 const db = openDatabase();
 import {
-  createTablesDB,
+  createShelveTable,
+  createAudioBookDataTable,
   updateAudioTrackPositionsDB,
   shelveAudiobookDB,
   updateBookShelveDB,
   initialAudioBookStoreDB,
   removeShelvedAudiobookDB,
-  updateRatingForHistory,
-  updateListeningProgress,
+  updateAudiobookRatingDB,
 } from "../database_functions";
 
 import { getAsyncData, storeAsyncData } from "../database_functions";
@@ -56,7 +56,6 @@ function Audiotracks(props: any) {
   const [currentSliderPosition, setCurrentSliderPosition] = React.useState(0.0);
   const [controlPanelButtonSize] = useState(30);
   const [visible, setVisible] = useState(false);
-  const [bookAmountRead, setBookAmountRead] = useState(0.0);
   // const [pitchCorrection, setPitchCorrection] = useState(true);
   const [audioPlayerSettings, setAudioPlayerSettings] = useState({
     rate: 1.0,
@@ -75,7 +74,7 @@ function Audiotracks(props: any) {
     totalAudioBookListeningTimeMS: 0,
   });
 
-  const [audioModeSettings, setAudioModeSettings] = useState({
+  const [audioModeSettings, setAudioModeSettings] = useState<any>({
     staysActiveInBackground: true,
     interruptionModeAndroid: Audio.INTERRUPTION_MODE_ANDROID_DO_NOT_MIX,
     shouldDuckAndroid: true,
@@ -109,31 +108,7 @@ function Audiotracks(props: any) {
     }
   }, [audiobookTitle]);
 
-  function backButtonHandler() {
-    console.log("backtest");
-  }
-
-  useEffect(() => {
-    BackHandler.addEventListener("hardwareBackPress", backButtonHandler);
-
-    return () => {
-      BackHandler.removeEventListener("hardwareBackPress", backButtonHandler);
-    };
-  }, [backButtonHandler]);
-
-  React.useEffect(() => {
-    const unsubscribe = navigation.addListener('beforeRemove', () => {
-      console.log('Screen is unfocused');
-              updateListeningProgress(
-                db,
-                audiotracksData?.totalAudioBookListeningProgress,
-                audiotracksData?.totalAudioBookListeningTimeMS,
-                audioBookId
-              );
-    });
-
-    return unsubscribe;
-  }, [navigation]);
+  function backButtonHandler() {}
 
   React.useLayoutEffect(() => {
     navigation.setOptions({
@@ -152,9 +127,6 @@ function Audiotracks(props: any) {
             }}
           />
         </Button>
-      ),
-      headerLeft: () => (
-      backButtonHandler()
       ),
     });
   }, []);
@@ -185,7 +157,8 @@ function Audiotracks(props: any) {
 
   useEffect(() => {
     try {
-      createTablesDB(db);
+      createShelveTable(db);
+      createAudioBookDataTable(db);
     } catch (err) {
       console.log(err);
     }
@@ -198,16 +171,25 @@ function Audiotracks(props: any) {
   ) => {
     console.log("updating audiobook position");
     try {
+      const initialValue = 0;
+      const current_listening_time = current_audiotrack_positions.reduce(
+        (previousValue: any, currentValue: any) =>
+          previousValue + Number(currentValue),
+        initialValue
+      );
+      const listening_progress_percent =
+        current_listening_time / 1000 / audiobookTimeSeconds;
       audiotrack_progress_bars = JSON.stringify(audiotrack_progress_bars);
       current_audiotrack_positions = JSON.stringify(
         current_audiotrack_positions
       );
-      updateAudioTrackPositionsDB(
-        db,
+      updateAudioTrackPositionsDB(db, {
         audiotrack_progress_bars,
+        listening_progress_percent,
+        current_listening_time,
         current_audiotrack_positions,
-        audiobook_id
-      );
+        audiobook_id,
+      });
     } catch (err) {
       console.log(err);
     }
@@ -231,7 +213,7 @@ function Audiotracks(props: any) {
     // initial load of audiotrack data from DB.
     db.transaction((tx) => {
       try {
-        tx.executeSql("select * from testaudio15", [], (_, { rows }) => {
+        tx.executeSql("select * from testaudio18", [], (_, { rows }) => {
           rows["_array"].forEach((element) => {
             if (initAudioBookData.audiobook_id === element.audiobook_id) {
               const initialValue = 0;
@@ -258,16 +240,6 @@ function Audiotracks(props: any) {
                 totalAudioBookListeningTimeMS: currentTimeReadInBook,
                 totalAudioBookListeningProgress: currentListeningProgress,
               });
-              setBookAmountRead(
-                currentTimeReadInBook / 1000 / audiobookTimeSeconds
-              );
-              console.log(currentListeningProgress, currentTimeReadInBook);
-              updateListeningProgress(
-                db,
-                currentListeningProgress,
-                currentTimeReadInBook,
-                audioBookId
-              );
             }
           });
         });
@@ -378,7 +350,9 @@ function Audiotracks(props: any) {
           ...audiotracksData,
           audiobookRating: averageAudiobookRating,
         });
-        updateRatingForHistory(db, audioBookId, averageAudiobookRating);
+        if (averageAudiobookRating > 0) {
+          updateAudiobookRatingDB(db, audioBookId, averageAudiobookRating);
+        }
       }
     } catch (e) {
       console.log(e);
@@ -413,28 +387,20 @@ function Audiotracks(props: any) {
         ? () => {
             console.log("Unloading Sound");
             sound.current.unloadAsync();
-            const initialValue = 0;
-            const currentTimeReadInBook =
-              audiotracksData.currentAudiotrackPositionsMs.reduce(
-                (previousValue: any, currentValue: any) =>
-                  previousValue + Number(currentValue),
-                initialValue
-              );
-            const currentListeningProgress =
-              currentTimeReadInBook / 1000 / audiobookTimeSeconds;
-            console.log(currentListeningProgress, currentTimeReadInBook);
-            updateListeningProgress(
-              db,
-              currentListeningProgress,
-              currentTimeReadInBook,
-              audioBookId
-            );
           }
         : undefined;
     } catch (err) {
       console.log(err);
     }
   }, [sound.current]);
+
+  React.useEffect(() => {
+    const unsubscribe = navigation.addListener("beforeRemove", () => {
+      backButtonHandler(audiotracksData);
+    });
+
+    return unsubscribe;
+  }, [navigation]);
 
   function sliderPositionCalculation(progress: number) {
     let sliderPositionCalculate = progress * 100;
@@ -464,11 +430,14 @@ function Audiotracks(props: any) {
         data.positionMillis / data.durationMillis;
       updateLinearProgressBars(currentAudiotrackProgress);
       updateAudiotrackPositions(data.positionMillis);
-
       const sliderPositionCalculated = sliderPositionCalculation(
         currentAudiotrackProgress
       );
+
+      let start = performance.now();
       setCurrentSliderPosition(sliderPositionCalculated);
+      let end = performance.now();
+      console.log("time: ", end - start);
       updateAudioBookPosition(
         audioBookId,
         audiotracksData.linearProgessBars,
@@ -487,7 +456,6 @@ function Audiotracks(props: any) {
           return HandleNext();
         }
       } else if (data.positionMillis && data.durationMillis) {
-        // console.log(data);
         updateAndStoreAudiobookPositions(data);
       }
     } catch (error) {
@@ -842,7 +810,7 @@ function Audiotracks(props: any) {
             <Rating
               showRating
               ratingCount={5}
-              startingValue={audiotracksData.audiobookRating}
+              startingValue={audiotracksData?.audiobookRating}
               fractions={1}
               readonly={true}
               style={{ paddingVertical: 10 }}

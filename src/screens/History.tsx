@@ -2,7 +2,8 @@ import React from "react";
 import { useState, useEffect } from "react";
 
 import { useNavigation } from "@react-navigation/native";
-import { ListItem, Rating } from "react-native-elements";
+import { ListItem, LinearProgress } from "react-native-elements";
+import { Rating } from "react-native-ratings";
 import {
   FlatList,
   ActivityIndicator,
@@ -27,6 +28,7 @@ let lolcache = {};
 
 function History() {
   const [audiobookHistory, setAudiobookHistory] = useState<any[]>([]);
+  const [audioBookInfo, setAudioBookInfo] = useState<any[]>([]);
   const [loadingHistory, setLoadingHistory] = useState(true);
   const [orderBy, setOrderBy] = useState("order by id");
   const [avatarOnPressEnabled, setAvatarOnPressEnabled] = useState(true);
@@ -57,27 +59,39 @@ function History() {
     }
   }
 
+  React.useEffect(() => {
+    db.transaction((tx) => {
+      tx.executeSql(`select * from testaudio18`, [], (_, { rows }) => {
+        const dataFromAudiobookInformationTable = {};
+        rows._array.forEach((row) => {
+          return (dataFromAudiobookInformationTable[row.audiobook_id] = row);
+        });
+        setAudioBookInfo(dataFromAudiobookInformationTable);
+      });
+    }, null);
+  }, []);
+
   function getShelvedBooks() {
     db.transaction((tx) => {
-      let start = performance.now();
       tx.executeSql(
-        `select * from testHistory14 ${orderBy} ${aescOrDesc.order}`,
+        // ${orderBy} ${aescOrDesc.order}
+        `select * from testHistory15`,
         [],
         (_, { rows }) => {
-          // if (JSON.stringify(audiobookHistory) !== JSON.stringify(rows["_array"])) {
-          // in your callback
-          let newHistory = [];
-          for (let row of rows._array) {
-            if (
-              Object.prototype.hasOwnProperty.call(lolcache, row.audiobook_id)
-            ) {
-              newHistory.push(lolcache[row.audiobook_id]);
-            } else {
-              lolcache[row.audiobook_id] = row;
-              newHistory.push(row);
-            }
-          }
-          setAudiobookHistory(newHistory);
+          let start = performance.now();
+          // let newHistory = [];
+          // for (let row of rows._array) {
+          // if (
+          // Object.prototype.hasOwnProperty.call(lolcache, row.audiobook_id)
+          // ) {
+          // newHistory.push(lolcache[row.audiobook_id]);
+          // } else {
+          // lolcache[row.audiobook_id] = row;
+          // newHistory.push(row);
+          // }
+          // }
+          setAudiobookHistory(rows["_array"]);
+          // console.log(rows["_array"]);
           let end = performance.now();
           console.log("time: ", end - start);
           setLoadingHistory(false);
@@ -89,10 +103,6 @@ function History() {
   useEffect(() => {
     getShelvedBooks();
   }, []);
-
-  const waitForRefresh = (timeout: number) => {
-    return new Promise((resolve) => setTimeout(resolve, timeout));
-  };
 
   const keyExtractor = (item, index) => item.audiobook_id.toString();
 
@@ -108,11 +118,6 @@ function History() {
       <ListItem topDivider containerStyle={styles.AudioBookListView}>
         <View style={styles.ImageContainer}>
           <Pressable
-            android_ripple={{
-              color: "#FFF",
-              borderless: false,
-              foreground: true,
-            }}
             onPress={() => {
               if (avatarOnPressEnabled) {
                 navigation.navigate("Audio", {
@@ -123,6 +128,7 @@ function History() {
                   audiobookAuthorFirstName: item?.audiobook_author_first_name,
                   audiobookAuthorLastName: item?.audiobook_author_last_name,
                   audiobookTotalTime: item?.audiobook_total_time,
+                  audiobookTimeSeconds: item?.audiobook_total_time_secs,
                   audiobookCopyrightYear: item?.audiobook_copyright_year,
                   audiobookGenres: JSON.parse(item?.audiobook_genres),
                   audiobookLanguage: item?.audiobook_language,
@@ -147,19 +153,39 @@ function History() {
               }}
             />
           </Pressable>
+
+          {audioBookInfo[item.audiobook_id]?.audiobook_id ==
+          item.audiobook_id ? (
+            <LinearProgress
+              color="primary"
+              value={
+                audioBookInfo[item.audiobook_id]?.listening_progress_percent
+              }
+              variant="determinate"
+              trackColor="lightblue"
+              animation={false}
+            />
+          ) : (
+            <LinearProgress
+              color="primary"
+              variant="determinate"
+              trackColor="lightblue"
+              animation={false}
+            />
+          )}
         </View>
       </ListItem>
-      <Rating
-        showRating
-        imageSize={20}
-        ratingCount={5}
-        startingValue={item?.audiobook_rating}
-        showRating={false}
-        readonly={true}
-        style={{ ratingColor: "red" }}
-        tintColor={"black"}
-        ratingBackgroundColor={"purple"}
-      />
+      {audioBookInfo[item.audiobook_id]?.audiobook_id == item.audiobook_id && audioBookInfo[item.audiobook_id]?.audiobook_rating > 0 ? (
+        <Rating
+          showRating={false}
+          imageSize={20}
+          ratingCount={5}
+          startingValue={audioBookInfo[item.audiobook_id]?.audiobook_rating}
+          readonly={true}
+          tintColor={"black"}
+        />
+      ) : undefined}
+
       <AudiobookAccordionList
         audiobookTitle={item?.audiobook_title}
         audiobookAuthorFirstName={item?.audiobook_author_first_name}
@@ -235,11 +261,6 @@ function History() {
             keyExtractor={keyExtractor}
             renderItem={renderItem}
             numColumns={2}
-            containerStyle={{ bottom: 10 }}
-            // onRefresh={() => refreshBookshelveOnPull()}
-            // refreshing={isRefreshing}
-            // onEndReached={() => refreshBookshelveOnPull()}
-            // onEndReachedThreshold={0} // handle refresh
           />
         </View>
       </View>
@@ -257,12 +278,13 @@ export default History;
 
 const windowWidth = Dimensions.get("window").width;
 const windowHeight = Dimensions.get("window").height;
+const ImageContainerWidth = windowWidth / 2 - 40;
 
 const styles = StyleSheet.create({
   ImageContainer: {
     flexDirection: "column",
     backgroundColor: "white",
-    width: windowWidth / 2 - 40,
+    width: ImageContainerWidth,
     borderStyle: "solid",
     borderWidth: 1,
     borderRadius: 2,
