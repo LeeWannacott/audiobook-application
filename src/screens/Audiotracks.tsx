@@ -30,6 +30,7 @@ import {
   initialAudioBookStoreDB,
   removeShelvedAudiobookDB,
   updateAudiobookRatingDB,
+  updateRatingForHistory,
 } from "../database_functions";
 
 import { getAsyncData, storeAsyncData } from "../database_functions";
@@ -328,6 +329,10 @@ function Audiotracks(props: any) {
       .catch((error) => console.log("Error: ", error));
   }, [audiobookReviewUrl]);
 
+  function roundNumberTwoDecimal(num){  
+  return Math.round((num + Number.EPSILON) * 100) / 100
+  } 
+
   useEffect(() => {
     try {
       if (reviews.length > 0 && reviews) {
@@ -351,7 +356,8 @@ function Audiotracks(props: any) {
           audiobookRating: averageAudiobookRating,
         });
         if (averageAudiobookRating > 0) {
-          updateAudiobookRatingDB(db, audioBookId, averageAudiobookRating);
+          updateAudiobookRatingDB(db, audioBookId, roundNumberTwoDecimal(averageAudiobookRating));
+          updateRatingForHistory(db, audioBookId, roundNumberTwoDecimal(averageAudiobookRating));
         }
       }
     } catch (e) {
