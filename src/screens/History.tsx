@@ -35,7 +35,7 @@ function History() {
 
   const [aescOrDesc, setAescOrDesc] = useState<any>({
     toggle: 0,
-    order: "ASC",
+    order: "DESC",
     icon: "sort-descending",
   });
 
@@ -45,7 +45,7 @@ function History() {
         ...aescOrDesc,
         toggle: 1,
         order: "DESC",
-        icon: "sort-ascending",
+        icon: "sort-descending",
       });
       getShelvedBooks();
     } else {
@@ -53,7 +53,7 @@ function History() {
         ...aescOrDesc,
         toggle: 0,
         order: "ASC",
-        icon: "sort-descending",
+        icon: "sort-ascending",
       });
       getShelvedBooks();
     }
@@ -75,22 +75,22 @@ function History() {
     db.transaction((tx) => {
       tx.executeSql(
         // ${orderBy} ${aescOrDesc.order}
-        `select * from testHistory15`,
+        `select * from testHistory15 ${orderBy} ${aescOrDesc.order}`,
         [],
         (_, { rows }) => {
           let start = performance.now();
-          // let newHistory = [];
-          // for (let row of rows._array) {
-          // if (
-          // Object.prototype.hasOwnProperty.call(lolcache, row.audiobook_id)
-          // ) {
-          // newHistory.push(lolcache[row.audiobook_id]);
-          // } else {
-          // lolcache[row.audiobook_id] = row;
-          // newHistory.push(row);
-          // }
-          // }
-          setAudiobookHistory(rows["_array"]);
+          let newHistory = [];
+          for (let row of rows._array) {
+            if (
+              Object.prototype.hasOwnProperty.call(lolcache, row.audiobook_id)
+            ) {
+              newHistory.push(lolcache[row.audiobook_id]);
+            } else {
+              lolcache[row.audiobook_id] = row;
+              newHistory.push(row);
+            }
+          }
+          setAudiobookHistory(newHistory);
           // console.log(rows["_array"]);
           let end = performance.now();
           console.log("time: ", end - start);
@@ -157,25 +157,26 @@ function History() {
           {audioBookInfo[item.audiobook_id]?.audiobook_id ==
           item.audiobook_id ? (
             <LinearProgress
-              color="primary"
+              color="darkgreen"
               value={
                 audioBookInfo[item.audiobook_id]?.listening_progress_percent
               }
               variant="determinate"
-              trackColor="lightblue"
+              trackColor="white"
               animation={false}
             />
           ) : (
             <LinearProgress
               color="primary"
               variant="determinate"
-              trackColor="lightblue"
+              trackColor="white"
               animation={false}
             />
           )}
         </View>
       </ListItem>
-      {audioBookInfo[item.audiobook_id]?.audiobook_id == item.audiobook_id && audioBookInfo[item.audiobook_id]?.audiobook_rating > 0 ? (
+      {audioBookInfo[item.audiobook_id]?.audiobook_id == item.audiobook_id &&
+      audioBookInfo[item.audiobook_id]?.audiobook_rating > 0 ? (
         <Rating
           showRating={false}
           imageSize={20}
@@ -187,6 +188,7 @@ function History() {
       ) : undefined}
 
       <AudiobookAccordionList
+        accordionTitle={item?.audiobook_title}
         audiobookTitle={item?.audiobook_title}
         audiobookAuthorFirstName={item?.audiobook_author_first_name}
         audiobookAuthorLastName={item?.audiobook_author_last_name}

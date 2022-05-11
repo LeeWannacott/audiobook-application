@@ -1,17 +1,19 @@
 import React from "react";
-import { StyleSheet, Dimensions } from "react-native";
+import { StyleSheet, Dimensions,Text } from "react-native";
 import { List, Divider } from "react-native-paper";
 import { ListItem } from "react-native-elements";
 import MaterialIconCommunity from "react-native-vector-icons/MaterialCommunityIcons.js";
 
-function AudiobookAccordionList(props:any) {
+function AudiobookAccordionList(props: any) {
   return (
     <List.Accordion
       titleStyle={styles.accordionTitleStyle}
+      title={props.accordionTitle}
       style={styles.accordionStyle}
+      titleNumberOfLines={1}
       accessibilityLabel={props.audiobookTitle}
       theme={{ colors: { text: "white" } }}
-    >
+      >
       <List.Section style={styles.accordianItemsStyle}>
         <ListItem.Subtitle style={styles.accordianItemsStyle}>
           <MaterialIconCommunity
@@ -78,22 +80,24 @@ function AudiobookAccordionList(props:any) {
 export default AudiobookAccordionList;
 
 const windowWidth = Dimensions.get("window").width;
+const accordionTitleWidth = windowWidth / 2 - 8 -60;
+const accordionStyleWidth = windowWidth / 2 - 8;
 
 const styles = StyleSheet.create({
   accordionStyle: {
     flex: 1,
     color: "white",
     backgroundColor: "#331800",
-    width: windowWidth / 2 - 8,
+    width: accordionStyleWidth, 
     justifyContent: "center",
-    height: 50,
+    height: 60,
   },
   accordionTitleStyle: {
-    color: "black",
+    color: "white",
     backgroundColor: "#331800",
-    width: windowWidth / 2 - 8,
+    width: accordionTitleWidth,
     flex: 1,
-    height: 40,
+    height: 80,
   },
   accordianItemsStyle: {
     color: "white",
