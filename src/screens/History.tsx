@@ -19,7 +19,7 @@ import AudiobookAccordionList from "../components/audiobookAccordionList";
 
 import { Picker } from "@react-native-picker/picker";
 
-import { openDatabase } from "../utils";
+import { openDatabase, roundNumberTwoDecimal } from "../utils";
 
 const db = openDatabase();
 
@@ -36,8 +36,8 @@ function History() {
 
   const [aescOrDesc, setAescOrDesc] = useState<any>({
     toggle: 0,
-    order: "DESC",
-    icon: "sort-descending",
+    order: "ASC",
+    icon: "sort-ascending",
   });
 
   function toggleAscOrDescSort() {
@@ -75,8 +75,7 @@ function History() {
   function getShelvedBooks() {
     db.transaction((tx) => {
       tx.executeSql(
-        // ${orderBy} ${aescOrDesc.order}
-        `select * from testHistory15 ${orderBy} ${aescOrDesc.order}`,
+        `select * from testHistory15 inner join testaudio18 on testHistory15.audiobook_id = testaudio18.audiobook_id ${orderBy} ${aescOrDesc.order}`,
         [],
         (_, { rows }) => {
           let start = performance.now();
@@ -92,7 +91,7 @@ function History() {
             }
           }
           setAudiobookHistory(newHistory);
-          // console.log(rows["_array"]);
+          console.log(rows["_array"]);
           let end = performance.now();
           console.log("time: ", end - start);
           setLoadingHistory(false);
@@ -122,7 +121,7 @@ function History() {
       case 1:
         return item?.audiobook_title;
       case 2:
-        return item?.audiobook_rating;
+        return audioBookInfo[item?.audiobook_id]?.audiobook_rating;
       case 3:
         return item?.audiobook_total_time;
       case 4:
@@ -132,9 +131,15 @@ function History() {
       case 6:
         return item?.audiobook_language;
       case 7:
-        return JSON.parse(item.audiobook_genres)[0].name        
+        return JSON.parse(item.audiobook_genres)[0].name;
       case 8:
         return item?.audiobook_copyright_year;
+      case 9:
+        return (
+          roundNumberTwoDecimal(
+            audioBookInfo[item?.audiobook_id]?.listening_progress_percent * 100
+          ) + "%"
+        );
     }
   }
 
@@ -157,7 +162,8 @@ function History() {
                   audiobookCopyrightYear: item?.audiobook_copyright_year,
                   audiobookGenres: JSON.parse(item?.audiobook_genres),
                   audiobookLanguage: item?.audiobook_language,
-                  audiobookRating: item?.audiobook_rating,
+                  audiobookRating:
+                    audioBookInfo[item?.audiobook_id]?.audiobook_rating,
                   audiobookReviewUrl: item?.audiobook_review_url,
                   numberBookSections: item?.audiobook_num_sections,
                   // ebookTextSource: item.audiobook_ebook_url,
@@ -264,6 +270,10 @@ function History() {
                 <Picker.Item
                   label="Copyright year"
                   value="order by audiobook_copyright_year"
+                />
+                <Picker.Item
+                  label="Listening Progress"
+                  value="order by listening_progress_percent"
                 />
               </Picker>
             </View>
