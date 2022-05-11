@@ -32,6 +32,7 @@ function History() {
   const [loadingHistory, setLoadingHistory] = useState(true);
   const [orderBy, setOrderBy] = useState("order by id");
   const [avatarOnPressEnabled, setAvatarOnPressEnabled] = useState(true);
+  const [pickerIndex, setPickerIndex] = useState(0);
 
   const [aescOrDesc, setAescOrDesc] = useState<any>({
     toggle: 0,
@@ -113,6 +114,30 @@ function History() {
   }
   const resizeCoverImageHeight = windowHeight / 5;
   const resizeCoverImageWidth = windowWidth / 2 - 42;
+
+  function selectAccordionPickerTitle(pickerIndex, item) {
+    switch (pickerIndex) {
+      case 0:
+        return item?.id;
+      case 1:
+        return item?.audiobook_title;
+      case 2:
+        return item?.audiobook_rating;
+      case 3:
+        return item?.audiobook_total_time;
+      case 4:
+        return item?.audiobook_author_last_name;
+      case 5:
+        return item?.audiobook_author_first_name;
+      case 6:
+        return item?.audiobook_language;
+      case 7:
+        return JSON.parse(item.audiobook_genres)[0].name        
+      case 8:
+        return item?.audiobook_copyright_year;
+    }
+  }
+
   const renderItem = ({ item, index }: any) => (
     <View>
       <ListItem topDivider containerStyle={styles.AudioBookListView}>
@@ -186,9 +211,8 @@ function History() {
           tintColor={"black"}
         />
       ) : undefined}
-
       <AudiobookAccordionList
-        accordionTitle={item?.audiobook_title}
+        accordionTitle={selectAccordionPickerTitle(pickerIndex, item)}
         audiobookTitle={item?.audiobook_title}
         audiobookAuthorFirstName={item?.audiobook_author_first_name}
         audiobookAuthorLastName={item?.audiobook_author_last_name}
@@ -209,8 +233,12 @@ function History() {
               <Picker
                 selectedValue={orderBy}
                 mode={"dropdown"}
-                onValueChange={(itemValue, itemIndex) => {
-                  setOrderBy(itemValue), getShelvedBooks();
+                dropdownIconRippleColor={"grey"}
+                onValueChange={(itemValue, itemPosition) => {
+                  console.log(itemPosition);
+                  setOrderBy(itemValue);
+                  setPickerIndex(itemPosition);
+                  getShelvedBooks();
                 }}
               >
                 <Picker.Item label="Order Visited" value="order by id" />
