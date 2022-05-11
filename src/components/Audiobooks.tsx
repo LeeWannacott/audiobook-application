@@ -190,6 +190,7 @@ export default function Audiobooks(props: any) {
         </View>
       </ListItem>
       <AudiobookAccordionList
+        accordionTitle={item?.title}
         audiobookTitle={item?.title}
         audiobookAuthorFirstName={item?.authors[0]?.first_name}
         audiobookAuthorLastName={item?.authors[0]?.last_name}
