@@ -23,6 +23,8 @@ import { openDatabase, roundNumberTwoDecimal } from "../utils";
 import {
   audiobookHistoryTableName,
   audiobookProgressTableName,
+  getAsyncData,
+  storeAsyncData,
 } from "../database_functions";
 
 const db = openDatabase();
@@ -34,28 +36,28 @@ function History() {
   const [audiobookHistory, setAudiobookHistory] = useState<any[]>([]);
   const [audioBookInfo, setAudioBookInfo] = useState<any[]>([]);
   const [loadingHistory, setLoadingHistory] = useState(true);
-  const [orderBy, setOrderBy] = useState("order by id");
   const [avatarOnPressEnabled, setAvatarOnPressEnabled] = useState(true);
-  const [pickerIndex, setPickerIndex] = useState(0);
 
-  const [aescOrDesc, setAescOrDesc] = useState<any>({
+  const [pickerAndQueryState, setPickerAndQueryState] = useState<any>({
     toggle: 0,
     order: "ASC",
+    orderBy: "order by id",
     icon: "sort-ascending",
+    pickerIndex: 0,
   });
 
   function toggleAscOrDescSort() {
-    if (aescOrDesc.toggle == 0) {
-      setAescOrDesc({
-        ...aescOrDesc,
+    if (pickerAndQueryState.toggle == 0) {
+      setPickerAndQueryState({
+        ...pickerAndQueryState,
         toggle: 1,
         order: "DESC",
         icon: "sort-descending",
       });
       getShelvedBooks();
     } else {
-      setAescOrDesc({
-        ...aescOrDesc,
+      setPickerAndQueryState({
+        ...pickerAndQueryState,
         toggle: 0,
         order: "ASC",
         icon: "sort-ascending",
@@ -65,21 +67,37 @@ function History() {
   }
 
   React.useEffect(() => {
-    db.transaction((tx) => {
-      tx.executeSql(`select * from ${audiobookProgressTableName}`, [], (_, { rows }) => {
-        const audioProgressData = {};
-        rows._array.forEach((row) => {
-          return (audioProgressData[row.audiobook_id] = row);
-        });
-        setAudioBookInfo(audioProgressData);
+    try {
+      getAsyncData("pickerAndQueryData").then((pickerAndQueryData) => {
+        if (pickerAndQueryData) {
+          return setPickerAndQueryState(pickerAndQueryData);
+        }
       });
+    } catch (err) {
+      console.log(err);
+    }
+  }, []);
+
+  React.useEffect(() => {
+    db.transaction((tx) => {
+      tx.executeSql(
+        `select * from ${audiobookProgressTableName}`,
+        [],
+        (_, { rows }) => {
+          const audioProgressData = {};
+          rows._array.forEach((row) => {
+            return (audioProgressData[row.audiobook_id] = row);
+          });
+          setAudioBookInfo(audioProgressData);
+        }
+      );
     }, null);
   }, []);
 
   function getShelvedBooks() {
     db.transaction((tx) => {
       tx.executeSql(
-        `select * from ${audiobookHistoryTableName} inner join testaudio18 on testHistory15.audiobook_id = testaudio18.audiobook_id ${orderBy} ${aescOrDesc.order}`,
+        `select * from ${audiobookHistoryTableName} inner join testaudio18 on testaudio18.audiobook_id = ${audiobookHistoryTableName}.audiobook_id ${pickerAndQueryState.orderBy} ${pickerAndQueryState.order}`,
         [],
         (_, { rows }) => {
           let start = performance.now();
@@ -222,7 +240,10 @@ function History() {
         />
       ) : undefined}
       <AudiobookAccordionList
-        accordionTitle={selectAccordionPickerTitle(pickerIndex, item)}
+        accordionTitle={selectAccordionPickerTitle(
+          pickerAndQueryState.pickerIndex,
+          item
+        )}
         audiobookTitle={item?.audiobook_title}
         audiobookAuthorFirstName={item?.audiobook_author_first_name}
         audiobookAuthorLastName={item?.audiobook_author_last_name}
@@ -241,13 +262,20 @@ function History() {
           <View style={styles.SQLQueryPickerAndIcon}>
             <View style={styles.SQLQueryPicker}>
               <Picker
-                selectedValue={orderBy}
+                selectedValue={pickerAndQueryState.orderBy}
                 mode={"dropdown"}
                 dropdownIconRippleColor={"grey"}
                 onValueChange={(itemValue, itemPosition) => {
-                  console.log(itemPosition);
-                  setOrderBy(itemValue);
-                  setPickerIndex(itemPosition);
+                  setPickerAndQueryState({
+                    ...pickerAndQueryState,
+                    orderBy: itemValue,
+                    pickerIndex: itemPosition,
+                  });
+                  storeAsyncData("pickerAndQueryData", {
+                    ...pickerAndQueryState,
+                    orderBy: itemValue,
+                    pickerIndex: itemPosition,
+                  });
                   getShelvedBooks();
                 }}
               >
@@ -294,7 +322,7 @@ function History() {
               }}
             >
               <MaterialIconCommunity
-                name={aescOrDesc.icon}
+                name={pickerAndQueryState.icon}
                 size={40}
                 color="white"
               />
