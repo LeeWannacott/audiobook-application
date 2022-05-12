@@ -3,7 +3,8 @@ import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { useState, useEffect } from "react";
 
 import { useNavigation } from "@react-navigation/native";
-import { ListItem, Rating } from "react-native-elements";
+import { ListItem } from "react-native-elements";
+import { Rating } from "react-native-ratings";
 import {
   FlatList,
   ActivityIndicator,
@@ -13,6 +14,7 @@ import {
 } from "react-native";
 import AudiobookAccordionList from "../components/audiobookAccordionList";
 
+import { audiobookShelfTableName } from "../database_functions";
 import { openDatabase } from "../utils";
 
 const db = openDatabase();
@@ -25,12 +27,14 @@ function Bookshelf() {
 
   function getShelvedBooks() {
     db.transaction((tx) => {
-      tx.executeSql("select * from testShelve24", [], (_, { rows }) => {
-        if (JSON.stringify(shelvedHistory) !== JSON.stringify(rows["_array"])) {
+      tx.executeSql(
+        `select * from ${audiobookShelfTableName}`,
+        [],
+        (_, { rows }) => {
           setShelvedHistory(rows["_array"]);
+          setLoadingHistory(false);
         }
-        setLoadingHistory(false);
-      });
+      );
     }, null);
   }
 
@@ -38,23 +42,23 @@ function Bookshelf() {
     getShelvedBooks();
   }, []);
 
-  const waitForRefresh = (timeout:number) => {
-  return new Promise(resolve => setTimeout(resolve, timeout));
-}
+  const waitForRefresh = (timeout: number) => {
+    return new Promise((resolve) => setTimeout(resolve, timeout));
+  };
   function refreshBookshelveOnPull() {
     setIsRefreshing(true);
     getShelvedBooks();
-     waitForRefresh(2000).then(() => setIsRefreshing(false));
+    waitForRefresh(2000).then(() => setIsRefreshing(false));
   }
 
-  const keyExtractor = (item:any, index:number) => item.audiobook_id.toString();
+  const keyExtractor = (item: any, index: number) =>
+    item.audiobook_id.toString();
   const windowWidth = Dimensions.get("window").width;
   const windowHeight = Dimensions.get("window").height;
   const resizeCoverImageHeight = windowHeight / 5;
   const resizeCoverImageWidth = windowWidth / 2 - 42;
   const navigation = useNavigation();
-  const renderBookshelve = ({ item, index }:any) => (
-
+  const renderBookshelve = ({ item, index }: any) => (
     <View>
       <ListItem topDivider containerStyle={styles.AudioBookListView}>
         <View style={styles.ImageContainer}>
@@ -74,6 +78,7 @@ function Bookshelf() {
                   audiobookAuthorFirstName: item?.audiobook_author_first_name,
                   audiobookAuthorLastName: item?.audiobook_author_last_name,
                   audiobookTotalTime: item?.audiobook_total_time,
+                  audiobookTimeSeconds: item?.audiobook_total_time_secs,
                   audiobookCopyrightYear: item?.audiobook_copyright_year,
                   audiobookGenres: JSON.parse(item?.audiobook_genres),
                   audiobookLanguage: item?.audiobook_language,

@@ -20,6 +20,10 @@ import AudiobookAccordionList from "../components/audiobookAccordionList";
 import { Picker } from "@react-native-picker/picker";
 
 import { openDatabase, roundNumberTwoDecimal } from "../utils";
+import {
+  audiobookHistoryTableName,
+  audiobookProgressTableName,
+} from "../database_functions";
 
 const db = openDatabase();
 
@@ -62,12 +66,12 @@ function History() {
 
   React.useEffect(() => {
     db.transaction((tx) => {
-      tx.executeSql(`select * from testaudio18`, [], (_, { rows }) => {
-        const dataFromAudiobookInformationTable = {};
+      tx.executeSql(`select * from ${audiobookProgressTableName}`, [], (_, { rows }) => {
+        const audioProgressData = {};
         rows._array.forEach((row) => {
-          return (dataFromAudiobookInformationTable[row.audiobook_id] = row);
+          return (audioProgressData[row.audiobook_id] = row);
         });
-        setAudioBookInfo(dataFromAudiobookInformationTable);
+        setAudioBookInfo(audioProgressData);
       });
     }, null);
   }, []);
@@ -75,7 +79,7 @@ function History() {
   function getShelvedBooks() {
     db.transaction((tx) => {
       tx.executeSql(
-        `select * from testHistory15 inner join testaudio18 on testHistory15.audiobook_id = testaudio18.audiobook_id ${orderBy} ${aescOrDesc.order}`,
+        `select * from ${audiobookHistoryTableName} inner join testaudio18 on testHistory15.audiobook_id = testaudio18.audiobook_id ${orderBy} ${aescOrDesc.order}`,
         [],
         (_, { rows }) => {
           let start = performance.now();
