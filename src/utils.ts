@@ -15,3 +15,7 @@ export function openDatabase() {
   const db = SQLite.openDatabase("audiobooktest10.db");
   return db;
 }
+
+export function roundNumberTwoDecimal(num:number) {
+  return Math.round((num + Number.EPSILON) * 100) / 100;
+}
