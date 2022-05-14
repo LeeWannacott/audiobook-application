@@ -17,7 +17,7 @@ import AudioTrackControls from "../components/audioTrackControls";
 import AudioTrackSettings from "../components/audioTrackSettings";
 import AudiotrackSliderWithCurrentPlaying from "../components/AudiotrackSliderWithCurrentPlaying";
 
-import { openDatabase } from "../utils";
+import { openDatabase, roundNumberTwoDecimal } from "../utils";
 import { useNavigation } from "@react-navigation/native";
 
 const db = openDatabase();
@@ -30,7 +30,7 @@ import {
   initialAudioBookStoreDB,
   removeShelvedAudiobookDB,
   updateAudiobookRatingDB,
-  updateRatingForHistory,
+  audiobookProgressTableName,
 } from "../database_functions";
 
 import { getAsyncData, storeAsyncData } from "../database_functions";
@@ -214,36 +214,40 @@ function Audiotracks(props: any) {
     // initial load of audiotrack data from DB.
     db.transaction((tx) => {
       try {
-        tx.executeSql("select * from testaudio18", [], (_, { rows }) => {
-          rows["_array"].forEach((element) => {
-            if (initAudioBookData.audiobook_id === element.audiobook_id) {
-              const initialValue = 0;
-              const currentTimeReadInBook = JSON.parse(
-                element?.current_audiotrack_positions
-              ).reduce(
-                (previousValue: any, currentValue: any) =>
-                  previousValue + Number(currentValue),
-                initialValue
-              );
-              const currentListeningProgress =
-                currentTimeReadInBook / 1000 / audiobookTimeSeconds;
-
-              setAudiotracksData({
-                ...audiotracksData,
-                linearProgessBars: JSON.parse(
-                  element?.audiotrack_progress_bars
-                ),
-                currentAudiotrackPositionsMs: JSON.parse(
+        tx.executeSql(
+          `select * from ${audiobookProgressTableName}`,
+          [],
+          (_, { rows }) => {
+            rows["_array"].forEach((element) => {
+              if (initAudioBookData.audiobook_id === element.audiobook_id) {
+                const initialValue = 0;
+                const currentTimeReadInBook = JSON.parse(
                   element?.current_audiotrack_positions
-                ),
-                shelveIconToggle: element?.audiobook_shelved,
-                audiobookRating: element?.audiobook_rating,
-                totalAudioBookListeningTimeMS: currentTimeReadInBook,
-                totalAudioBookListeningProgress: currentListeningProgress,
-              });
-            }
-          });
-        });
+                ).reduce(
+                  (previousValue: any, currentValue: any) =>
+                    previousValue + Number(currentValue),
+                  initialValue
+                );
+                const currentListeningProgress =
+                  currentTimeReadInBook / 1000 / audiobookTimeSeconds;
+
+                setAudiotracksData({
+                  ...audiotracksData,
+                  linearProgessBars: JSON.parse(
+                    element?.audiotrack_progress_bars
+                  ),
+                  currentAudiotrackPositionsMs: JSON.parse(
+                    element?.current_audiotrack_positions
+                  ),
+                  shelveIconToggle: element?.audiobook_shelved,
+                  audiobookRating: element?.audiobook_rating,
+                  totalAudioBookListeningTimeMS: currentTimeReadInBook,
+                  totalAudioBookListeningProgress: currentListeningProgress,
+                });
+              }
+            });
+          }
+        );
       } catch (err) {
         console.log(err);
       }
@@ -329,10 +333,6 @@ function Audiotracks(props: any) {
       .catch((error) => console.log("Error: ", error));
   }, [audiobookReviewUrl]);
 
-  function roundNumberTwoDecimal(num){  
-  return Math.round((num + Number.EPSILON) * 100) / 100
-  } 
-
   useEffect(() => {
     try {
       if (reviews.length > 0 && reviews) {
@@ -355,10 +355,11 @@ function Audiotracks(props: any) {
           ...audiotracksData,
           audiobookRating: averageAudiobookRating,
         });
-        if (averageAudiobookRating > 0) {
-          updateAudiobookRatingDB(db, audioBookId, roundNumberTwoDecimal(averageAudiobookRating));
-          updateRatingForHistory(db, audioBookId, roundNumberTwoDecimal(averageAudiobookRating));
-        }
+        updateAudiobookRatingDB(
+          db,
+          audioBookId,
+          roundNumberTwoDecimal(averageAudiobookRating)
+        );
       }
     } catch (e) {
       console.log(e);

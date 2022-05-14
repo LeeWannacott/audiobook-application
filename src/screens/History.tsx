@@ -97,7 +97,7 @@ function History() {
   function getShelvedBooks() {
     db.transaction((tx) => {
       tx.executeSql(
-        `select * from ${audiobookHistoryTableName} inner join testaudio18 on testaudio18.audiobook_id = ${audiobookHistoryTableName}.audiobook_id ${pickerAndQueryState.orderBy} ${pickerAndQueryState.order}`,
+        `select * from ${audiobookHistoryTableName} inner join ${audiobookProgressTableName} on ${audiobookProgressTableName}.audiobook_id = ${audiobookHistoryTableName}.audiobook_id ${pickerAndQueryState.orderBy} ${pickerAndQueryState.order}`,
         [],
         (_, { rows }) => {
           let start = performance.now();
@@ -185,7 +185,7 @@ function History() {
                   audiobookGenres: JSON.parse(item?.audiobook_genres),
                   audiobookLanguage: item?.audiobook_language,
                   audiobookRating:
-                    audioBookInfo[item?.audiobook_id]?.audiobook_rating,
+                  audioBookInfo[item?.audiobook_id]?.audiobook_rating,
                   audiobookReviewUrl: item?.audiobook_review_url,
                   numberBookSections: item?.audiobook_num_sections,
                   // ebookTextSource: item.audiobook_ebook_url,

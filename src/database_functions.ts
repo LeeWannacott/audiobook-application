@@ -4,12 +4,12 @@ export const audiobookShelfTableName = "testshelve25"
 export function createShelveTable(db: any) {
   db.transaction((tx: any) => {
     tx.executeSql(
-      `create table if not exists ${audiobookShelfTableName} (id integer primary key not null, audiobook_rss_url text not null unique, audiobook_id text not null unique, audiobook_image text, audiobook_title text, audiobook_author_first_name text, audiobook_author_last_name text, audiobook_total_time text, audiobook_total_time_secs text, audiobook_copyright_year text, audiobook_genres text, audiobook_rating text, audiobook_review_url text, audiobook_num_sections text, audiobook_ebook_url text, audiobook_zip text, audiobook_language text);`
+      `create table if not exists ${audiobookShelfTableName} (id integer primary key not null, audiobook_rss_url text not null unique, audiobook_id text not null unique, audiobook_image text, audiobook_title text, audiobook_author_first_name text, audiobook_author_last_name text, audiobook_total_time text, audiobook_total_time_secs text, audiobook_copyright_year text, audiobook_genres text, audiobook_review_url text, audiobook_num_sections text, audiobook_ebook_url text, audiobook_zip text, audiobook_language text);`
     );
   });
 }
 
-export const audiobookProgressTableName = "testaudio18" 
+export const audiobookProgressTableName = "testaudio19" 
 export function createAudioBookDataTable(db: any) {
   db.transaction((tx: any) => {
     tx.executeSql(
@@ -18,11 +18,11 @@ export function createAudioBookDataTable(db: any) {
   });
 }
 
-export const audiobookHistoryTableName = "testHistory15" 
+export const audiobookHistoryTableName = "testHistory18" 
 export function createHistoryTableDB(db: any) {
   db.transaction((tx: any) => {
     tx.executeSql(
-      `create table if not exists ${audiobookHistoryTableName} (id integer primary key not null, audiobook_rss_url text not null unique, audiobook_id text not null unique, audiobook_image text, audiobook_title text, audiobook_author_first_name text, audiobook_author_last_name text, audiobook_total_time text, audiobook_total_time_secs text, audiobook_copyright_year text, audiobook_genres text, audiobook_rating text, audiobook_review_url text, audiobook_num_sections text, audiobook_ebook_url text, audiobook_zip text, audiobook_language text);`
+      `create table if not exists ${audiobookHistoryTableName} (id integer primary key not null, audiobook_rss_url text not null unique, audiobook_id text not null unique, audiobook_image text, audiobook_title text, audiobook_author_first_name text, audiobook_author_last_name text, audiobook_total_time text, audiobook_total_time_secs text, audiobook_copyright_year text, audiobook_genres text, audiobook_review_url text, audiobook_num_sections text, audiobook_ebook_url text, audiobook_zip text, audiobook_language text);`
     );
   });
 }
@@ -30,7 +30,7 @@ export function createHistoryTableDB(db: any) {
 export function addAudiobookToHistoryDB(db: any, bookDataForHistory: any) {
   db.transaction((tx: any) => {
     tx.executeSql(
-      `insert into ${audiobookHistoryTableName} (audiobook_rss_url, audiobook_id, audiobook_image, audiobook_title, audiobook_author_first_name, audiobook_author_last_name, audiobook_total_time, audiobook_total_time_secs, audiobook_copyright_year, audiobook_genres, audiobook_rating, audiobook_review_url, audiobook_num_sections, audiobook_ebook_url, audiobook_zip, audiobook_language) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+      `insert into ${audiobookHistoryTableName} (audiobook_rss_url, audiobook_id, audiobook_image, audiobook_title, audiobook_author_first_name, audiobook_author_last_name, audiobook_total_time, audiobook_total_time_secs, audiobook_copyright_year, audiobook_genres, audiobook_review_url, audiobook_num_sections, audiobook_ebook_url, audiobook_zip, audiobook_language) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
       [
         bookDataForHistory.audiobook_rss_url,
         bookDataForHistory.audiobook_id,
@@ -42,7 +42,6 @@ export function addAudiobookToHistoryDB(db: any, bookDataForHistory: any) {
         bookDataForHistory.audiobook_total_time_secs,
         bookDataForHistory.audiobook_copyright_year,
         bookDataForHistory.audiobook_genres,
-        bookDataForHistory.audiobook_rating,
         bookDataForHistory.audiobook_review_url,
         bookDataForHistory.audiobook_num_sections,
         bookDataForHistory.audiobook_ebook_url,
@@ -62,7 +61,7 @@ export function deleteAudiobookHistoryDB(db: any) {
 export function shelveAudiobookDB(db: any, audiobookToShelve: any) {
   db.transaction((tx: any) => {
     tx.executeSql(
-      `insert into ${audiobookShelfTableName} (audiobook_rss_url, audiobook_id, audiobook_image, audiobook_title, audiobook_author_first_name, audiobook_author_last_name, audiobook_total_time, audiobook_total_time_secs, audiobook_copyright_year, audiobook_genres, audiobook_rating, audiobook_review_url, audiobook_num_sections, audiobook_ebook_url, audiobook_zip, audiobook_language) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+      `insert into ${audiobookShelfTableName} (audiobook_rss_url, audiobook_id, audiobook_image, audiobook_title, audiobook_author_first_name, audiobook_author_last_name, audiobook_total_time, audiobook_total_time_secs, audiobook_copyright_year, audiobook_genres, audiobook_review_url, audiobook_num_sections, audiobook_ebook_url, audiobook_zip, audiobook_language) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
       [
         audiobookToShelve.audiobook_rss_url,
         audiobookToShelve.audiobook_id,
@@ -74,7 +73,6 @@ export function shelveAudiobookDB(db: any, audiobookToShelve: any) {
         audiobookToShelve.audiobook_total_time_secs,
         audiobookToShelve.audiobook_copyright_year,
         audiobookToShelve.audiobook_genres,
-        audiobookToShelve.audiobook_rating,
         audiobookToShelve.audiobook_review_url,
         audiobookToShelve.audiobook_num_sections,
         audiobookToShelve.audiobook_ebook_url,
