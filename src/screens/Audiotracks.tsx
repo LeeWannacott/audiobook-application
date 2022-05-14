@@ -45,19 +45,26 @@ function Audiotracks(props: any) {
   const [loadingAudiobookData, setLoadingAudioBookData] = useState(true);
   const [loadingAudioListeningLinks, setLoadingAudioListeningLinks] =
     useState(true);
-  const [loadingCurrentAudiotrack, setLoadingCurrentAudiotrack] =
-    useState(false);
-  const [loadedCurrentAudiotrack, setLoadedCurrentAudiotrack] = useState(false);
+
+  const [audiotrackLoadingStatuses, setAudiotrackLoadingStatuses] = useState({
+    loadedCurrentAudiotrack: false,
+    loadingCurrentAudiotrack: false,
+  });
+
   const [audioPaused, setAudioPaused] = useState(false);
   const [Playing, SetPlaying] = useState(false);
-  const [Duration, SetDuration] = useState(0);
-  const [audioTrackChapterPlayingTitle, setAudioTrackChapterPlayingTitle] =
-    useState("");
-  const [audioTrackReader, setAudioTrackReader] = useState("");
+
+  const [currentAudiotrackPlayingInfo, setCurrentPlayingInformation] = useState(
+    {
+      audioTrackChapterPlayingTitle: "",
+      audioTrackReader: "",
+      Duration: 0,
+    }
+  );
+
   const [currentSliderPosition, setCurrentSliderPosition] = React.useState(0.0);
-  const [controlPanelButtonSize] = useState(30);
+  const controlPanelButtonSize = 30;
   const [visible, setVisible] = useState(false);
-  // const [pitchCorrection, setPitchCorrection] = useState(true);
   const [audioPlayerSettings, setAudioPlayerSettings] = useState({
     rate: 1.0,
     shouldCorrectPitch: true,
@@ -474,7 +481,7 @@ function Audiotracks(props: any) {
     try {
       const result = await sound.current.getStatusAsync();
       if (result.isLoaded === true) {
-        const result = (data / 100) * Duration;
+        const result = (data / 100) * currentAudiotrackPlayingInfo.Duration;
         await sound.current.setPositionAsync(Math.round(result));
       }
     } catch (error) {
@@ -497,7 +504,10 @@ function Audiotracks(props: any) {
 
   const LoadAudio = async (index: number, audiotrackPositions = 0) => {
     currentAudioTrackIndex.current = index;
-    setLoadingCurrentAudiotrack(true);
+    setAudiotrackLoadingStatuses({
+      ...audiotrackLoadingStatuses,
+      loadingCurrentAudiotrack: true,
+    });
     console.log(index, "Playing");
     const checkLoading = await sound.current.getStatusAsync();
     if (checkLoading.isLoaded === false) {
@@ -517,28 +527,41 @@ function Audiotracks(props: any) {
           true
         );
         if (result.isLoaded === false) {
-          setLoadingCurrentAudiotrack(false);
-          setLoadedCurrentAudiotrack(false);
+          setAudiotrackLoadingStatuses({
+            ...audiotrackLoadingStatuses,
+            loadingCurrentAudiotrack: false,
+            loadedCurrentAudiotrack: false,
+          });
         } else {
-          setAudioTrackChapterPlayingTitle(
-            chapters[index]?.section_number + ". " + chapters[index]?.title
-          );
-          setAudioTrackReader(chapters[index]?.readers[0]?.display_name);
-          // ...long-running synchronous task...
-          SetDuration(result?.durationMillis);
-          setLoadingCurrentAudiotrack(false);
-          setLoadedCurrentAudiotrack(true);
+          setCurrentPlayingInformation({
+            ...currentAudiotrackPlayingInfo,
+            audioTrackReader: chapters[index]?.readers[0]?.display_name,
+            audioTrackChapterPlayingTitle:
+              chapters[index]?.section_number + ". " + chapters[index]?.title,
+            Duration: result?.durationMillis,
+          });
+          setAudiotrackLoadingStatuses({
+            ...audiotrackLoadingStatuses,
+            loadingCurrentAudiotrack: false,
+            loadedCurrentAudiotrack: true,
+          });
           sound.current.setOnPlaybackStatusUpdate(UpdateStatus);
           await PlayAudio();
         }
       } catch (error) {
-        setLoadingCurrentAudiotrack(false);
-        setLoadedCurrentAudiotrack(false);
+        setAudiotrackLoadingStatuses({
+          ...audiotrackLoadingStatuses,
+          loadingCurrentAudiotrack: false,
+          loadedCurrentAudiotrack: false,
+        });
         console.log("Error: ", error);
       }
     } else {
-      setLoadingCurrentAudiotrack(false);
-      setLoadedCurrentAudiotrack(true);
+      setAudiotrackLoadingStatuses({
+        ...audiotrackLoadingStatuses,
+        loadingCurrentAudiotrack: false,
+        loadedCurrentAudiotrack: true,
+      });
     }
   };
 
@@ -629,10 +652,10 @@ function Audiotracks(props: any) {
     }
   };
 
-  const GetDurationFormat = (duration: number) => {
+  const GetDurationFormat = (currentDuration: number) => {
     try {
-      if (typeof duration === "number") {
-        const time = duration / 1000;
+      if (typeof currentDuration === "number") {
+        const time = currentDuration / 1000;
         const minutes = Math.floor(time / 60);
         const seconds = Math.floor(time - minutes * 60);
         const secondsFormatted = seconds > 9 ? seconds : `0${seconds}`;
@@ -913,10 +936,12 @@ function Audiotracks(props: any) {
           currentSliderPosition={currentSliderPosition}
           SeekUpdate={SeekUpdate}
           GetDurationFormat={GetDurationFormat}
-          Duration={Duration}
+          Duration={currentAudiotrackPlayingInfo.Duration}
           bookCoverImage={bookCoverImage}
-          audioTrackChapterPlayingTitle={audioTrackChapterPlayingTitle}
-          audioTrackReader={audioTrackReader}
+          audioTrackChapterPlayingTitle={
+            currentAudiotrackPlayingInfo.audioTrackChapterPlayingTitle
+          }
+          audioTrackReader={currentAudiotrackPlayingInfo.audioTrackReader}
         />
 
         <AudioTrackControls
@@ -927,8 +952,12 @@ function Audiotracks(props: any) {
           Playing={Playing}
           PauseAudio={PauseAudio}
           audioPaused={audioPaused}
-          loadingCurrentAudiotrack={loadingCurrentAudiotrack}
-          loadedCurrentAudiotrack={loadedCurrentAudiotrack}
+          loadingCurrentAudiotrack={
+            audiotrackLoadingStatuses.loadingCurrentAudiotrack
+          }
+          loadedCurrentAudiotrack={
+            audiotrackLoadingStatuses.loadedCurrentAudiotrack
+          }
           currentAudioTrackIndex={currentAudioTrackIndex}
         ></AudioTrackControls>
       </View>
