@@ -34,7 +34,7 @@ let lolcache = {};
 
 function History() {
   const [audiobookHistory, setAudiobookHistory] = useState<any[]>([]);
-  const [audioBookInfo, setAudioBookInfo] = useState<any[]>([]);
+  const [audioBookInfo, setAudioBookInfo] = useState({});
   const [loadingHistory, setLoadingHistory] = useState(true);
   const [avatarOnPressEnabled, setAvatarOnPressEnabled] = useState(true);
 
@@ -54,7 +54,18 @@ function History() {
         order: "DESC",
         icon: "sort-descending",
       });
-      getShelvedBooks();
+      getShelvedBooks({
+        ...pickerAndQueryState,
+        toggle: 1,
+        order: "DESC",
+        icon: "sort-descending",
+      });
+      storeAsyncData("pickerAndQueryData", {
+        ...pickerAndQueryState,
+        toggle: 1,
+        order: "DESC",
+        icon: "sort-descending",
+      });
     } else {
       setPickerAndQueryState({
         ...pickerAndQueryState,
@@ -62,15 +73,29 @@ function History() {
         order: "ASC",
         icon: "sort-ascending",
       });
-      getShelvedBooks();
+      getShelvedBooks({
+        ...pickerAndQueryState,
+        toggle: 0,
+        order: "ASC",
+        icon: "sort-ascending",
+      });
+      storeAsyncData("pickerAndQueryData", {
+        ...pickerAndQueryState,
+        toggle: 0,
+        order: "ASC",
+        icon: "sort-ascending",
+      });
     }
   }
 
   React.useEffect(() => {
     try {
-      getAsyncData("pickerAndQueryData").then((pickerAndQueryData) => {
-        if (pickerAndQueryData) {
-          return setPickerAndQueryState(pickerAndQueryData);
+      getAsyncData("pickerAndQueryData").then((pickerAndQueryDataRetrieved) => {
+        if (pickerAndQueryDataRetrieved) {
+          getShelvedBooks(pickerAndQueryDataRetrieved);
+          return setPickerAndQueryState(pickerAndQueryDataRetrieved);
+        } else {
+          getShelvedBooks(pickerAndQueryState);
         }
       });
     } catch (err) {
@@ -94,10 +119,18 @@ function History() {
     }, null);
   }, []);
 
-  function getShelvedBooks() {
+  function getShelvedBooks(pickerAndQueryStatePassedIn: {
+    orderBy: string;
+    order: string;
+  }) {
+    console.log(pickerAndQueryStatePassedIn);
+
+    let test = `select * from ${audiobookHistoryTableName} inner join ${audiobookProgressTableName} on ${audiobookProgressTableName}.audiobook_id = ${audiobookHistoryTableName}.audiobook_id ${pickerAndQueryStatePassedIn.orderBy} ${pickerAndQueryStatePassedIn.order} limit 100`;
+    console.log(test);
+
     db.transaction((tx) => {
       tx.executeSql(
-        `select * from ${audiobookHistoryTableName} inner join ${audiobookProgressTableName} on ${audiobookProgressTableName}.audiobook_id = ${audiobookHistoryTableName}.audiobook_id ${pickerAndQueryState.orderBy} ${pickerAndQueryState.order}`,
+        `select * from ${audiobookHistoryTableName} inner join ${audiobookProgressTableName} on ${audiobookProgressTableName}.audiobook_id = ${audiobookHistoryTableName}.audiobook_id ${pickerAndQueryStatePassedIn.orderBy} ${pickerAndQueryStatePassedIn.order} limit 100`,
         [],
         (_, { rows }) => {
           let start = performance.now();
@@ -113,7 +146,8 @@ function History() {
             }
           }
           setAudiobookHistory(newHistory);
-          console.log(rows["_array"]);
+          // setAudiobookHistory(rows["_array"]);
+          // console.log(rows["_array"]);
           let end = performance.now();
           console.log("time: ", end - start);
           setLoadingHistory(false);
@@ -121,10 +155,6 @@ function History() {
       );
     }, null);
   }
-
-  useEffect(() => {
-    getShelvedBooks();
-  }, []);
 
   const keyExtractor = (item, index) => item.audiobook_id.toString();
 
@@ -185,7 +215,7 @@ function History() {
                   audiobookGenres: JSON.parse(item?.audiobook_genres),
                   audiobookLanguage: item?.audiobook_language,
                   audiobookRating:
-                  audioBookInfo[item?.audiobook_id]?.audiobook_rating,
+                    audioBookInfo[item?.audiobook_id]?.audiobook_rating,
                   audiobookReviewUrl: item?.audiobook_review_url,
                   numberBookSections: item?.audiobook_num_sections,
                   // ebookTextSource: item.audiobook_ebook_url,
@@ -271,12 +301,16 @@ function History() {
                     orderBy: itemValue,
                     pickerIndex: itemPosition,
                   });
+                  getShelvedBooks({
+                    ...pickerAndQueryState,
+                    orderBy: itemValue,
+                    pickerIndex: itemPosition,
+                  });
                   storeAsyncData("pickerAndQueryData", {
                     ...pickerAndQueryState,
                     orderBy: itemValue,
                     pickerIndex: itemPosition,
                   });
-                  getShelvedBooks();
                 }}
               >
                 <Picker.Item label="Order Visited" value="order by id" />
