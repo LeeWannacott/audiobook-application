@@ -93,6 +93,7 @@ function History() {
       getAsyncData("pickerAndQueryData").then((pickerAndQueryDataRetrieved) => {
         if (pickerAndQueryDataRetrieved) {
           getShelvedBooks(pickerAndQueryDataRetrieved);
+           // getShelvedBooks(pickerAndQueryState);
           return setPickerAndQueryState(pickerAndQueryDataRetrieved);
         } else {
           getShelvedBooks(pickerAndQueryState);
@@ -123,11 +124,6 @@ function History() {
     orderBy: string;
     order: string;
   }) {
-    console.log(pickerAndQueryStatePassedIn);
-
-    let test = `select * from ${audiobookHistoryTableName} inner join ${audiobookProgressTableName} on ${audiobookProgressTableName}.audiobook_id = ${audiobookHistoryTableName}.audiobook_id ${pickerAndQueryStatePassedIn.orderBy} ${pickerAndQueryStatePassedIn.order} limit 100`;
-    console.log(test);
-
     db.transaction((tx) => {
       tx.executeSql(
         `select * from ${audiobookHistoryTableName} inner join ${audiobookProgressTableName} on ${audiobookProgressTableName}.audiobook_id = ${audiobookHistoryTableName}.audiobook_id ${pickerAndQueryStatePassedIn.orderBy} ${pickerAndQueryStatePassedIn.order} limit 100`,
@@ -177,9 +173,9 @@ function History() {
       case 3:
         return item?.audiobook_total_time;
       case 4:
-        return item?.audiobook_author_last_name;
-      case 5:
         return item?.audiobook_author_first_name;
+      case 5:
+        return item?.audiobook_author_last_name;
       case 6:
         return item?.audiobook_language;
       case 7:
@@ -315,18 +311,18 @@ function History() {
               >
                 <Picker.Item label="Order Visited" value="order by id" />
                 <Picker.Item label="Title" value="order by audiobook_title" />
-                <Picker.Item label="Rating" value="order by audiobook_rating" />
+                <Picker.Item label="Rating" value="order by audiobook_rating + 0" />
                 <Picker.Item
                   label="Total Time"
-                  value="order by audiobook_total_time"
-                />
-                <Picker.Item
-                  label="Author Last Name"
-                  value="order by audiobook_author_last_name"
+                  value="order by audiobook_total_time_secs + 0"
                 />
                 <Picker.Item
                   label="Author First Name"
                   value="order by audiobook_author_first_name"
+                />
+                <Picker.Item
+                  label="Author Last Name"
+                  value="order by audiobook_author_last_name"
                 />
                 <Picker.Item
                   label="Language"
@@ -335,11 +331,11 @@ function History() {
                 <Picker.Item label="Genre" value="order by audiobook_genres" />
                 <Picker.Item
                   label="Copyright year"
-                  value="order by audiobook_copyright_year"
+                  value="order by audiobook_copyright_year + 0"
                 />
                 <Picker.Item
                   label="Listening Progress"
-                  value="order by listening_progress_percent"
+                  value="order by listening_progress_percent + 0"
                 />
               </Picker>
             </View>
