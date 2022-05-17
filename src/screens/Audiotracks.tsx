@@ -448,10 +448,7 @@ function Audiotracks(props: any) {
         currentAudiotrackProgress
       );
 
-      let start = performance.now();
       setCurrentSliderPosition(sliderPositionCalculated);
-      let end = performance.now();
-      console.log("time: ", end - start);
       updateAudioBookPosition(
         audioBookId,
         audiotracksData.linearProgessBars,
@@ -477,12 +474,26 @@ function Audiotracks(props: any) {
     }
   };
 
-  const SeekUpdate = async (data: any) => {
+  const updateAudiotrackSlider = async (data: any) => {
     try {
       const result = await sound.current.getStatusAsync();
       if (result.isLoaded === true) {
         const result = (data / 100) * currentAudiotrackPlayingInfo.Duration;
-        await sound.current.setPositionAsync(Math.round(result));
+        await sound.current.setPositionAsync(roundNumberTwoDecimal(result));
+      }
+    } catch (error) {
+      console.log("Error: ", error);
+    }
+  };
+
+  const fastForwardTenSeconds = async (data: any) => {
+    try {
+      const result = await sound.current.getStatusAsync();
+      console.log(result);
+      if (result.isLoaded === true) {
+        const result =
+          (data + 10 / 100) * currentAudiotrackPlayingInfo.Duration;
+        await sound.current.setPositionAsync(roundNumberTwoDecimal(result));
       }
     } catch (error) {
       console.log("Error: ", error);
@@ -652,6 +663,15 @@ function Audiotracks(props: any) {
     }
   };
 
+  function msToTime(duration: number) {
+    let seconds = Math.floor((duration / 1000) % 60),
+      minutes = Math.floor((duration / (1000 * 60)) % 60),
+      hours = Math.floor((duration / (1000 * 60 * 60)) % 24);
+    minutes = minutes < 10 ? "0" + minutes : minutes;
+    seconds = seconds < 10 ? "0" + seconds : seconds;
+    return hours + ":" + minutes + ":" + seconds;
+  }
+
   const GetDurationFormat = (currentDuration: number) => {
     try {
       if (typeof currentDuration === "number") {
@@ -820,18 +840,27 @@ function Audiotracks(props: any) {
               style={{
                 width: 200,
                 height: 200,
-                marginBottom: 20,
                 marginLeft: 35,
               }}
             />
             <LinearProgress
-              color="primary"
+              color="green"
               value={audiotracksData?.totalAudioBookListeningProgress}
               variant="determinate"
               trackColor="lightblue"
-              width={100}
               animation={false}
+              style={{
+                width: 200,
+                marginLeft: 35,
+              }}
             />
+            <View style={styles.coverImageTimeListened}>
+              <Text>
+                {msToTime(audiotracksData.totalAudioBookListeningTimeMS)}
+              </Text>
+              <Text> {audiobookTotalTime}</Text>
+            </View>
+
             <Text style={styles.bookAuthor}>
               {" "}
               Author: {audiobookAuthorFirstName} {audiobookAuthorLastName}
@@ -860,11 +889,10 @@ function Audiotracks(props: any) {
                     audiobook_total_time_secs: audiobookTimeSeconds,
                     audiobook_copyright_year: audiobookCopyrightYear,
                     audiobook_genres: audiobookGenres,
-                    audiobook_rating: audiotracksData.audiobookRating,
                     audiobook_review_url: audiobookReviewUrl,
                     audiobook_num_sections: numberBookSections,
                     audiobook_ebook_url: ebookTextSource,
-                    audiobook_zip_file: ListenUrlZip,
+                    audiobook_zip: ListenUrlZip,
                     audiobook_language: audiobookLanguage,
                   });
                 }}
@@ -934,7 +962,7 @@ function Audiotracks(props: any) {
 
         <AudiotrackSliderWithCurrentPlaying
           currentSliderPosition={currentSliderPosition}
-          SeekUpdate={SeekUpdate}
+          SeekUpdate={updateAudiotrackSlider}
           GetDurationFormat={GetDurationFormat}
           Duration={currentAudiotrackPlayingInfo.Duration}
           bookCoverImage={bookCoverImage}
@@ -959,6 +987,7 @@ function Audiotracks(props: any) {
             audiotrackLoadingStatuses.loadedCurrentAudiotrack
           }
           currentAudioTrackIndex={currentAudioTrackIndex}
+          fastForwardTenSeconds={fastForwardTenSeconds}
         ></AudioTrackControls>
       </View>
     );
@@ -1052,6 +1081,13 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     color: "white",
     fontSize: 16,
+  },
+  coverImageTimeListened: {
+    width: 200,
+    marginBottom: 10,
+    marginLeft: 35,
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
 });
 
