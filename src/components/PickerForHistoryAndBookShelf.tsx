@@ -1,19 +1,17 @@
-import { Picker } from "@react-native-picker/picker";
 import React from "react";
-import { StyleSheet,Dimensions} from "react-native";
+import { StyleSheet, Dimensions, View } from "react-native";
+import { Picker } from "@react-native-picker/picker";
+import { Button } from "react-native-paper";
+import MaterialIconCommunity from "react-native-vector-icons/MaterialCommunityIcons.js";
+import { storeAsyncData } from "../database_functions";
 
 function PickerForHistoryAndBookShelf(props) {
-  console.log(props)
   const {
     pickerAndQueryState,
     getShelvedBooks,
     setPickerAndQueryState,
     storeAsyncData,
     toggleAscOrDescSort,
-    Button,
-    Picker,
-    View,
-    MaterialIconCommunity
   } = props;
   return (
     <View style={styles.SQLQueryPickerAndIcon}>

@@ -292,11 +292,6 @@ function History() {
             setPickerAndQueryState={setPickerAndQueryState}
             getShelvedBooks={getShelvedBooks}
             toggleAscOrDescSort={toggleAscOrDescSort}
-            storeAsyncData={storeAsyncData}
-            MaterialIconCommunity={MaterialIconCommunity}
-            Button={Button}
-            Picker={Picker}
-            View={View}
             />
           <FlatList
             data={audiobookHistory}
@@ -317,10 +312,6 @@ function History() {
             getShelvedBooks={getShelvedBooks}
             toggleAscOrDescSort={toggleAscOrDescSort}
             storeAsyncData={storeAsyncData}
-            MaterialIconCommunity={MaterialIconCommunity}
-            Button={Button}
-            Picker={Picker}
-            View={View}
             />
           <View style={styles.ActivityIndicatorStyle}>
             <ActivityIndicator size="large" color="#00ff00" />
