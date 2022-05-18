@@ -16,6 +16,7 @@ import {
 import { Button } from "react-native-paper";
 import MaterialIconCommunity from "react-native-vector-icons/MaterialCommunityIcons.js";
 import AudiobookAccordionList from "../components/audiobookAccordionList";
+import PickerForHistoryAndBookShelf from "../components/PickerForHistoryAndBookShelf";
 
 import { Picker } from "@react-native-picker/picker";
 
@@ -31,6 +32,7 @@ const db = openDatabase();
 
 // global scope
 let lolcache = {};
+
 
 function History() {
   const [audiobookHistory, setAudiobookHistory] = useState<any[]>([]);
@@ -93,7 +95,6 @@ function History() {
       getAsyncData("pickerAndQueryData").then((pickerAndQueryDataRetrieved) => {
         if (pickerAndQueryDataRetrieved) {
           getShelvedBooks(pickerAndQueryDataRetrieved);
-           // getShelvedBooks(pickerAndQueryState);
           return setPickerAndQueryState(pickerAndQueryDataRetrieved);
         } else {
           getShelvedBooks(pickerAndQueryState);
@@ -114,6 +115,7 @@ function History() {
           rows._array.forEach((row) => {
             return (audioProgressData[row.audiobook_id] = row);
           });
+          console.log(audioProgressData);
           setAudioBookInfo(audioProgressData);
         }
       );
@@ -214,8 +216,8 @@ function History() {
                     audioBookInfo[item?.audiobook_id]?.audiobook_rating,
                   audiobookReviewUrl: item?.audiobook_review_url,
                   numberBookSections: item?.audiobook_num_sections,
-                  // ebookTextSource: item.audiobook_ebook_url,
-                  // ListenUrlZip: item.audiobook_zip_file,
+                  ebookTextSource: item.audiobook_ebook_url,
+                  ListenUrlZip: item.audiobook_zip,
                 });
               }
               setAvatarOnPressEnabled(false);
@@ -285,79 +287,17 @@ function History() {
     return (
       <View>
         <View style={styles.flatListStyle}>
-          <View style={styles.SQLQueryPickerAndIcon}>
-            <View style={styles.SQLQueryPicker}>
-              <Picker
-                selectedValue={pickerAndQueryState.orderBy}
-                mode={"dropdown"}
-                dropdownIconRippleColor={"grey"}
-                onValueChange={(itemValue, itemPosition) => {
-                  setPickerAndQueryState({
-                    ...pickerAndQueryState,
-                    orderBy: itemValue,
-                    pickerIndex: itemPosition,
-                  });
-                  getShelvedBooks({
-                    ...pickerAndQueryState,
-                    orderBy: itemValue,
-                    pickerIndex: itemPosition,
-                  });
-                  storeAsyncData("pickerAndQueryData", {
-                    ...pickerAndQueryState,
-                    orderBy: itemValue,
-                    pickerIndex: itemPosition,
-                  });
-                }}
-              >
-                <Picker.Item label="Order Visited" value="order by id" />
-                <Picker.Item label="Title" value="order by audiobook_title" />
-                <Picker.Item label="Rating" value="order by audiobook_rating + 0" />
-                <Picker.Item
-                  label="Total Time"
-                  value="order by audiobook_total_time_secs + 0"
-                />
-                <Picker.Item
-                  label="Author First Name"
-                  value="order by audiobook_author_first_name"
-                />
-                <Picker.Item
-                  label="Author Last Name"
-                  value="order by audiobook_author_last_name"
-                />
-                <Picker.Item
-                  label="Language"
-                  value="order by audiobook_language"
-                />
-                <Picker.Item label="Genre" value="order by audiobook_genres" />
-                <Picker.Item
-                  label="Copyright year"
-                  value="order by audiobook_copyright_year + 0"
-                />
-                <Picker.Item
-                  label="Listening Progress"
-                  value="order by listening_progress_percent + 0"
-                />
-              </Picker>
-            </View>
-            <Button
-              mode="contained"
-              style={{
-                backgroundColor: "black",
-                height: 62,
-                marginTop: 5,
-                marginBottom: 5,
-              }}
-              onPress={() => {
-                toggleAscOrDescSort();
-              }}
-            >
-              <MaterialIconCommunity
-                name={pickerAndQueryState.icon}
-                size={40}
-                color="white"
-              />
-            </Button>
-          </View>
+          <PickerForHistoryAndBookShelf
+            pickerAndQueryState={pickerAndQueryState}
+            setPickerAndQueryState={setPickerAndQueryState}
+            getShelvedBooks={getShelvedBooks}
+            toggleAscOrDescSort={toggleAscOrDescSort}
+            storeAsyncData={storeAsyncData}
+            MaterialIconCommunity={MaterialIconCommunity}
+            Button={Button}
+            Picker={Picker}
+            View={View}
+            />
           <FlatList
             data={audiobookHistory}
             keyExtractor={keyExtractor}
@@ -369,8 +309,23 @@ function History() {
     );
   } else {
     return (
-      <View style={styles.ActivityIndicatorStyle}>
-        <ActivityIndicator size="large" color="#00ff00" />
+      <View>
+        <View style={styles.flatListStyle}>
+          <PickerForHistoryAndBookShelf
+            pickerAndQueryState={pickerAndQueryState}
+            setPickerAndQueryState={setPickerAndQueryState}
+            getShelvedBooks={getShelvedBooks}
+            toggleAscOrDescSort={toggleAscOrDescSort}
+            storeAsyncData={storeAsyncData}
+            MaterialIconCommunity={MaterialIconCommunity}
+            Button={Button}
+            Picker={Picker}
+            View={View}
+            />
+          <View style={styles.ActivityIndicatorStyle}>
+            <ActivityIndicator size="large" color="#00ff00" />
+          </View>
+        </View>
       </View>
     );
   }
@@ -404,7 +359,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#51361a",
   },
   ActivityIndicatorStyle: {
-    top: windowHeight / 2,
+    top: windowHeight / 3,
     color: "green",
   },
   SQLQueryPicker: {
