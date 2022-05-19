@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { ActivityIndicator, StyleSheet, View, Dimensions } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
+
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons.js";
 import { Button, List, Colors, Switch } from "react-native-paper";
 
 function AudioTrackControls(props: any) {
@@ -9,9 +11,10 @@ function AudioTrackControls(props: any) {
   return (
     <View style={styles.controlsVert}>
       <View style={styles.controls}>
-        <Button mode="outlined">
-          <MaterialIcons
-            name="reply"
+
+        <Button mode="outlined" onPress={() => props.rewindTenSeconds()}>
+          <MaterialCommunityIcons
+            name="rewind-10"
             size={controlPanelButtonSize}
             color="black"
             style={styles.control}
@@ -26,7 +29,9 @@ function AudioTrackControls(props: any) {
           />
         </Button>
         {props.loadingCurrentAudiotrack ? (
-          <ActivityIndicator size={"large"} color={"dodgerblue"} />
+          <View style={styles.ActivityIndicatorContainer}>
+            <ActivityIndicator size={"large"} color={"dodgerblue"} />
+          </View>
         ) : props.loadedCurrentAudiotrack === false ? (
           <Button
             mode="outlined"
@@ -51,7 +56,9 @@ function AudioTrackControls(props: any) {
             />
           </Button>
         ) : props.audioPaused === false ? (
-          <ActivityIndicator size={"large"} color={"dodgerblue"} />
+          <View style={styles.ActivityIndicatorContainer}>
+            <ActivityIndicator size={"large"} color={"red"} />
+          </View>
         ) : (
           <Button mode="outlined" onPress={() => props.PlayAudio()}>
             <MaterialIcons
@@ -70,9 +77,9 @@ function AudioTrackControls(props: any) {
             style={styles.control}
           />
         </Button>
-        <Button mode="outlined" onPress={props.toggleOverlay}>
-          <MaterialIcons
-            name="list"
+        <Button mode="outlined" onPress={() => props.forwardTenSeconds()}>
+          <MaterialCommunityIcons
+            name="fast-forward-10"
             size={controlPanelButtonSize}
             color="black"
             style={styles.control}
@@ -93,13 +100,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   controlsVert: {
-    flex: 0.8,
+    height: 60,
   },
   control: {
-    height: 50,
-    borderRadius: 25,
     color: "black",
-    margin: 30,
+  },
+  ActivityIndicatorContainer: {
+    width: 64,
   },
 });
 

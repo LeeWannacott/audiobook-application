@@ -1,16 +1,10 @@
 import React, { useEffect, useState, useRef } from "react";
-import {
-  ActivityIndicator,
-  Dimensions,
-  Switch,
-  BackHandler,
-} from "react-native";
+import { ActivityIndicator, Dimensions } from "react-native";
 import { ListItem, LinearProgress, Card } from "react-native-elements";
 import { Rating } from "react-native-ratings";
 import * as rssParser from "react-native-rss-parser";
 import { Audio } from "expo-av";
-import { MaterialIcons } from "@expo/vector-icons";
-import { StyleSheet, Text, View, SectionList, Image } from "react-native";
+import { StyleSheet, Text, View, SectionList } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons.js";
 import { Button } from "react-native-paper";
 import AudioTrackControls from "../components/audioTrackControls";
@@ -121,9 +115,9 @@ function Audiotracks(props: any) {
   React.useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <Button mode={"outlined"} onPress={() => toggleOverlay()}>
-          <MaterialIcons
-            name="settings"
+        <Button mode={"outlined"} onPress={() => toggleSettingsOverlay()}>
+          <MaterialCommunityIcons
+            name="cog"
             size={controlPanelButtonSize}
             color="black"
             style={{
@@ -486,14 +480,26 @@ function Audiotracks(props: any) {
     }
   };
 
-  const fastForwardTenSeconds = async (data: any) => {
+  const forwardTenSeconds = async () => {
     try {
       const result = await sound.current.getStatusAsync();
       console.log(result);
       if (result.isLoaded === true) {
-        const result =
-          (data + 10 / 100) * currentAudiotrackPlayingInfo.Duration;
-        await sound.current.setPositionAsync(roundNumberTwoDecimal(result));
+        const result = audiotracksData.currentAudiotrackPositionsMs[currentAudioTrackIndex.current] 
+        await sound.current.setPositionAsync(result+10000);
+      }
+    } catch (error) {
+      console.log("Error: ", error);
+    }
+  };
+
+  const rewindTenSeconds = async () => {
+    try {
+      const result = await sound.current.getStatusAsync();
+      console.log(result);
+      if (result.isLoaded === true) {
+        const result = audiotracksData.currentAudiotrackPositionsMs[currentAudioTrackIndex.current] 
+        await sound.current.setPositionAsync(result-10000);
       }
     } catch (error) {
       console.log("Error: ", error);
@@ -824,7 +830,7 @@ function Audiotracks(props: any) {
     }
   }
 
-  const toggleOverlay = () => {
+  const toggleSettingsOverlay = () => {
     setVisible(!visible);
   };
 
@@ -833,7 +839,15 @@ function Audiotracks(props: any) {
       return (
         <View style={styles.bookHeader}>
           <Card>
-            <Card.Title style={styles.bookTitle}> {audiobookTitle}</Card.Title>
+            <View
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "space-around",
+              }}
+            >
+              <Card.Title style={styles.bookTitle}>{audiobookTitle}</Card.Title>
+            </View>
             <Card.Divider />
             <Card.Image
               source={{ uri: bookCoverImage }}
@@ -896,12 +910,13 @@ function Audiotracks(props: any) {
                     audiobook_language: audiobookLanguage,
                   });
                 }}
+                style={{ width: 40 }}
               >
                 <MaterialCommunityIcons
                   name={
                     audiotracksData.shelveIconToggle ? "book" : "book-outline"
                   }
-                  size={50}
+                  size={30}
                   color={audiotracksData.shelveIconToggle ? "black" : "black"}
                 />
               </Button>
@@ -920,7 +935,7 @@ function Audiotracks(props: any) {
 
     const AudioTracksScreenData = [
       {
-        title: "Audiotracks",
+        title: "No. Audiotracks: " + numberBookSections,
         renderItem: renderAudiotracks,
         data: chapters,
         keyExtractor: audiotracksKeyExtractor,
@@ -937,7 +952,7 @@ function Audiotracks(props: any) {
       <View style={styles.container}>
         <AudioTrackSettings
           visible={visible}
-          toggleOverlay={toggleOverlay}
+          toggleOverlay={toggleSettingsOverlay}
           audioPlayerSettings={audioPlayerSettings}
           storeAudioTrackSettings={storeAudioTrackSettings}
           setAudioPlayerSettings={setAudioPlayerSettings}
@@ -971,7 +986,6 @@ function Audiotracks(props: any) {
           }
           audioTrackReader={currentAudiotrackPlayingInfo.audioTrackReader}
         />
-
         <AudioTrackControls
           HandlePrev={HandlePrev}
           HandleNext={HandleNext}
@@ -987,7 +1001,8 @@ function Audiotracks(props: any) {
             audiotrackLoadingStatuses.loadedCurrentAudiotrack
           }
           currentAudioTrackIndex={currentAudioTrackIndex}
-          fastForwardTenSeconds={fastForwardTenSeconds}
+          forwardTenSeconds={forwardTenSeconds}
+          rewindTenSeconds={rewindTenSeconds}
         ></AudioTrackControls>
       </View>
     );
