@@ -10,6 +10,7 @@ import { Button } from "react-native-paper";
 import AudioTrackControls from "../components/audioTrackControls";
 import AudioTrackSettings from "../components/audioTrackSettings";
 import AudiotrackSliderWithCurrentPlaying from "../components/AudiotrackSliderWithCurrentPlaying";
+import { Overlay } from "react-native-elements";
 
 import { openDatabase, roundNumberTwoDecimal } from "../utils";
 import { useNavigation } from "@react-navigation/native";
@@ -59,6 +60,7 @@ function Audiotracks(props: any) {
   const [currentSliderPosition, setCurrentSliderPosition] = React.useState(0.0);
   const controlPanelButtonSize = 30;
   const [visible, setVisible] = useState(false);
+  const [playOptionsVisible, setPlayOptionsVisible] = useState(false);
   const [audioPlayerSettings, setAudioPlayerSettings] = useState({
     rate: 1.0,
     shouldCorrectPitch: true,
@@ -145,6 +147,13 @@ function Audiotracks(props: any) {
         (audioTrackSettingsRetrieved) => {
           if (audioTrackSettingsRetrieved) {
             return setAudioPlayerSettings(audioTrackSettingsRetrieved);
+          }
+        }
+      );
+      getAsyncData("currentTrackIndex").then(
+        (currentTrackRetrieved) => {
+          if (currentTrackRetrieved) {
+            currentAudioTrackIndex.current = currentTrackRetrieved
           }
         }
       );
@@ -485,8 +494,11 @@ function Audiotracks(props: any) {
       const result = await sound.current.getStatusAsync();
       console.log(result);
       if (result.isLoaded === true) {
-        const result = audiotracksData.currentAudiotrackPositionsMs[currentAudioTrackIndex.current] 
-        await sound.current.setPositionAsync(result+10000);
+        const result =
+          audiotracksData.currentAudiotrackPositionsMs[
+            currentAudioTrackIndex.current
+          ];
+        await sound.current.setPositionAsync(result + 10000);
       }
     } catch (error) {
       console.log("Error: ", error);
@@ -498,8 +510,11 @@ function Audiotracks(props: any) {
       const result = await sound.current.getStatusAsync();
       console.log(result);
       if (result.isLoaded === true) {
-        const result = audiotracksData.currentAudiotrackPositionsMs[currentAudioTrackIndex.current] 
-        await sound.current.setPositionAsync(result-10000);
+        const result =
+          audiotracksData.currentAudiotrackPositionsMs[
+            currentAudioTrackIndex.current
+          ];
+        await sound.current.setPositionAsync(result - 10000);
       }
     } catch (error) {
       console.log("Error: ", error);
@@ -525,6 +540,7 @@ function Audiotracks(props: any) {
       ...audiotrackLoadingStatuses,
       loadingCurrentAudiotrack: true,
     });
+    await storeAsyncData("currentTrackIndex", currentAudioTrackIndex.current);
     console.log(index, "Playing");
     const checkLoading = await sound.current.getStatusAsync();
     if (checkLoading.isLoaded === false) {
@@ -728,6 +744,19 @@ function Audiotracks(props: any) {
     }
   };
 
+  const PlayFromStartOfTrack = async (index: number) => {
+    try {
+      const unloadSound = await sound.current.unloadAsync();
+      if (unloadSound.isLoaded === false) {
+        setCurrentSliderPosition(0.0);
+        await ResetPlayer();
+        await LoadAudio(index, 0);
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
   const renderAudiotracks = ({ item, index }: any) => (
     <ListItem bottomDivider>
       <ListItem.Content>
@@ -764,6 +793,7 @@ function Audiotracks(props: any) {
         onPress={() => {
           PlayFromListenButton(index);
         }}
+        onLongPress={() => PlayFromStartOfTrack(index)}
       >
         <MaterialCommunityIcons name="book-play" size={40} color="black" />
       </Button>
@@ -832,6 +862,9 @@ function Audiotracks(props: any) {
 
   const toggleSettingsOverlay = () => {
     setVisible(!visible);
+  };
+  const togglePlayOptions = () => {
+    setPlayOptionsVisible(!playOptionsVisible);
   };
 
   if (!loadingAudioListeningLinks && !loadingAudiobookData) {
@@ -959,6 +992,15 @@ function Audiotracks(props: any) {
           sound={sound}
         />
 
+        <Overlay
+          isVisible={playOptionsVisible}
+          onBackdropPress={togglePlayOptions}
+          fullScreen={false}
+        >
+          <Text>PlayFromStart</Text>
+          <Text>PlayFromStart</Text>
+        </Overlay>
+
         <View style={styles.AudioTracksStyle}>
           <View style={styles.listItemHeaderStyle}>
             <SectionList
@@ -1003,6 +1045,8 @@ function Audiotracks(props: any) {
           currentAudioTrackIndex={currentAudioTrackIndex}
           forwardTenSeconds={forwardTenSeconds}
           rewindTenSeconds={rewindTenSeconds}
+          trackPositions={audiotracksData}
+
         ></AudioTrackControls>
       </View>
     );

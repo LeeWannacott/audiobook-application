@@ -7,12 +7,22 @@ import { Button, List, Colors, Switch } from "react-native-paper";
 
 function AudioTrackControls(props: any) {
   const controlPanelButtonSize = 30;
+  const {
+    loadingCurrentAudiotrack,
+    rewindTenSeconds,
+    HandlePrev,
+    HandleNext,
+    PlayAudio,
+    forwardTenSeconds,
+    currentAudioTrackIndex,
+    trackPositions,
+  } = props;
+  console.log(trackPositions.currentAudiotrackPositionsMs);
 
   return (
     <View style={styles.controlsVert}>
       <View style={styles.controls}>
-
-        <Button mode="outlined" onPress={() => props.rewindTenSeconds()}>
+        <Button mode="outlined" onPress={() => rewindTenSeconds()}>
           <MaterialCommunityIcons
             name="rewind-10"
             size={controlPanelButtonSize}
@@ -20,7 +30,7 @@ function AudioTrackControls(props: any) {
             style={styles.control}
           />
         </Button>
-        <Button mode="outlined" onPress={() => props.HandlePrev()}>
+        <Button mode="outlined" onPress={() => HandlePrev()}>
           <MaterialIcons
             name="skip-previous"
             size={controlPanelButtonSize}
@@ -28,7 +38,7 @@ function AudioTrackControls(props: any) {
             style={styles.control}
           />
         </Button>
-        {props.loadingCurrentAudiotrack ? (
+        {loadingCurrentAudiotrack ? (
           <View style={styles.ActivityIndicatorContainer}>
             <ActivityIndicator size={"large"} color={"dodgerblue"} />
           </View>
@@ -36,7 +46,12 @@ function AudioTrackControls(props: any) {
           <Button
             mode="outlined"
             onPress={() =>
-              props.LoadAudio(props.currentAudioTrackIndex.current)
+              props.LoadAudio(
+                currentAudioTrackIndex.current,
+                trackPositions.currentAudiotrackPositionsMs[
+                  currentAudioTrackIndex.current
+                ]
+              )
             }
           >
             <MaterialIcons
@@ -60,7 +75,7 @@ function AudioTrackControls(props: any) {
             <ActivityIndicator size={"large"} color={"red"} />
           </View>
         ) : (
-          <Button mode="outlined" onPress={() => props.PlayAudio()}>
+          <Button mode="outlined" onPress={() => PlayAudio()}>
             <MaterialIcons
               name="play-arrow"
               size={controlPanelButtonSize}
@@ -69,7 +84,7 @@ function AudioTrackControls(props: any) {
             />
           </Button>
         )}
-        <Button mode="outlined" onPress={() => props.HandleNext()}>
+        <Button mode="outlined" onPress={() => HandleNext()}>
           <MaterialIcons
             name="skip-next"
             size={controlPanelButtonSize}
@@ -77,7 +92,7 @@ function AudioTrackControls(props: any) {
             style={styles.control}
           />
         </Button>
-        <Button mode="outlined" onPress={() => props.forwardTenSeconds()}>
+        <Button mode="outlined" onPress={() => forwardTenSeconds()}>
           <MaterialCommunityIcons
             name="fast-forward-10"
             size={controlPanelButtonSize}
