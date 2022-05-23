@@ -3,19 +3,15 @@ import AudioTracks from "./src/screens/Audiotracks";
 import History from "./src/screens/History";
 import Bookshelf from "./src/screens/Bookshelf";
 import Settings from "./src/screens/Settings";
-import Downloads from "./src/screens/Downloads";
 import * as React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { StatusBar } from "expo-status-bar";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { Button } from "react-native-paper";
-import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
 
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons.js";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 const Stack = createNativeStackNavigator();
 
-// const Tab = createMaterialBottomTabNavigator();
 const Tab = createBottomTabNavigator();
 
 const TabNavigation = () => {
@@ -62,7 +58,7 @@ const TabNavigation = () => {
         component={Bookshelf}
         options={{
           tabBarLabel: "Bookshelf",
-          unmountOnBlur:true,
+          unmountOnBlur: true,
         }}
       />
       <Tab.Screen
@@ -70,7 +66,7 @@ const TabNavigation = () => {
         component={History}
         options={{
           tabBarLabel: "History",
-          unmountOnBlur:true,
+          unmountOnBlur: true,
         }}
       />
       <Tab.Screen
@@ -88,7 +84,14 @@ function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="BottomTabs" component={TabNavigation} />
+        <Stack.Screen
+          name="BottomTabs"
+          component={TabNavigation}
+          options={{
+            headerShown: false,
+            // statusBarHidden: true,
+          }}
+        />
         <Stack.Screen
           name="Audio"
           options={{
@@ -97,7 +100,7 @@ function App() {
           component={AudioTracks}
         />
       </Stack.Navigator>
-      <StatusBar style="light" backgroundColor="" translucent={true} />
+      <StatusBar style="auto" backgroundColor="white" translucent={false} />
     </NavigationContainer>
   );
 }

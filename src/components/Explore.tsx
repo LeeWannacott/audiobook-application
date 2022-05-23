@@ -60,15 +60,15 @@ function Search() {
     }
   }, []);
 
-  const storeApiSettings = (tempApiSettings:any) => {
+  const storeApiSettings = (tempApiSettings: any) => {
     storeAsyncData("apiSettings", tempApiSettings);
   };
 
-  const storeAuthorGenreEnablePickers = (dropdownPickers:object) => {
+  const storeAuthorGenreEnablePickers = (dropdownPickers: object) => {
     storeAsyncData("author&GenrePickerSearchbarDisableBools", dropdownPickers);
   };
 
-  function changeAudiobookAmountRequested(amount:number) {
+  function changeAudiobookAmountRequested(amount: number) {
     setApiSettings((prevState) => ({
       ...prevState,
       ["audiobookAmountRequested"]: amount,
@@ -93,7 +93,7 @@ function Search() {
   );
 
   const AuthorsListRender = React.useCallback(
-    authorsListJson["authors"].map((author, i:number) => {
+    authorsListJson["authors"].map((author, i: number) => {
       return (
         <Picker.Item
           key={`${authorsListJson["authors"][i].id}`}
@@ -126,7 +126,7 @@ function Search() {
             ref={(searchbar) => (refToSearchbar.current = searchbar)}
             placeholder={searchBarPlaceholder()}
             disabled={statusOfPickers.isSearchDisabled}
-            onChangeText={(val:string) => {
+            onChangeText={(val: string) => {
               updateSearch(val);
             }}
             onSubmitEditing={() => setUserInputEntered(search)}
@@ -309,6 +309,7 @@ function Search() {
 }
 
 const windowWidth = Dimensions.get("window").width;
+const windowHeight = Dimensions.get("window").height;
 export default Search;
 
 const styles = StyleSheet.create({
@@ -316,14 +317,13 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "row",
     width: windowWidth,
-    top: 20,
-    marginLeft:0,
+    marginLeft: 0,
     backgroundColor: "black",
-    paddingLeft:0,
-    left:-10,
+    paddingLeft: 0,
+    left: -10,
   },
   searchStyle: {
-    left:5,
+    left: 5,
     width: windowWidth - 80,
   },
   settingsIcon: {
@@ -346,8 +346,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   scrollStyle: {
-    top: 20,
-    height: 600,
+    height: windowHeight / 1.225,
     backgroundColor: "#331800",
   },
 });

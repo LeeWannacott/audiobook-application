@@ -24,7 +24,7 @@ export default function Audiobooks(props: any) {
   const [loadingAudioBooks, setLoadingAudioBooks] = useState(true);
   const [data, setAudiobooks] = useState<any>([]);
   const [bookCovers, setBookCovers] = useState<any[]>([]);
-  const [reviewsUrlList, setReviewsUrlList] = useState<any[]>([]);
+  const [reviewURLS, setReviewsUrlList] = useState<any[]>([]);
   const [avatarOnPressEnabled, setAvatarOnPressEnabled] = useState(true);
 
   React.useEffect(() => {
@@ -34,6 +34,7 @@ export default function Audiobooks(props: any) {
   const addAudiobookToHistory = (bookDataForHistory: {
     audiobook_genres: string;
   }) => {
+    console.log(bookDataForHistory);
     bookDataForHistory.audiobook_genres = JSON.stringify(
       bookDataForHistory.audiobook_genres
     );
@@ -138,13 +139,14 @@ export default function Audiobooks(props: any) {
           <Pressable
             onPress={() => {
               if (avatarOnPressEnabled) {
+                console.log(item);
                 addAudiobookToHistory({
                   audiobook_rss_url: item?.url_rss,
                   audiobook_id: item?.id,
                   audiobook_image: bookCovers[index],
                   audiobook_num_sections: item?.num_sections,
-                  audiobook_url_text_source: item?.url_text_source,
-                  audiobook_audiobook_zip: item?.url_zip,
+                  audiobook_ebook_url: item?.url_text_source,
+                  audiobook_zip: item?.url_zip_file,
                   audiobook_title: item?.title,
                   audiobook_author_first_name: item?.authors[0]?.first_name,
                   audiobook_author_last_name: item?.authors[0]?.last_name,
@@ -152,25 +154,25 @@ export default function Audiobooks(props: any) {
                   audiobook_total_time_secs: item?.totaltimesecs,
                   audiobook_copyright_year: item?.copyright_year,
                   audiobook_genres: item?.genres,
-                  audiobook_review_url: reviewsUrlList[index],
+                  audiobook_review_url: reviewURLS[index],
                   audiobook_language: item?.language,
                 });
                 navigation.navigate("Audio", {
-                  audioBooksRSSLinkToAudioTracks: item?.url_rss,
                   audioBookId: item?.id,
-                  bookCoverImage: bookCovers[index],
-                  numberBookSections: item?.num_sections,
-                  ebookTextSource: item?.url_text_source,
-                  ListenUrlZip: item?.url_zip,
-                  audiobookTitle: item?.title,
-                  audiobookAuthorFirstName: item?.authors[0]?.first_name,
-                  audiobookAuthorLastName: item?.authors[0]?.last_name,
-                  audiobookTotalTime: item?.totaltime,
-                  audiobookTimeSeconds: item?.totaltimesecs,
-                  audiobookCopyrightYear: item?.copyright_year,
-                  audiobookGenres: item?.genres,
-                  audiobookReviewUrl: reviewsUrlList[index],
-                  audiobookLanguage: item?.language,
+                  urlRss: item?.url_rss,
+                  coverImage: bookCovers[index],
+                  numSections: item?.num_sections,
+                  urlTextSource: item?.url_text_source,
+                  urlZipFile: item?.url_zip_file,
+                  title: item?.title,
+                  authorFirstName: item?.authors[0]?.first_name,
+                  authorLastName: item?.authors[0]?.last_name,
+                  totalTime: item?.totaltime,
+                  totalTimeSecs: item?.totaltimesecs,
+                  copyrightYear: item?.copyright_year,
+                  genres: item?.genres,
+                  urlReview: reviewURLS[index],
+                  language: item?.language,
                 });
               }
               setAvatarOnPressEnabled(false);

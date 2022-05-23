@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, Text, View,Switch } from "react-native";
+import { StyleSheet, Text, View, Switch } from "react-native";
 import { Overlay } from "react-native-elements";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons.js";
 import Slider from "@react-native-community/slider";
@@ -39,11 +39,17 @@ function AudioTrackSettings(props: any) {
       const result = await props.sound.current.getStatusAsync();
       if (pitchToggled) {
         if (result.isLoaded === true) {
-          await props.sound.current.setRateAsync(props.audioPlayerSettings.rate, true);
+          await props.sound.current.setRateAsync(
+            props.audioPlayerSettings.rate,
+            true
+          );
         }
       } else if (!pitchToggled) {
         if (result.isLoaded === true) {
-          await props.sound.current.setRateAsync(props.audioPlayerSettings.rate, false);
+          await props.sound.current.setRateAsync(
+            props.audioPlayerSettings.rate,
+            false
+          );
         }
       }
       await props.storeAudioTrackSettings({
@@ -143,7 +149,7 @@ function AudioTrackSettings(props: any) {
         value={props.audioPlayerSettings.isLooping}
         onValueChange={onToggleLoopSwitch}
       />
-      <Text>Speed of Audiotrack: {props.audioPlayerSettings.rate}</Text>
+      <Text>Speed of Audiotrack: {props.audioPlayerSettings.rate}X</Text>
       <View style={styles.sliderWithIconsOnSides}>
         <MaterialCommunityIcons name={"tortoise"} size={30} color={"black"} />
         <Slider

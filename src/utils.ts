@@ -16,6 +16,6 @@ export function openDatabase() {
   return db;
 }
 
-export function roundNumberTwoDecimal(num:number) {
+export function roundNumberTwoDecimal(num: number) {
   return Math.round((num + Number.EPSILON) * 100) / 100;
 }

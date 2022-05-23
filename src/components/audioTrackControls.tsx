@@ -40,7 +40,7 @@ function AudioTrackControls(props: any) {
         </Button>
         {loadingCurrentAudiotrack ? (
           <View style={styles.ActivityIndicatorContainer}>
-            <ActivityIndicator size={"large"} color={"dodgerblue"} />
+            <ActivityIndicator size={"large"} color="#00ff00" />
           </View>
         ) : props.loadedCurrentAudiotrack === false ? (
           <Button
@@ -72,7 +72,7 @@ function AudioTrackControls(props: any) {
           </Button>
         ) : props.audioPaused === false ? (
           <View style={styles.ActivityIndicatorContainer}>
-            <ActivityIndicator size={"large"} color={"red"} />
+            <ActivityIndicator size={"large"} color="#00ff00" />
           </View>
         ) : (
           <Button mode="outlined" onPress={() => PlayAudio()}>

@@ -1,28 +1,28 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-export const audiobookShelfTableName = "testshelve25"
+export const audiobookShelfTableName = "testshelve27";
 export function createShelveTable(db: any) {
   db.transaction((tx: any) => {
     tx.executeSql(
-      `create table if not exists ${audiobookShelfTableName} (id integer primary key not null, audiobook_rss_url text not null unique, audiobook_id text not null unique, audiobook_image text, audiobook_title text, audiobook_author_first_name text, audiobook_author_last_name text, audiobook_total_time text, audiobook_total_time_secs text, audiobook_copyright_year text, audiobook_genres text, audiobook_review_url text, audiobook_num_sections text, audiobook_ebook_url text, audiobook_zip text, audiobook_language text);`
+      `create table if not exists ${audiobookShelfTableName} (id integer primary key not null, audiobook_rss_url text not null unique, audiobook_id text not null unique, audiobook_image text, audiobook_title text, audiobook_author_first_name text, audiobook_author_last_name text, audiobook_total_time text, audiobook_total_time_secs int, audiobook_copyright_year int, audiobook_genres text, audiobook_review_url text, audiobook_num_sections int, audiobook_ebook_url text, audiobook_zip text, audiobook_language text);`
     );
   });
 }
 
-export const audiobookProgressTableName = "testaudio19" 
+export const audiobookProgressTableName = "testaudio22";
 export function createAudioBookDataTable(db: any) {
   db.transaction((tx: any) => {
     tx.executeSql(
-      `create table if not exists ${audiobookProgressTableName} (id integer primary key not null, audiobook_id text not null unique, audiotrack_progress_bars text, current_audiotrack_positions text, audiobook_shelved int, audiobook_rating text, listening_progress_percent text, current_listening_time text);`
+      `create table if not exists ${audiobookProgressTableName} (id integer primary key not null, audiobook_id text not null unique, audiotrack_progress_bars text, current_audiotrack_positions text, audiobook_shelved int, audiobook_rating real, listening_progress_percent real, current_listening_time int);`
     );
   });
 }
 
-export const audiobookHistoryTableName = "testHistory18" 
+export const audiobookHistoryTableName = "testHistory20";
 export function createHistoryTableDB(db: any) {
   db.transaction((tx: any) => {
     tx.executeSql(
-      `create table if not exists ${audiobookHistoryTableName} (id integer primary key not null, audiobook_rss_url text not null unique, audiobook_id text not null unique, audiobook_image text, audiobook_title text, audiobook_author_first_name text, audiobook_author_last_name text, audiobook_total_time text, audiobook_total_time_secs text, audiobook_copyright_year text, audiobook_genres text, audiobook_review_url text, audiobook_num_sections text, audiobook_ebook_url text, audiobook_zip text, audiobook_language text);`
+      `create table if not exists ${audiobookHistoryTableName}  (id integer primary key not null, audiobook_rss_url text not null unique, audiobook_id text not null unique, audiobook_image text, audiobook_title text, audiobook_author_first_name text, audiobook_author_last_name text, audiobook_total_time text, audiobook_total_time_secs int, audiobook_copyright_year int, audiobook_genres text, audiobook_review_url text, audiobook_num_sections int, audiobook_ebook_url text, audiobook_zip text, audiobook_language text);`
     );
   });
 }
@@ -80,14 +80,10 @@ export function shelveAudiobookDB(db: any, audiobookToShelve: any) {
         audiobookToShelve.audiobook_language,
       ]
     );
-    tx.executeSql(`select * from ${audiobookShelfTableName}`, [], (_, { rows }) => {});
   }, null);
 }
 
-export function updateAudioTrackPositionsDB(
-  db: any,
-  audiotrackProgress:any,
-) {
+export function updateAudioTrackPositionsDB(db: any, audiotrackProgress: any) {
   db.transaction((tx: any) => {
     tx.executeSql(
       `update ${audiobookProgressTableName} set audiotrack_progress_bars=?,current_audiotrack_positions=?,listening_progress_percent=?,current_listening_time=? where audiobook_id=?;`,
@@ -99,11 +95,6 @@ export function updateAudioTrackPositionsDB(
         audiotrackProgress.audiobook_id,
       ]
     );
-  });
-  db.transaction((tx: any) => {
-    tx.executeSql(`select * from ${audiobookProgressTableName}`, [], (_, { rows }) => {
-      console.log("banana", rows);
-    });
   });
 }
 
@@ -132,11 +123,15 @@ export function updateListeningProgressDB(
       [listening_progress_percent, current_listening_time, audiobook_id]
     );
   });
-  db.transaction((tx: any) => {
-    tx.executeSql(`select * from ${audiobookProgressTableName}`, [], (_, { rows }) => {
-      console.log("banana", rows);
-    });
-  });
+  // db.transaction((tx: any) => {
+  // tx.executeSql(
+  // `select * from ${audiobookProgressTableName}`,
+  // [],
+  // (_, { rows }) => {
+  // console.log("banana", rows);
+  // }
+  // );
+  // });
 }
 
 export function updateAudiobookRatingDB(
@@ -173,9 +168,10 @@ export function removeShelvedAudiobookDB(db: any, audiobook_id: any) {
     return false;
   }
   db.transaction((tx: any) => {
-    tx.executeSql(`delete from ${audiobookShelfTableName} where audiobook_id=?`, [
-      audiobook_id,
-    ]);
+    tx.executeSql(
+      `delete from ${audiobookShelfTableName} where audiobook_id=?`,
+      [audiobook_id]
+    );
   }, null);
 }
 

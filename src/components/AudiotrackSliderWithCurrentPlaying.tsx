@@ -3,8 +3,7 @@ import { StyleSheet, Text, View, Image } from "react-native";
 import React from "react";
 import { Dimensions } from "react-native";
 
-function AudiotrackSliderWithCurrentPlaying(props:any) {
-
+function AudiotrackSliderWithCurrentPlaying(props: any) {
   return (
     <View style={styles.SliderStyle}>
       <Slider
@@ -12,6 +11,8 @@ function AudiotrackSliderWithCurrentPlaying(props:any) {
         disabled={false}
         minimumValue={0.0}
         maximumValue={100.0}
+        minimumTrackTintColor="black"
+        thumbTintColor="black"
         onSlidingComplete={(data) => props.SeekUpdate(data)}
       />
       <View style={styles.AudiobookTime}>
@@ -28,7 +29,7 @@ function AudiotrackSliderWithCurrentPlaying(props:any) {
       </View>
       <View style={styles.SliderContainer}>
         <Image
-          source={{ uri: props.bookCoverImage }}
+          source={{ uri: props.coverImage }}
           style={{
             width: 50,
             height: 50,
@@ -55,16 +56,6 @@ export default AudiotrackSliderWithCurrentPlaying;
 const windowWidth = Dimensions.get("window").width;
 const windowHeight = Dimensions.get("window").height;
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "black",
-    padding: 10,
-    paddingTop: 2,
-  },
-  AudioTracksStyle: {
-    flex: 7,
-    paddingBottom: 2,
-  },
   AudiobookTime: {
     display: "flex",
     backgroundColor: "white",
@@ -85,51 +76,5 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     paddingLeft: 5,
     maxWidth: windowWidth - 70,
-  },
-  listItemHeaderStyle: {
-    fontSize: 20,
-    backgroundColor: "black",
-  },
-  ActivityIndicatorStyle: {
-    top: windowHeight / 2,
-    color: "green",
-  },
-  bookTitle: {
-    // top:100,
-    fontSize: 30,
-  },
-  bookAuthor: {
-    // top:100,
-    fontWeight: "bold",
-  },
-  bookDescription: {
-    // top:100,
-    fontSize: 16,
-    padding: 2,
-  },
-  bookHeader: {
-    display: "flex",
-    paddingBottom: 0,
-    padding: 2,
-  },
-  shelveButtons: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "flex-start",
-  },
-  reviewFooter: {
-    display: "flex",
-    flexDirection: "row",
-    flexWrap: "wrap",
-  },
-  sectionTitles: {
-    color: "white",
-    fontSize: 16,
-  },
-  sectionTitlesContainer: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "center",
-    alignSelf: "center",
   },
 });

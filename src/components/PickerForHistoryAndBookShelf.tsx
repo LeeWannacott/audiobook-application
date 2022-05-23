@@ -10,7 +10,6 @@ function PickerForHistoryAndBookShelf(props) {
     pickerAndQueryState,
     getShelvedBooks,
     setPickerAndQueryState,
-    storeAsyncData,
     toggleAscOrDescSort,
   } = props;
   return (
@@ -43,7 +42,7 @@ function PickerForHistoryAndBookShelf(props) {
           <Picker.Item label="Rating" value="order by audiobook_rating + 0" />
           <Picker.Item
             label="Total Time"
-            value="order by audiobook_total_time_secs + 0"
+            value="order by audiobook_total_time_secs"
           />
           <Picker.Item
             label="Author First Name"
@@ -57,11 +56,11 @@ function PickerForHistoryAndBookShelf(props) {
           <Picker.Item label="Genre" value="order by audiobook_genres" />
           <Picker.Item
             label="Copyright year"
-            value="order by audiobook_copyright_year + 0"
+            value="order by audiobook_copyright_year"
           />
           <Picker.Item
             label="Listening Progress"
-            value="order by listening_progress_percent + 0"
+            value="order by listening_progress_percent"
           />
         </Picker>
       </View>

@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, Dimensions,Text } from "react-native";
+import { StyleSheet, Dimensions, Text } from "react-native";
 import { List, Divider } from "react-native-paper";
 import { ListItem } from "react-native-elements";
 import MaterialIconCommunity from "react-native-vector-icons/MaterialCommunityIcons.js";
@@ -13,7 +13,7 @@ function AudiobookAccordionList(props: any) {
       titleNumberOfLines={1}
       accessibilityLabel={props.audiobookTitle}
       theme={{ colors: { text: "white" } }}
-      >
+    >
       <List.Section style={styles.accordianItemsStyle}>
         <ListItem.Subtitle style={styles.accordianItemsStyle}>
           <MaterialIconCommunity
@@ -80,7 +80,7 @@ function AudiobookAccordionList(props: any) {
 export default AudiobookAccordionList;
 
 const windowWidth = Dimensions.get("window").width;
-const accordionTitleWidth = windowWidth / 2 - 8 -60;
+const accordionTitleWidth = windowWidth / 2 - 8 - 60;
 const accordionStyleWidth = windowWidth / 2 - 8;
 
 const styles = StyleSheet.create({
@@ -88,7 +88,7 @@ const styles = StyleSheet.create({
     flex: 1,
     color: "white",
     backgroundColor: "#331800",
-    width: accordionStyleWidth, 
+    width: accordionStyleWidth,
     justifyContent: "center",
     height: 60,
   },

@@ -12,14 +12,12 @@ import { openDatabase } from "../utils";
 const db = openDatabase();
 
 const UserSettings = () => {
-
   const [audioModeSettings, setAudioModeSettings] = useState({
     interruptionModeAndroid: 1,
     staysActiveInBackground: true,
     shouldDuckAndroid: true,
     playThroughEarpieceAndroid: false,
   });
-
 
   React.useEffect(() => {
     getAsyncData("audioModeSettings").then(
@@ -126,7 +124,7 @@ const UserSettings = () => {
           />
           <SettingsList.Item
             icon={
-            <MaterialIconCommunity name="duck" size={50} color={"black"}/>
+              <MaterialIconCommunity name="duck" size={50} color={"black"} />
             }
             hasNavArrow={false}
             title="Duck Audio"
@@ -241,7 +239,11 @@ const UserSettings = () => {
           <SettingsList.Item
             hasNavArrow={true}
             icon={
-            <MaterialIconCommunity name="account-voice" size={50} color={"black"} />
+              <MaterialIconCommunity
+                name="account-voice"
+                size={50}
+                color={"black"}
+              />
             }
             title="LibriVox"
             onPress={() =>

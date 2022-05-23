@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { ListItem, LinearProgress } from "react-native-elements";
 import { Rating } from "react-native-ratings";
+
 import {
   FlatList,
   ActivityIndicator,
@@ -13,12 +14,9 @@ import {
   StyleSheet,
   View,
 } from "react-native";
-import { Button } from "react-native-paper";
-import MaterialIconCommunity from "react-native-vector-icons/MaterialCommunityIcons.js";
+
 import AudiobookAccordionList from "../components/audiobookAccordionList";
 import PickerForHistoryAndBookShelf from "../components/PickerForHistoryAndBookShelf";
-
-import { Picker } from "@react-native-picker/picker";
 
 import { openDatabase, roundNumberTwoDecimal } from "../utils";
 import {
@@ -32,7 +30,6 @@ const db = openDatabase();
 
 // global scope
 let lolcache = {};
-
 
 function History() {
   const [audiobookHistory, setAudiobookHistory] = useState<any[]>([]);
@@ -201,23 +198,21 @@ function History() {
             onPress={() => {
               if (avatarOnPressEnabled) {
                 navigation.navigate("Audio", {
-                  audioBooksRSSLinkToAudioTracks: item?.audiobook_rss_url,
                   audioBookId: item?.audiobook_id,
-                  bookCoverImage: item?.audiobook_image,
-                  audiobookTitle: item?.audiobook_title,
-                  audiobookAuthorFirstName: item?.audiobook_author_first_name,
-                  audiobookAuthorLastName: item?.audiobook_author_last_name,
-                  audiobookTotalTime: item?.audiobook_total_time,
-                  audiobookTimeSeconds: item?.audiobook_total_time_secs,
-                  audiobookCopyrightYear: item?.audiobook_copyright_year,
-                  audiobookGenres: JSON.parse(item?.audiobook_genres),
-                  audiobookLanguage: item?.audiobook_language,
-                  audiobookRating:
-                    audioBookInfo[item?.audiobook_id]?.audiobook_rating,
-                  audiobookReviewUrl: item?.audiobook_review_url,
-                  numberBookSections: item?.audiobook_num_sections,
-                  ebookTextSource: item.audiobook_ebook_url,
-                  ListenUrlZip: item.audiobook_zip,
+                  urlRss: item?.audiobook_rss_url,
+                  coverImage: item?.audiobook_image,
+                  title: item?.audiobook_title,
+                  authorFirstName: item?.audiobook_author_first_name,
+                  authorLastName: item?.audiobook_author_last_name,
+                  totalTime: item?.audiobook_total_time,
+                  totalTimeSecs: item?.audiobook_total_time_secs,
+                  copyrightYear: item?.audiobook_copyright_year,
+                  genres: JSON.parse(item?.audiobook_genres),
+                  language: item?.audiobook_language,
+                  urlReview: item?.audiobook_review_url,
+                  numSections: item?.audiobook_num_sections,
+                  urlTextSource: item.audiobook_ebook_url,
+                  urlZipFile: item.audiobook_zip,
                 });
               }
               setAvatarOnPressEnabled(false);
@@ -238,12 +233,12 @@ function History() {
           {audioBookInfo[item.audiobook_id]?.audiobook_id ==
           item.audiobook_id ? (
             <LinearProgress
-              color="darkgreen"
+              color="primary"
               value={
                 audioBookInfo[item.audiobook_id]?.listening_progress_percent
               }
               variant="determinate"
-              trackColor="white"
+              trackColor="lightblue"
               animation={false}
             />
           ) : (
@@ -292,7 +287,8 @@ function History() {
             setPickerAndQueryState={setPickerAndQueryState}
             getShelvedBooks={getShelvedBooks}
             toggleAscOrDescSort={toggleAscOrDescSort}
-            />
+            storeAsyncData={storeAsyncData}
+          />
           <FlatList
             data={audiobookHistory}
             keyExtractor={keyExtractor}
@@ -312,7 +308,7 @@ function History() {
             getShelvedBooks={getShelvedBooks}
             toggleAscOrDescSort={toggleAscOrDescSort}
             storeAsyncData={storeAsyncData}
-            />
+          />
           <View style={styles.ActivityIndicatorStyle}>
             <ActivityIndicator size="large" color="#00ff00" />
           </View>
@@ -339,11 +335,8 @@ const styles = StyleSheet.create({
   },
   flatListStyle: {
     padding: 10,
-    paddingTop: 40,
     paddingBottom: 0,
-    // bottom: 162,
-    height: 681,
-    color: "blue",
+    height: windowHeight - 75,
     backgroundColor: "#331800",
   },
   AudioBookListView: {

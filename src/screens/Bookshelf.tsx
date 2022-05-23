@@ -71,22 +71,21 @@ function Bookshelf() {
             onPress={() => {
               if (avatarOnPressEnabled) {
                 navigation.navigate("Audio", {
-                  audioBooksRSSLinkToAudioTracks: item?.audiobook_rss_url,
                   audioBookId: item?.audiobook_id,
-                  bookCoverImage: item?.audiobook_image,
-                  audiobookTitle: item?.audiobook_title,
-                  audiobookAuthorFirstName: item?.audiobook_author_first_name,
-                  audiobookAuthorLastName: item?.audiobook_author_last_name,
-                  audiobookTotalTime: item?.audiobook_total_time,
-                  audiobookTimeSeconds: item?.audiobook_total_time_secs,
-                  audiobookCopyrightYear: item?.audiobook_copyright_year,
-                  audiobookGenres: JSON.parse(item?.audiobook_genres),
-                  audiobookLanguage: item?.audiobook_language,
-                  audiobookRating: item?.audiobook_rating,
-                  audiobookReviewUrl: item?.audiobook_review_url,
-                  numberBookSections: item?.audiobook_num_sections,
-                  // ebookTextSource: item.audiobook_ebook_url,
-                  // ListenUrlZip: item.audiobook_zip_file,
+                  urlRss: item?.audiobook_rss_url,
+                  coverImage: item?.audiobook_image,
+                  title: item?.audiobook_title,
+                  authorFirstName: item?.audiobook_author_first_name,
+                  authorLastName: item?.audiobook_author_last_name,
+                  totalTime: item?.audiobook_total_time,
+                  totalTimeSecs: item?.audiobook_total_time_secs,
+                  copyrightYear: item?.audiobook_copyright_year,
+                  genres: JSON.parse(item?.audiobook_genres),
+                  language: item?.audiobook_language,
+                  urlReview: item?.audiobook_review_url,
+                  numSections: item?.audiobook_num_sections,
+                  urlTextSource: item.audiobook_ebook_url,
+                  urlZipFile: item.audiobook_zip,
                 });
               }
               setAvatarOnPressEnabled(false);
