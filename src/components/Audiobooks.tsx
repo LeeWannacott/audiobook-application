@@ -137,6 +137,7 @@ export default function Audiobooks(props: any) {
       >
         <View style={styles.ImageContainer}>
           <Pressable
+            style={({ pressed }) => [{ opacity: pressed ? 0.75 : 1.0 }]}
             onPress={() => {
               if (avatarOnPressEnabled) {
                 console.log(item);

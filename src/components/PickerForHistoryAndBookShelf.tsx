@@ -5,7 +5,7 @@ import { Button } from "react-native-paper";
 import MaterialIconCommunity from "react-native-vector-icons/MaterialCommunityIcons.js";
 import { storeAsyncData } from "../database_functions";
 
-function PickerForHistoryAndBookShelf(props) {
+function PickerForHistoryAndBookShelf(props: any) {
   const {
     pickerAndQueryState,
     getShelvedBooks,

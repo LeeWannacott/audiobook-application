@@ -14,7 +14,6 @@ import {
   StyleSheet,
   View,
 } from "react-native";
-
 import AudiobookAccordionList from "../components/audiobookAccordionList";
 import PickerForHistoryAndBookShelf from "../components/PickerForHistoryAndBookShelf";
 
@@ -195,6 +194,7 @@ function History() {
       <ListItem topDivider containerStyle={styles.AudioBookListView}>
         <View style={styles.ImageContainer}>
           <Pressable
+            style={({ pressed }) => [{ opacity: pressed ? 0.75 : 1.0 }]}
             onPress={() => {
               if (avatarOnPressEnabled) {
                 navigation.navigate("Audio", {
@@ -215,6 +215,7 @@ function History() {
                   urlZipFile: item.audiobook_zip,
                 });
               }
+
               setAvatarOnPressEnabled(false);
               setTimeout(() => {
                 setAvatarOnPressEnabled(true);
@@ -229,7 +230,6 @@ function History() {
               }}
             />
           </Pressable>
-
           {audioBookInfo[item.audiobook_id]?.audiobook_id ==
           item.audiobook_id ? (
             <LinearProgress
