@@ -15,14 +15,14 @@ https://docs.expo.io/versions/latest/sdk/audio/
 
 - [x] Store (persistantly) whether audiobook has been shelved in audiotrack page.
 
-- [-] Add options to searchby for searchbar (e.g Author).
+- [x] Add options to searchby for searchbar (e.g Author).
 
-- [ ] Fix how many time updateStatus is called to prevent locking up
+- [x] Fix how many time updateStatus is called to prevent locking up
       controls (threads?, interpolation?).
 
-- [ ] Fix delay on controls when hitting play or stop (or show feedback/waiting)
+- [x] Fix delay on controls when hitting play or stop (or show feedback/waiting)
 
-- [-] Add a user setting page to change settings (e.g darkmode toggle)
+- [x] Add a user setting page to change settings (e.g darkmode toggle)
 
 - [x] When adding audiobook to history tab check if already stored in database.
 
