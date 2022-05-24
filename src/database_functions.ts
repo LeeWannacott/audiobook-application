@@ -9,11 +9,11 @@ export function createShelveTable(db: any) {
   });
 }
 
-export const audiobookProgressTableName = "testaudio22";
+export const audiobookProgressTableName = "testaudio23";
 export function createAudioBookDataTable(db: any) {
   db.transaction((tx: any) => {
     tx.executeSql(
-      `create table if not exists ${audiobookProgressTableName} (id integer primary key not null, audiobook_id text not null unique, audiotrack_progress_bars text, current_audiotrack_positions text, audiobook_shelved int, audiobook_rating real, listening_progress_percent real, current_listening_time int);`
+      `create table if not exists ${audiobookProgressTableName} (id integer primary key not null, audiobook_id text not null unique, audiotrack_progress_bars text, current_audiotrack_positions text, audiobook_shelved int, audiobook_rating real, listening_progress_percent real, current_listening_time int, current_audiotrack_index int);`
     );
   });
 }
@@ -93,6 +93,18 @@ export function updateAudioTrackPositionsDB(db: any, audiotrackProgress: any) {
         audiotrackProgress.listening_progress_percent,
         audiotrackProgress.current_listening_time,
         audiotrackProgress.audiobook_id,
+      ]
+    );
+  });
+}
+
+export function updateAudioTrackIndexDB(db: any, audioTrackIndex: any, audiobook_id:any) {
+  db.transaction((tx: any) => {
+    tx.executeSql(
+      `update ${audiobookProgressTableName} set current_audiotrack_index=? where audiobook_id=?;`,
+      [
+        audioTrackIndex,
+        audiobook_id,
       ]
     );
   });

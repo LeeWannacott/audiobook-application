@@ -25,6 +25,7 @@ import {
   initialAudioBookStoreDB,
   removeShelvedAudiobookDB,
   updateAudiobookRatingDB,
+  updateAudioTrackIndexDB,
   audiobookProgressTableName,
 } from "../database_functions";
 
@@ -144,11 +145,6 @@ function Audiotracks(props: any) {
           }
         }
       );
-      getAsyncData("currentTrackIndex").then((currentTrackRetrieved) => {
-        if (currentTrackRetrieved) {
-          currentAudioTrackIndex.current = currentTrackRetrieved;
-        }
-      });
     } catch (err) {
       console.log(err);
     }
@@ -222,6 +218,9 @@ function Audiotracks(props: any) {
           (_, { rows }) => {
             rows["_array"].forEach((element) => {
               if (initAudioBookData.audiobook_id === element.audiobook_id) {
+                if(element?.current_audiotrack_index){
+                  currentAudioTrackIndex.current = element?.current_audiotrack_index
+                }
                 const TotalListenTimeAndProgress =
                   updateCoverBookProgress(element);
                 setAudiotracksData({
@@ -526,11 +525,11 @@ function Audiotracks(props: any) {
 
   const LoadAudio = async (index: number, audiotrackPositions = 0) => {
     currentAudioTrackIndex.current = index;
+    updateAudioTrackIndexDB(db, currentAudioTrackIndex.current, audioBookId)
     setAudiotrackLoadingStatuses({
       ...audiotrackLoadingStatuses,
       loadingCurrentAudiotrack: true,
     });
-    await storeAsyncData("currentTrackIndex", currentAudioTrackIndex.current);
     console.log(index, "Playing");
     const checkLoading = await sound.current.getStatusAsync();
     if (checkLoading.isLoaded === false) {
