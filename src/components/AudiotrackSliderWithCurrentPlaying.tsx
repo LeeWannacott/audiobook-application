@@ -11,8 +11,8 @@ function AudiotrackSliderWithCurrentPlaying(props: any) {
         disabled={false}
         minimumValue={0.0}
         maximumValue={100.0}
-        minimumTrackTintColor="black"
-        thumbTintColor="black"
+        // minimumTrackTintColor="black"
+        // thumbTintColor="black"
         onSlidingComplete={(data) => props.SeekUpdate(data)}
       />
       <View style={styles.AudiobookTime}>

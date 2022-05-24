@@ -157,6 +157,9 @@ export default function Audiobooks(props: any) {
                   audiobook_genres: item?.genres,
                   audiobook_review_url: reviewURLS[index],
                   audiobook_language: item?.language,
+                  audiobook_project_url: item?.url_project,
+                  audiobook_librivox_url: item?.url_librivox,
+                  audiobook_iarchive_url: item?.url_iarchive,
                 });
                 navigation.navigate("Audio", {
                   audioBookId: item?.id,
@@ -174,6 +177,9 @@ export default function Audiobooks(props: any) {
                   genres: item?.genres,
                   urlReview: reviewURLS[index],
                   language: item?.language,
+                  urlProject: item?.url_project,
+                  urlLibrivox: item?.url_librivox,
+                  urlIArchive: item?.url_iarchive,
                 });
               }
               setAvatarOnPressEnabled(false);
@@ -184,6 +190,7 @@ export default function Audiobooks(props: any) {
           >
             <Image
               source={{ uri: bookCovers[index] }}
+              loadingIndicatorSource={{}}
               style={{
                 width: resizeCoverImageWidth,
                 height: resizeCoverImageHeight,

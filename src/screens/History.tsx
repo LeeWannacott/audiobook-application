@@ -139,9 +139,10 @@ function History() {
               newHistory.push(row);
             }
           }
+
           setAudiobookHistory(newHistory);
           // setAudiobookHistory(rows["_array"]);
-          // console.log(rows["_array"]);
+          console.log("yogibear",rows["_array"]);
           let end = performance.now();
           console.log("time: ", end - start);
           setLoadingHistory(false);

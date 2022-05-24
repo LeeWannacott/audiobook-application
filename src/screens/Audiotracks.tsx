@@ -102,6 +102,9 @@ function Audiotracks(props: any) {
     genres,
     urlReview,
     language,
+    urlProject,
+    urlLibrivox,
+    urlIArchive,
   } = props.route.params;
 
   const navigation = useNavigation();
@@ -218,8 +221,9 @@ function Audiotracks(props: any) {
           (_, { rows }) => {
             rows["_array"].forEach((element) => {
               if (initAudioBookData.audiobook_id === element.audiobook_id) {
-                if(element?.current_audiotrack_index){
-                  currentAudioTrackIndex.current = element?.current_audiotrack_index
+                if (element?.current_audiotrack_index) {
+                  currentAudioTrackIndex.current =
+                    element?.current_audiotrack_index;
                 }
                 const TotalListenTimeAndProgress =
                   updateCoverBookProgress(element);
@@ -525,7 +529,7 @@ function Audiotracks(props: any) {
 
   const LoadAudio = async (index: number, audiotrackPositions = 0) => {
     currentAudioTrackIndex.current = index;
-    updateAudioTrackIndexDB(db, currentAudioTrackIndex.current, audioBookId)
+    updateAudioTrackIndexDB(db, currentAudioTrackIndex.current, audioBookId);
     setAudiotrackLoadingStatuses({
       ...audiotrackLoadingStatuses,
       loadingCurrentAudiotrack: true,
@@ -932,6 +936,9 @@ function Audiotracks(props: any) {
                     audiobook_ebook_url: urlTextSource,
                     audiobook_zip: urlZipFile,
                     audiobook_language: language,
+                    audiobook_project_url:urlProject,
+                    audiobook_librivox_url:urlLibrivox,
+                    audiobook_iarchive_url:urlIArchive,
                   });
                 }}
                 style={{ width: 40 }}
