@@ -21,7 +21,7 @@ import {
   createAudioBookDataTable,
   updateAudioTrackPositionsDB,
   shelveAudiobookDB,
-  updateBookShelveDB,
+  updateIfBookShelvedDB,
   initialAudioBookStoreDB,
   removeShelvedAudiobookDB,
   updateAudiobookRatingDB,
@@ -201,14 +201,13 @@ function Audiotracks(props: any) {
     audiobook_id: number | string,
     audiobook_shelved: boolean
   ) => {
-    updateBookShelveDB(db, audiobook_id, audiobook_shelved);
+    updateIfBookShelvedDB(db, audiobook_id, audiobook_shelved);
   };
-
   const initialAudioBookStore = (initAudioBookData: any) => {
     initAudioBookData.audiotrack_progress_bars = JSON.stringify(
       initAudioBookData.audiotrack_progress_bars
     );
-    initAudioBookData.current_audiotrack_positions = JSON.stringify(
+    initAudioBookData.current_audiotrack_posiions = JSON.stringify(
       initAudioBookData.current_audiotrack_positions
     );
     initialAudioBookStoreDB(db, initAudioBookData);
@@ -249,22 +248,6 @@ function Audiotracks(props: any) {
         console.log(err);
       }
     }, null);
-  };
-
-  const shelveAudiobook = (bookBeingShelved: any) => {
-    bookBeingShelved.audiobook_genres = JSON.stringify(
-      bookBeingShelved.audiobook_genres
-    );
-    // bookBeingShelved.audiobook_total_time_secs = JSON.stringify(
-    // bookBeingShelved.audiobook_total_time_secs
-    // );
-    // bookBeingShelved.audiobook_total_time = JSON.stringify(
-    // bookBeingShelved.audiobook_total_time
-    // );
-    shelveAudiobookDB(db, bookBeingShelved);
-  };
-  const removeShelvedAudiobook = (audiobook_id: number) => {
-    removeShelvedAudiobookDB(db, audiobook_id);
   };
 
   useEffect(() => {
@@ -832,13 +815,12 @@ function Audiotracks(props: any) {
     }
   }, [dataRSS]);
 
-  function pressedToShelveBook(bookBeingShelved: any) {
+  function pressedToShelveBook(audiobook_id: any) {
     switch (audiotracksData.shelveIconToggle) {
       case 0:
         setAudiotracksData({ ...audiotracksData, shelveIconToggle: 1 });
-        shelveAudiobook(bookBeingShelved);
         updateBookShelve(
-          bookBeingShelved.audiobook_id,
+          audiobook_id,
           !audiotracksData.shelveIconToggle
         );
         break;
@@ -846,10 +828,9 @@ function Audiotracks(props: any) {
         // remove from db
         setAudiotracksData({ ...audiotracksData, shelveIconToggle: 0 });
         updateBookShelve(
-          bookBeingShelved.audiobook_id,
+          audiobook_id,
           !audiotracksData.shelveIconToggle
         );
-        removeShelvedAudiobook(bookBeingShelved.audiobook_id);
         break;
     }
   }
@@ -920,26 +901,7 @@ function Audiotracks(props: any) {
               <Button
                 mode="outlined"
                 onPress={() => {
-                  pressedToShelveBook({
-                    audiobook_rss_url: urlRss,
-                    audiobook_id: audioBookId,
-                    audiobook_image: coverImage,
-                    audiobook_title: title,
-                    audiobook_author_first_name: authorFirstName,
-                    audiobook_author_last_name: authorLastName,
-                    audiobook_total_time: totalTime,
-                    audiobook_total_time_secs: totalTimeSecs,
-                    audiobook_copyright_year: copyrightYear,
-                    audiobook_genres: genres,
-                    audiobook_review_url: urlReview,
-                    audiobook_num_sections: numSections,
-                    audiobook_ebook_url: urlTextSource,
-                    audiobook_zip: urlZipFile,
-                    audiobook_language: language,
-                    audiobook_project_url:urlProject,
-                    audiobook_librivox_url:urlLibrivox,
-                    audiobook_iarchive_url:urlIArchive,
-                  });
+                  pressedToShelveBook(audioBookId);
                 }}
                 style={{ width: 40 }}
               >
