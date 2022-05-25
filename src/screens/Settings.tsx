@@ -82,7 +82,7 @@ const UserSettings = () => {
             headerText="Audiobook settings"
             headerStyle={styles.audiobookSettingsSubHeading}
           />
-          <SettingsList.Item
+          {/*<SettingsList.Item
             icon={
               <MaterialIconCommunity
                 name="theme-light-dark"
@@ -94,7 +94,7 @@ const UserSettings = () => {
             title="Color scheme"
             hasNavArrow={false}
             hasSwitch={false}
-          />
+          />*/}
           <SettingsList.Item
             icon={
               <MaterialIconCommunity
@@ -168,7 +168,7 @@ const UserSettings = () => {
               )
             }
           />
-          <SettingsList.Item
+          {/*<SettingsList.Item
             icon={
               <MaterialIconCommunity name="history" size={50} color={"black"} />
             }
@@ -193,7 +193,7 @@ const UserSettings = () => {
                 }
               )
             }
-          />
+        />*/}
           <SettingsList.Header
             headerText="About"
             headerStyle={styles.audiobookSettingsSubHeading}
