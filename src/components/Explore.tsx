@@ -119,7 +119,7 @@ function Search() {
   }
 
   return (
-    <View>
+    <View style={styles.test}>
       <View style={styles.searchBarAndSettingsIcon}>
         <View style={styles.searchStyle}>
           <SearchBar
@@ -141,7 +141,7 @@ function Search() {
           mode="contained"
           style={styles.settingsIcon}
         >
-          <MaterialIconCommunity name="cog" size={45} color="white" />
+          <MaterialIconCommunity name="cog" size={40} color="white" />
         </Button>
         <Overlay
           isVisible={visible}
@@ -316,23 +316,25 @@ const styles = StyleSheet.create({
   searchBarAndSettingsIcon: {
     display: "flex",
     flexDirection: "row",
+    justifyContent:"center",
+    alignContent:"center",
     width: windowWidth,
-    marginLeft: 0,
+    height:80,
     backgroundColor: "black",
     paddingLeft: 0,
+    paddingTop: 10,
     left: -10,
   },
   searchStyle: {
-    left: 5,
+    backgroundColor: "orange",
     width: windowWidth - 80,
   },
   settingsIcon: {
     backgroundColor: "black",
-    marginLeft: "auto",
-    marginRight: "auto",
-    marginTop: "auto",
-    marginBottom: "auto",
+    left:-5,
+    height:62,
     borderWidth: 1,
+    top:5,
     borderRadius: 2,
   },
   checkboxRow: {
@@ -347,6 +349,7 @@ const styles = StyleSheet.create({
   },
   scrollStyle: {
     height: windowHeight / 1.225,
-    backgroundColor: "#331800",
+  },
+  test: {
   },
 });

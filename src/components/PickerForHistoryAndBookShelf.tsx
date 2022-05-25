@@ -69,8 +69,6 @@ function PickerForHistoryAndBookShelf(props: any) {
         style={{
           backgroundColor: "black",
           height: 62,
-          marginTop: 5,
-          marginBottom: 5,
         }}
         onPress={() => {
           toggleAscOrDescSort();
@@ -98,10 +96,16 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     width: windowWidth - 100,
     margin: 5,
+    height:55,
     marginLeft: 0,
   },
   SQLQueryPickerAndIcon: {
     display: "flex",
     flexDirection: "row",
+    justifyContent:"center",
+    alignItems:"center",
+    backgroundColor:"black",
+    height:80,
+    paddingTop:10,
   },
 });

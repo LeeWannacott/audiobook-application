@@ -5,9 +5,7 @@ import Explore from "../components/Explore";
 function HomeScreen() {
   return (
     <View style={styles.container}>
-      <View>
         <Explore />
-      </View>
     </View>
   );
 }
@@ -19,6 +17,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "column",
     padding: 10,
+    paddingTop: 0,
     backgroundColor: "#331800",
   },
 });

@@ -142,7 +142,7 @@ function History() {
 
           setAudiobookHistory(newHistory);
           // setAudiobookHistory(rows["_array"]);
-          console.log("yogibear",rows["_array"]);
+          console.log("yogibear", rows["_array"]);
           let end = performance.now();
           console.log("time: ", end - start);
           setLoadingHistory(false);
@@ -282,14 +282,14 @@ function History() {
   if (!loadingHistory) {
     return (
       <View>
+        <PickerForHistoryAndBookShelf
+          pickerAndQueryState={pickerAndQueryState}
+          setPickerAndQueryState={setPickerAndQueryState}
+          getShelvedBooks={getShelvedBooks}
+          toggleAscOrDescSort={toggleAscOrDescSort}
+          storeAsyncData={storeAsyncData}
+        />
         <View style={styles.flatListStyle}>
-          <PickerForHistoryAndBookShelf
-            pickerAndQueryState={pickerAndQueryState}
-            setPickerAndQueryState={setPickerAndQueryState}
-            getShelvedBooks={getShelvedBooks}
-            toggleAscOrDescSort={toggleAscOrDescSort}
-            storeAsyncData={storeAsyncData}
-          />
           <FlatList
             data={audiobookHistory}
             keyExtractor={keyExtractor}
@@ -301,15 +301,15 @@ function History() {
     );
   } else {
     return (
-      <View>
+      <View style={styles.test}>
+        <PickerForHistoryAndBookShelf
+          pickerAndQueryState={pickerAndQueryState}
+          setPickerAndQueryState={setPickerAndQueryState}
+          getShelvedBooks={getShelvedBooks}
+          toggleAscOrDescSort={toggleAscOrDescSort}
+          storeAsyncData={storeAsyncData}
+        />
         <View style={styles.flatListStyle}>
-          <PickerForHistoryAndBookShelf
-            pickerAndQueryState={pickerAndQueryState}
-            setPickerAndQueryState={setPickerAndQueryState}
-            getShelvedBooks={getShelvedBooks}
-            toggleAscOrDescSort={toggleAscOrDescSort}
-            storeAsyncData={storeAsyncData}
-          />
           <View style={styles.ActivityIndicatorStyle}>
             <ActivityIndicator size="large" color="#00ff00" />
           </View>
@@ -323,6 +323,7 @@ export default History;
 
 const windowWidth = Dimensions.get("window").width;
 const windowHeight = Dimensions.get("window").height;
+const flatlistHeight = windowHeight / 1.29;
 const ImageContainerWidth = windowWidth / 2 - 40;
 
 const styles = StyleSheet.create({
@@ -336,8 +337,9 @@ const styles = StyleSheet.create({
   },
   flatListStyle: {
     padding: 10,
+    paddingTop: 2,
     paddingBottom: 0,
-    height: windowHeight - 75,
+    height: flatlistHeight,
     backgroundColor: "#331800",
   },
   AudioBookListView: {
@@ -345,19 +347,10 @@ const styles = StyleSheet.create({
   },
   ActivityIndicatorStyle: {
     top: windowHeight / 3,
+    backgroundColor: "#331800",
     color: "green",
   },
-  SQLQueryPicker: {
-    borderColor: "green",
-    borderWidth: 1,
-    borderRadius: 2,
-    backgroundColor: "white",
-    width: windowWidth - 100,
-    margin: 5,
-    marginLeft: 0,
-  },
-  SQLQueryPickerAndIcon: {
-    display: "flex",
-    flexDirection: "row",
+  test: {
+    backgroundColor: "#331800",
   },
 });
