@@ -17,13 +17,10 @@ import { useNavigation } from "@react-navigation/native";
 
 const db = openDatabase();
 import {
-  createShelveTable,
   createAudioBookDataTable,
   updateAudioTrackPositionsDB,
-  shelveAudiobookDB,
   updateIfBookShelvedDB,
   initialAudioBookStoreDB,
-  removeShelvedAudiobookDB,
   updateAudiobookRatingDB,
   updateAudioTrackIndexDB,
   audiobookProgressTableName,
@@ -116,6 +113,13 @@ function Audiotracks(props: any) {
     }
   }, [title]);
 
+  useEffect(() => {
+const unsubscribe = navigation.addListener('focus', () => {
+  // Do whatever you want
+      return unsubscribe
+  });
+  }, [title]);
+
   function backButtonHandler() {}
 
   React.useLayoutEffect(() => {
@@ -159,7 +163,6 @@ function Audiotracks(props: any) {
 
   useEffect(() => {
     try {
-      createShelveTable(db);
       createAudioBookDataTable(db);
     } catch (err) {
       console.log(err);

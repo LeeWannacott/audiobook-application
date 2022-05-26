@@ -4,6 +4,7 @@ import { Picker } from "@react-native-picker/picker";
 import { Button } from "react-native-paper";
 import MaterialIconCommunity from "react-native-vector-icons/MaterialCommunityIcons.js";
 import { storeAsyncData } from "../database_functions";
+import { useNavigation } from "@react-navigation/native";
 
 function PickerForHistoryAndBookShelf(props: any) {
   const {
@@ -11,7 +12,21 @@ function PickerForHistoryAndBookShelf(props: any) {
     getShelvedBooks,
     setPickerAndQueryState,
     toggleAscOrDescSort,
+    asyncDataKeyName,
   } = props;
+  const navigation = useNavigation();
+
+React.useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      // The screen is focused
+      // Call any action
+      console.log("mouse")
+    });
+
+    // Return the function to unsubscribe from the event so it gets removed on unmount
+    return unsubscribe;
+  }, [navigation]);
+
   return (
     <View style={styles.SQLQueryPickerAndIcon}>
       <View style={styles.SQLQueryPicker}>
@@ -30,7 +45,7 @@ function PickerForHistoryAndBookShelf(props: any) {
               orderBy: itemValue,
               pickerIndex: itemPosition,
             });
-            storeAsyncData("pickerAndQueryData", {
+            storeAsyncData(asyncDataKeyName, {
               ...pickerAndQueryState,
               orderBy: itemValue,
               pickerIndex: itemPosition,

@@ -125,7 +125,6 @@ export function initialAudioBookStoreDB(db: any, initAudioBookData: any) {
   db.transaction((tx: any) => {
     tx.executeSql(
       `insert into ${audiobookProgressTableName}(audiobook_id, audiotrack_progress_bars, current_audiotrack_positions, audiobook_shelved, audiobook_rating) values(?,?,?,?,?)`,
-
       [
         initAudioBookData.audiobook_id,
         initAudioBookData.audiotrack_progress_bars,
