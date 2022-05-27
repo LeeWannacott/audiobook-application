@@ -104,6 +104,7 @@ function Audiotracks(props: any) {
     urlIArchive,
   } = props.route.params;
 
+
   const navigation = useNavigation();
   useEffect(() => {
     try {
@@ -210,7 +211,7 @@ const unsubscribe = navigation.addListener('focus', () => {
     initAudioBookData.audiotrack_progress_bars = JSON.stringify(
       initAudioBookData.audiotrack_progress_bars
     );
-    initAudioBookData.current_audiotrack_posiions = JSON.stringify(
+    initAudioBookData.current_audiotrack_positions = JSON.stringify(
       initAudioBookData.current_audiotrack_positions
     );
     initialAudioBookStoreDB(db, initAudioBookData);
