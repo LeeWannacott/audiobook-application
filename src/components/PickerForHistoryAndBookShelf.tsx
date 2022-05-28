@@ -4,7 +4,6 @@ import { Picker } from "@react-native-picker/picker";
 import { Button } from "react-native-paper";
 import MaterialIconCommunity from "react-native-vector-icons/MaterialCommunityIcons.js";
 import { storeAsyncData } from "../database_functions";
-import { useNavigation } from "@react-navigation/native";
 
 function PickerForHistoryAndBookShelf(props: any) {
   const {
@@ -14,18 +13,6 @@ function PickerForHistoryAndBookShelf(props: any) {
     toggleAscOrDescSort,
     asyncDataKeyName,
   } = props;
-  const navigation = useNavigation();
-
-React.useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', () => {
-      // The screen is focused
-      // Call any action
-      console.log("mouse")
-    });
-
-    // Return the function to unsubscribe from the event so it gets removed on unmount
-    return unsubscribe;
-  }, [navigation]);
 
   return (
     <View style={styles.SQLQueryPickerAndIcon}>
@@ -34,6 +21,8 @@ React.useEffect(() => {
           selectedValue={pickerAndQueryState.orderBy}
           mode={"dropdown"}
           dropdownIconRippleColor={"grey"}
+          fontFamily={"arial  "}
+          
           onValueChange={(itemValue, itemPosition) => {
             setPickerAndQueryState({
               ...pickerAndQueryState,

@@ -25,8 +25,7 @@ import {
 
 const db = openDatabase();
 
-function ShelfForBookshelfAndHistory(props:any) {
-
+function ShelfForBookshelfAndHistory(props: any) {
   const [audioBookInfo, setAudioBookInfo] = useState({});
   const [avatarOnPressEnabled, setAvatarOnPressEnabled] = useState(true);
 
@@ -80,70 +79,12 @@ function ShelfForBookshelfAndHistory(props:any) {
     }
   }
 
-  React.useEffect(() => {
-    try {
-      getAsyncData(props.asyncDataKeyName).then((pickerAndQueryDataRetrieved) => {
-        if (pickerAndQueryDataRetrieved) {
-          props.getShelvedBooks(pickerAndQueryDataRetrieved);
-          return setPickerAndQueryState(pickerAndQueryDataRetrieved);
-        } else {
-          props.getShelvedBooks(pickerAndQueryState);
-        }
-      });
-    } catch (err) {
-      console.log(err);
-    }
-  }, []);
-
-  // React.useEffect(() => {
-    // db.transaction((tx) => {
-      // tx.executeSql(
-        // `select * from ${audiobookProgressTableName}`,
-        // [],
-        // (_, { rows }) => {
-          // const audioProgressData = {};
-          // rows._array.forEach((row) => {
-            // return (audioProgressData[row.audiobook_id] = row);
-          // });
-          // console.log(audioProgressData);
-          // setAudioBookInfo(audioProgressData);
-        // }
-      // );
-    // }, null);
-  // }, []);
-
-
   const keyExtractor = (item, index) => item.audiobook_id.toString();
   const windowWidth = Dimensions.get("window").width;
   const windowHeight = Dimensions.get("window").height;
   const navigation = useNavigation();
   const resizeCoverImageHeight = windowHeight / 5;
   const resizeCoverImageWidth = windowWidth / 2 - 42;
-
-React.useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', () => {
-      // The screen is focused
-      // Call any action
-    db.transaction((tx) => {
-      tx.executeSql(
-        `select * from ${audiobookProgressTableName}`,
-        [],
-        (_, { rows }) => {
-          const audioProgressData = {};
-          rows._array.forEach((row) => {
-            return (audioProgressData[row.audiobook_id] = row);
-          });
-          console.log(audioProgressData);
-          setAudioBookInfo(audioProgressData);
-        }
-      );
-    }, null);
-      console.log("yolobolo")
-    });
-
-    // Return the function to unsubscribe from the event so it gets removed on unmount
-    return unsubscribe;
-  }, [navigation]);
 
   function selectAccordionPickerTitle(pickerIndex, item) {
     switch (pickerIndex) {
@@ -261,6 +202,45 @@ React.useEffect(() => {
       />
     </View>
   );
+
+  React.useEffect(() => {
+    const unsubscribe = navigation.addListener("focus", () => {
+      // The screen is focused
+      // Call any action
+      try {
+      db.transaction((tx) => {
+        tx.executeSql(
+          `select * from ${audiobookProgressTableName}`,
+          [],
+          (_, { rows }) => {
+            const audioProgressData = {};
+            rows._array.forEach((row) => {
+              return (audioProgressData[row.audiobook_id] = row);
+            });
+            // console.log(audioProgressData);
+            setAudioBookInfo(audioProgressData);
+          }
+        );
+      }, null);
+
+        getAsyncData(props.asyncDataKeyName).then(
+          (pickerAndQueryDataRetrieved) => {
+            if (pickerAndQueryDataRetrieved) {
+              props.getShelvedBooks(pickerAndQueryDataRetrieved);
+              return setPickerAndQueryState(pickerAndQueryDataRetrieved);
+            } else {
+              props.getShelvedBooks(pickerAndQueryState);
+            }
+          }
+        );
+      } catch (err) {
+        console.log(err);
+      }
+    });
+
+    // Return the function to unsubscribe from the event so it gets removed on unmount
+    return unsubscribe;
+  }, [navigation]);
 
   if (!props.loadingHistory) {
     return (
