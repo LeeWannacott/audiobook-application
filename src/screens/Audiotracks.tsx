@@ -1,11 +1,12 @@
 import React, { useEffect, useState, useRef } from "react";
 import { ActivityIndicator, Dimensions } from "react-native";
-import { ListItem, LinearProgress, Card } from "react-native-elements";
+import { ListItem, LinearProgress, Card } from "@rneui/themed";
 import { Rating } from "react-native-ratings";
 import * as rssParser from "react-native-rss-parser";
 import { Audio } from "expo-av";
 import { StyleSheet, Text, View, SectionList } from "react-native";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons.js";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+
 import { Button } from "react-native-paper";
 import AudioTrackControls from "../components/audioTrackControls";
 import AudioTrackSettings from "../components/audioTrackSettings";
@@ -104,7 +105,6 @@ function Audiotracks(props: any) {
     urlIArchive,
   } = props.route.params;
 
-
   const navigation = useNavigation();
   useEffect(() => {
     try {
@@ -114,25 +114,11 @@ function Audiotracks(props: any) {
     }
   }, [title]);
 
-  useEffect(() => {
-const unsubscribe = navigation.addListener('focus', () => {
-  // Do whatever you want
-      return unsubscribe
-  });
-  }, [title]);
-
-  function backButtonHandler() {}
-
   React.useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
         <Button mode={"outlined"} onPress={() => toggleSettingsOverlay()}>
-          <MaterialCommunityIcons
-            name="cog"
-            size={controlPanelButtonSize}
-            color="black"
-            style={{}}
-          />
+          <MaterialCommunityIcons name="book-cog" size={30} color="black" />
         </Button>
       ),
     });
@@ -740,13 +726,35 @@ const unsubscribe = navigation.addListener('focus', () => {
 
   const renderAudiotracks = ({ item, index }: any) => (
     <ListItem bottomDivider>
-      <ListItem.Content>
-        <ListItem.Title>
+      <Button
+        mode="outlined"
+        onPress={() => PlayFromStartOfTrack(index)}
+        style={{ left: -10, margin: 0, padding: 0 }}
+      >
+        <MaterialCommunityIcons
+          name="book-arrow-left"
+          size={30}
+          color="black"
+        />
+      </Button>
+      <ListItem.Content style={{ left: -15, alignContent: "stretch", flex: 1 }}>
+        <ListItem.Title numberOfLines={1} ellipsizeMode="clip">
           {item?.section_number}: {item?.title}
         </ListItem.Title>
+        <ListItem.Subtitle numberOfLines={1} ellipsizeMode="clip">
+          {item?.readers[0]?.display_name}
+        </ListItem.Subtitle>
+
+        <LinearProgress
+          color="primary"
+          value={audiotracksData.linearProgessBars[index]}
+          variant="determinate"
+          trackColor="lightblue"
+          width={300}
+          animation={false}
+        />
         <ListItem.Subtitle>
           <Text numberOfLines={1} ellipsizeMode="tail">
-            Playtime:{" "}
             {GetDurationFormat(
               audiotracksData.currentAudiotrackPositionsMs[index]
             )}
@@ -754,29 +762,15 @@ const unsubscribe = navigation.addListener('focus', () => {
             {FormatChapterDurations(chapters[index]?.playtime)}
           </Text>
         </ListItem.Subtitle>
-        <LinearProgress
-          color="primary"
-          value={audiotracksData.linearProgessBars[index]}
-          variant="determinate"
-          trackColor="lightblue"
-          width={190}
-          animation={false}
-        />
-        <ListItem.Subtitle>
-          <Text numberOfLines={1} ellipsizeMode="tail">
-            Reader: {item?.readers[0]?.display_name}
-          </Text>
-        </ListItem.Subtitle>
       </ListItem.Content>
-      <ListItem.Chevron />
       <Button
         mode="outlined"
         onPress={() => {
           PlayFromListenButton(index);
         }}
-        onLongPress={() => PlayFromStartOfTrack(index)}
+        style={{ left: 10 }}
       >
-        <MaterialCommunityIcons name="book-play" size={40} color="black" />
+        <MaterialCommunityIcons name="book-play" size={30} color="black" />
       </Button>
     </ListItem>
   );
@@ -823,18 +817,12 @@ const unsubscribe = navigation.addListener('focus', () => {
     switch (audiotracksData.shelveIconToggle) {
       case 0:
         setAudiotracksData({ ...audiotracksData, shelveIconToggle: 1 });
-        updateBookShelve(
-          audiobook_id,
-          !audiotracksData.shelveIconToggle
-        );
+        updateBookShelve(audiobook_id, !audiotracksData.shelveIconToggle);
         break;
       case 1:
         // remove from db
         setAudiotracksData({ ...audiotracksData, shelveIconToggle: 0 });
-        updateBookShelve(
-          audiobook_id,
-          !audiotracksData.shelveIconToggle
-        );
+        updateBookShelve(audiobook_id, !audiotracksData.shelveIconToggle);
         break;
     }
   }
@@ -911,7 +899,9 @@ const unsubscribe = navigation.addListener('focus', () => {
               >
                 <MaterialCommunityIcons
                   name={
-                    audiotracksData.shelveIconToggle ? "book" : "book-outline"
+                    audiotracksData.shelveIconToggle
+                      ? "book"
+                      : "book-plus-outline"
                   }
                   size={30}
                   color={audiotracksData.shelveIconToggle ? "black" : "black"}

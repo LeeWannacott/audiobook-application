@@ -7,8 +7,8 @@ import * as React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { StatusBar } from "expo-status-bar";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { MaterialCommunityIcons } from '@expo/vector-icons'; 
 
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons.js";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 const Stack = createNativeStackNavigator();
 
@@ -37,7 +37,6 @@ const TabNavigation = () => {
               iconName = focused ? "account-cog" : "account-cog";
               break;
           }
-          // You can return any component that you like here!
           return (
             <MaterialCommunityIcons name={iconName} size={size} color={color} />
           );

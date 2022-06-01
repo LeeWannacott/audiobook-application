@@ -1,15 +1,15 @@
 import React, { useState } from "react";
 import { StyleSheet, Text, View, Alert, Linking } from "react-native";
 import SettingsList from "react-native-settings-list";
-import MaterialIconCommunity from "react-native-vector-icons/MaterialCommunityIcons.js";
+
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import {
   deleteAudiobookHistoryDB,
   storeAsyncData,
   getAsyncData,
 } from "../database_functions";
-import { openDatabase } from "../utils";
-
-const db = openDatabase();
+// import { openDatabase } from "../utils";
+// const db = openDatabase();
 
 const UserSettings = () => {
   const [audioModeSettings, setAudioModeSettings] = useState({
@@ -84,7 +84,7 @@ const UserSettings = () => {
           />
           {/*<SettingsList.Item
             icon={
-              <MaterialIconCommunity
+              <MaterialCommunityIcons
                 name="theme-light-dark"
                 size={50}
                 color={"black"}
@@ -97,7 +97,7 @@ const UserSettings = () => {
           />*/}
           <SettingsList.Item
             icon={
-              <MaterialIconCommunity
+              <MaterialCommunityIcons
                 name="run-fast"
                 size={50}
                 color={"black"}
@@ -124,7 +124,7 @@ const UserSettings = () => {
           />
           <SettingsList.Item
             icon={
-              <MaterialIconCommunity name="duck" size={50} color={"black"} />
+              <MaterialCommunityIcons name="duck" size={50} color={"black"} />
             }
             hasNavArrow={false}
             title="Duck Audio"
@@ -147,7 +147,7 @@ const UserSettings = () => {
           />
           <SettingsList.Item
             icon={
-              <MaterialIconCommunity name="headset" size={50} color={"black"} />
+              <MaterialCommunityIcons name="headset" size={50} color={"black"} />
             }
             hasNavArrow={false}
             title="Play through earpiece"
@@ -170,7 +170,7 @@ const UserSettings = () => {
           />
           {/*<SettingsList.Item
             icon={
-              <MaterialIconCommunity name="history" size={50} color={"black"} />
+              <MaterialCommunityIcons name="history" size={50} color={"black"} />
             }
             hasNavArrow={true}
             title="Delete viewing history"
@@ -200,7 +200,7 @@ const UserSettings = () => {
           />
           <SettingsList.Item
             icon={
-              <MaterialIconCommunity
+              <MaterialCommunityIcons
                 name="information-variant"
                 size={50}
                 color={"green"}
@@ -213,7 +213,7 @@ const UserSettings = () => {
           <SettingsList.Item
             hasNavArrow={true}
             icon={
-              <MaterialIconCommunity name="github" size={50} color={"black"} />
+              <MaterialCommunityIcons name="github" size={50} color={"black"} />
             }
             title="GitHub: LeeWannacott"
             onPress={() =>
@@ -239,7 +239,7 @@ const UserSettings = () => {
           <SettingsList.Item
             hasNavArrow={true}
             icon={
-              <MaterialIconCommunity
+              <MaterialCommunityIcons
                 name="account-voice"
                 size={50}
                 color={"black"}

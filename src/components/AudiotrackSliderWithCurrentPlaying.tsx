@@ -11,7 +11,7 @@ function AudiotrackSliderWithCurrentPlaying(props: any) {
         disabled={false}
         minimumValue={0.0}
         maximumValue={100.0}
-        // minimumTrackTintColor="black"
+        minimumTrackTintColor="darkgreen"
         // thumbTintColor="black"
         onSlidingComplete={(data) => props.SeekUpdate(data)}
       />
