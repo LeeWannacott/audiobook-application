@@ -5,7 +5,7 @@ import { Rating } from "react-native-ratings";
 import * as rssParser from "react-native-rss-parser";
 import { Audio } from "expo-av";
 import { StyleSheet, Text, View, SectionList } from "react-native";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { MaterialCommunityIcons,Ionicons } from "@expo/vector-icons";
 
 import { Button } from "react-native-paper";
 import AudioTrackControls from "../components/audioTrackControls";
@@ -39,15 +39,12 @@ function Audiotracks(props: any) {
   const [loadingAudiobookData, setLoadingAudioBookData] = useState(true);
   const [loadingAudioListeningLinks, setLoadingAudioListeningLinks] =
     useState(true);
-
   const [audiotrackLoadingStatuses, setAudiotrackLoadingStatuses] = useState({
     loadedCurrentAudiotrack: false,
     loadingCurrentAudiotrack: false,
   });
-
   const [audioPaused, setAudioPaused] = useState(false);
   const [Playing, SetPlaying] = useState(false);
-
   const [currentAudiotrackPlayingInfo, setCurrentPlayingInformation] = useState(
     {
       audioTrackChapterPlayingTitle: "",
@@ -57,7 +54,6 @@ function Audiotracks(props: any) {
   );
 
   const [currentSliderPosition, setCurrentSliderPosition] = React.useState(0.0);
-  const controlPanelButtonSize = 30;
   const [visible, setVisible] = useState(false);
   const [playOptionsVisible, setPlayOptionsVisible] = useState(false);
   const [audioPlayerSettings, setAudioPlayerSettings] = useState({
@@ -76,7 +72,6 @@ function Audiotracks(props: any) {
     totalAudioBookListeningProgress: 0,
     totalAudioBookListeningTimeMS: 0,
   });
-
   const [audioModeSettings, setAudioModeSettings] = useState<any>({
     staysActiveInBackground: true,
     interruptionModeAndroid: Audio.INTERRUPTION_MODE_ANDROID_DO_NOT_MIX,
@@ -214,8 +209,9 @@ function Audiotracks(props: any) {
                   currentAudioTrackIndex.current =
                     element?.current_audiotrack_index;
                 }
-                const TotalListenTimeAndProgress =
-                  updateCoverBookProgress(element);
+                const TotalListenTimeAndProgress = updateCoverBookProgress(
+                  element?.current_audiotrack_positions
+                );
                 setAudiotracksData({
                   ...audiotracksData,
                   linearProgessBars: JSON.parse(
@@ -303,10 +299,10 @@ function Audiotracks(props: any) {
       .catch((error) => console.log("Error: ", error));
   }, [urlReview]);
 
-  function updateCoverBookProgress(test) {
+  function updateCoverBookProgress(current_audiotrack_positions: any) {
     const initialValue = 0;
     const currentTimeReadInBook = JSON.parse(
-      test?.current_audiotrack_positions
+      current_audiotrack_positions
     ).reduce(
       (previousValue: any, currentValue: any) =>
         previousValue + Number(currentValue),
@@ -729,7 +725,7 @@ function Audiotracks(props: any) {
       <Button
         mode="outlined"
         onPress={() => PlayFromStartOfTrack(index)}
-        style={{ left: -10, margin: 0, padding: 0 }}
+        style={{ margin: 0, padding: 0 }}
       >
         <MaterialCommunityIcons
           name="book-arrow-left"
@@ -737,38 +733,56 @@ function Audiotracks(props: any) {
           color="black"
         />
       </Button>
-      <ListItem.Content style={{ left: -15, alignContent: "stretch", flex: 1 }}>
-        <ListItem.Title numberOfLines={1} ellipsizeMode="clip">
+      <ListItem.Content style={{ alignItems: "stretch", flex: 1 }}>
+        <ListItem.Title numberOfLines={1} ellipsizeMode="tail">
           {item?.section_number}: {item?.title}
         </ListItem.Title>
-        <ListItem.Subtitle numberOfLines={1} ellipsizeMode="clip">
-          {item?.readers[0]?.display_name}
-        </ListItem.Subtitle>
+
+        <View style={{ display: "flex", flexDirection: "row" ,alignItems:"center" }}>
+        <MaterialCommunityIcons
+          name="timer"
+          size={15}
+          color="black"
+        />
+        <Text>  
+          {": "}
+            {GetDurationFormat(
+              audiotracksData.currentAudiotrackPositionsMs[index]
+            )}
+          </Text>
+          <Text>
+            {" | "}
+          </Text>
+          <Text>{FormatChapterDurations(chapters[index]?.playtime)}</Text>
+        </View>
 
         <LinearProgress
           color="primary"
           value={audiotracksData.linearProgessBars[index]}
           variant="determinate"
           trackColor="lightblue"
-          width={300}
           animation={false}
         />
-        <ListItem.Subtitle>
-          <Text numberOfLines={1} ellipsizeMode="tail">
-            {GetDurationFormat(
-              audiotracksData.currentAudiotrackPositionsMs[index]
-            )}
-            {" | "}
-            {FormatChapterDurations(chapters[index]?.playtime)}
-          </Text>
+
+        <View style={{ display: "flex", flexDirection: "row" ,alignItems:"center" }}>
+        <MaterialCommunityIcons
+          name="account-tie-voice"
+          size={15}
+          color="black"
+        />
+        <Text>{": "}</Text>
+        <ListItem.Subtitle numberOfLines={1} ellipsizeMode="clip">
+          {item?.readers[0]?.display_name}
         </ListItem.Subtitle>
+      </View>
+
       </ListItem.Content>
       <Button
         mode="outlined"
         onPress={() => {
           PlayFromListenButton(index);
         }}
-        style={{ left: 10 }}
+        style={{}}
       >
         <MaterialCommunityIcons name="book-play" size={30} color="black" />
       </Button>
@@ -928,7 +942,7 @@ function Audiotracks(props: any) {
         keyExtractor: audiotracksKeyExtractor,
       },
       {
-        title: "Reviews: " + audiotracksData?.audiobookRating,
+        title: "Average of reviews: " + audiotracksData?.audiobookRating,
         renderItem: renderReviews,
         data: reviews,
         keyExtractor: reviewsKeyExtractor,
