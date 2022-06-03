@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { ActivityIndicator, Dimensions } from "react-native";
+import { ActivityIndicator, Dimensions,Image } from "react-native";
 import { ListItem, LinearProgress, Card } from "@rneui/themed";
 import { Rating } from "react-native-ratings";
 import * as rssParser from "react-native-rss-parser";
@@ -858,24 +858,43 @@ function Audiotracks(props: any) {
       return (
         <View style={styles.bookHeader}>
           <Card>
-            <View
-              style={{
-                display: "flex",
-                flexDirection: "row",
-                justifyContent: "space-around",
-              }}
-            >
-              <Card.Title style={styles.bookTitle}>{title}</Card.Title>
-            </View>
+            <Card.Title style={styles.bookTitle}>{title}</Card.Title>
             <Card.Divider />
-            <Card.Image
-              source={{ uri: coverImage }}
+
+            <View
               style={{
                 width: 200,
                 height: 200,
                 marginLeft: 35,
               }}
-            />
+            >
+              <Image resizeMode="cover" source={{ uri: coverImage }} style={{flex:1,borderRadius:5}} />
+              <Button
+                mode="text"
+                onPress={() => {
+                  pressedToShelveBook(audioBookId);
+                }}
+                style={{
+                  margin: 5,
+                  position: "absolute",
+                  top: 0,
+                  right: 0,
+                  width: 25,
+                  height: 55,
+                }}
+              >
+                <MaterialCommunityIcons
+                  name={
+                    audiotracksData.shelveIconToggle
+                      ? "star"
+                    : "star-outline"
+                  }
+                  size={30}
+                  color={audiotracksData.shelveIconToggle ? "#DAA520" : "#DAA520"}
+                  style={{borderColor:"black",borderWidth:2}}
+                />
+              </Button>
+            </View>
 
             <LinearProgress
               color="#50C878"
@@ -909,23 +928,6 @@ function Audiotracks(props: any) {
               style={{ paddingVertical: 10 }}
             />
             <View style={styles.shelveButtons}>
-              <Button
-                mode="outlined"
-                onPress={() => {
-                  pressedToShelveBook(audioBookId);
-                }}
-                style={{ width: 40 }}
-              >
-                <MaterialCommunityIcons
-                  name={
-                    audiotracksData.shelveIconToggle
-                      ? "book"
-                      : "book-plus-outline"
-                  }
-                  size={30}
-                  color={audiotracksData.shelveIconToggle ? "black" : "black"}
-                />
-              </Button>
             </View>
           </Card>
         </View>

@@ -4,6 +4,8 @@ import { useNavigation } from "@react-navigation/native";
 import { ListItem, LinearProgress } from "react-native-elements";
 import { Rating } from "react-native-ratings";
 import { useFonts } from "expo-font";
+import { Button } from "react-native-paper";
+import { MaterialCommunityIcons, Ionicons } from "@expo/vector-icons";
 
 import {
   FlatList,
@@ -155,6 +157,25 @@ function ShelfForBookshelfAndHistory(props: any) {
                 height: resizeCoverImageHeight,
               }}
             />
+
+            <MaterialCommunityIcons
+              name={
+                audioBookInfo[item.audiobook_id]?.audiobook_shelved
+                  ? "star"
+                  : "star-outline"
+              }
+              size={30}
+              color={"#DAA520"}
+              style={{
+                margin: 5,
+                position: "absolute",
+                top: 0,
+                right: 0,
+                width: 27,
+                height: 55,
+              }}
+            />
+
           </Pressable>
           {audioBookInfo[item.audiobook_id]?.audiobook_id ==
           item.audiobook_id ? (
