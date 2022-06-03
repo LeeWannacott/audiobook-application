@@ -4,6 +4,7 @@ import { Picker } from "@react-native-picker/picker";
 import { Button } from "react-native-paper";
 import MaterialIconCommunity from "react-native-vector-icons/MaterialCommunityIcons.js";
 import { storeAsyncData } from "../database_functions";
+import { useFonts } from "expo-font";
 
 function PickerForHistoryAndBookShelf(props: any) {
   const {
@@ -14,16 +15,25 @@ function PickerForHistoryAndBookShelf(props: any) {
     asyncDataKeyName,
   } = props;
 
+  const [loaded] = useFonts({
+    IBMPlexMono: require('../../assets/fonts/Helvetica.ttf'),
+  });
+
+  if (!loaded) {
+    return null;
+  }
   return (
     <View style={styles.SQLQueryPickerAndIcon}>
       <View style={styles.SQLQueryPicker}>
         <Picker
+          style={{fontFamily:"Helvetica",fontSize:90}}
           selectedValue={pickerAndQueryState.orderBy}
           mode={"dropdown"}
           dropdownIconRippleColor={"grey"}
-          fontFamily={"arial  "}
           
+
           onValueChange={(itemValue, itemPosition) => {
+
             setPickerAndQueryState({
               ...pickerAndQueryState,
               orderBy: itemValue,

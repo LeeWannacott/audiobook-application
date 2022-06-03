@@ -757,10 +757,10 @@ function Audiotracks(props: any) {
         </View>
 
         <LinearProgress
-          color="primary"
+          color="#50C878"
           value={audiotracksData.linearProgessBars[index]}
           variant="determinate"
-          trackColor="lightblue"
+          trackColor="grey"
           animation={false}
         />
 
@@ -873,10 +873,10 @@ function Audiotracks(props: any) {
             />
 
             <LinearProgress
-              color="primary"
+              color="#50C878"
               value={audiotracksData?.totalAudioBookListeningProgress}
               variant="determinate"
-              trackColor="lightblue"
+              trackColor="grey"
               animation={false}
               style={{
                 width: 200,
@@ -1023,7 +1023,7 @@ function Audiotracks(props: any) {
       <View>
         <ActivityIndicator
           size="large"
-          color="#00ff00"
+          color="#50C878"
           style={styles.ActivityIndicatorStyle}
         />
       </View>

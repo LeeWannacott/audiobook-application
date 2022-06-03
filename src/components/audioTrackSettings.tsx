@@ -104,8 +104,8 @@ function AudioTrackSettings(props: any) {
           style={{ width: 200, height: 40 }}
           minimumValue={0.0}
           maximumValue={1.0}
-          minimumTrackTintColor="green"
-          maximumTrackTintColor="grey"
+          minimumTrackTintColor="#50C878"
+          thumbTintColor="#228B22"
           step={0.25}
           onValueChange={async (volumeLevel: number) => {
             try {
@@ -157,8 +157,8 @@ function AudioTrackSettings(props: any) {
           style={{ width: 200, height: 40 }}
           minimumValue={0.5}
           maximumValue={2.0}
-          minimumTrackTintColor="green"
-          maximumTrackTintColor="grey"
+          minimumTrackTintColor="#50C878"
+          thumbTintColor="#228B22"
           step={0.25}
           onValueChange={async (speed: number) => {
             try {

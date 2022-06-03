@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { ListItem, LinearProgress } from "react-native-elements";
 import { Rating } from "react-native-ratings";
+import { useFonts } from "expo-font";
 
 import {
   FlatList,
@@ -158,19 +159,19 @@ function ShelfForBookshelfAndHistory(props: any) {
           {audioBookInfo[item.audiobook_id]?.audiobook_id ==
           item.audiobook_id ? (
             <LinearProgress
-              color="primary"
+              color="#50C878"
               value={
                 audioBookInfo[item.audiobook_id]?.listening_progress_percent
               }
               variant="determinate"
-              trackColor="lightblue"
+              trackColor="grey"
               animation={false}
             />
           ) : (
             <LinearProgress
-              color="primary"
+              color="#50C878"
               variant="determinate"
-              trackColor="white"
+              trackColor="grey"
               animation={false}
             />
           )}
@@ -208,20 +209,20 @@ function ShelfForBookshelfAndHistory(props: any) {
       // The screen is focused
       // Call any action
       try {
-      db.transaction((tx) => {
-        tx.executeSql(
-          `select * from ${audiobookProgressTableName}`,
-          [],
-          (_, { rows }) => {
-            const audioProgressData = {};
-            rows._array.forEach((row) => {
-              return (audioProgressData[row.audiobook_id] = row);
-            });
-            // console.log(audioProgressData);
-            setAudioBookInfo(audioProgressData);
-          }
-        );
-      }, null);
+        db.transaction((tx) => {
+          tx.executeSql(
+            `select * from ${audiobookProgressTableName}`,
+            [],
+            (_, { rows }) => {
+              const audioProgressData = {};
+              rows._array.forEach((row) => {
+                return (audioProgressData[row.audiobook_id] = row);
+              });
+              // console.log(audioProgressData);
+              setAudioBookInfo(audioProgressData);
+            }
+          );
+        }, null);
 
         getAsyncData(props.asyncDataKeyName).then(
           (pickerAndQueryDataRetrieved) => {
