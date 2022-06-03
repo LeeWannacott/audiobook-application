@@ -1,11 +1,7 @@
 import React from "react";
 import { useState } from "react";
 
-
-import {
-  View,
-} from "react-native";
-
+import { View } from "react-native";
 
 import { openDatabase } from "../utils";
 import {
@@ -20,11 +16,9 @@ const db = openDatabase();
 // global scope
 let lolcache = {};
 
-
 function History() {
   const [audiobookHistory, setAudiobookHistory] = useState<any[]>([]);
   const [loadingHistory, setLoadingHistory] = useState(true);
-
 
   function getShelvedBooks(pickerAndQueryStatePassedIn: {
     orderBy: string;
@@ -56,7 +50,7 @@ function History() {
       );
     }, null);
   }
-  const asyncDataKeyNameForPickerAndToggle = "pickerAndQueryDataHistory"
+  const asyncDataKeyNameForPickerAndToggle = "pickerAndQueryDataHistory";
 
   return (
     <View>
@@ -71,4 +65,3 @@ function History() {
 }
 
 export default History;
-

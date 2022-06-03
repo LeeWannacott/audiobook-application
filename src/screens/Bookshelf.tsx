@@ -50,7 +50,7 @@ function History() {
       );
     }, null);
   }
-  const asyncDataKeyNameForPickerAndToggle= "pickerAndQueryDataBookshelf";
+  const asyncDataKeyNameForPickerAndToggle = "pickerAndQueryDataBookshelf";
 
   return (
     <View>

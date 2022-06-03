@@ -147,7 +147,11 @@ const UserSettings = () => {
           />
           <SettingsList.Item
             icon={
-              <MaterialCommunityIcons name="headset" size={50} color={"black"} />
+              <MaterialCommunityIcons
+                name="headset"
+                size={50}
+                color={"black"}
+              />
             }
             hasNavArrow={false}
             title="Play through earpiece"
@@ -240,7 +244,7 @@ const UserSettings = () => {
             hasNavArrow={true}
             icon={
               <MaterialCommunityIcons
-                name="account-voice"
+                name="account-tie-voice"
                 size={50}
                 color={"black"}
               />

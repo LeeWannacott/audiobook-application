@@ -5,7 +5,7 @@ import Explore from "../components/Explore";
 function HomeScreen() {
   return (
     <View style={styles.container}>
-        <Explore />
+      <Explore />
     </View>
   );
 }

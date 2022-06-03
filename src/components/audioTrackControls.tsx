@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { ActivityIndicator, StyleSheet, View, Dimensions } from "react-native";
-import { MaterialIcons,MaterialCommunityIcons } from "@expo/vector-icons";
+import { MaterialIcons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { Button, List, Colors, Switch } from "react-native-paper";
 
 function AudioTrackControls(props: any) {

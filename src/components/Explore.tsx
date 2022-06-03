@@ -86,7 +86,12 @@ function Search() {
   const genreListRender = React.useCallback(
     genreList.map((genre) => {
       return (
-        <Picker.Item key={`${genre}`} label={`${genre}`} value={`${genre}`} />
+        <Picker.Item
+          key={`${genre}`}
+          label={`${genre}`}
+          value={`${genre}`}
+          style={{ fontSize: 18 }}
+        />
       );
     }),
     [genreList]
@@ -99,6 +104,7 @@ function Search() {
           key={`${authorsListJson["authors"][i].id}`}
           label={`${authorsListJson["authors"][i].first_name} ${authorsListJson["authors"][i].last_name}`}
           value={`${authorsListJson["authors"][i].last_name}`}
+          style={{ fontSize: 18 }}
         />
       );
     }),
@@ -221,10 +227,18 @@ function Search() {
               }
             }}
           >
-            <Picker.Item label="Latest Releases" value="recent" />
-            <Picker.Item label="Title" value="title" />
-            <Picker.Item label="Author" value="author" />
-            <Picker.Item label="Genre" value="genre" />
+            <Picker.Item
+              label="Latest Releases"
+              value="recent"
+              style={{ fontSize: 18 }}
+            />
+            <Picker.Item label="Title" value="title" style={{ fontSize: 18 }} />
+            <Picker.Item
+              label="Author"
+              value="author"
+              style={{ fontSize: 18 }}
+            />
+            <Picker.Item label="Genre" value="genre" style={{ fontSize: 18 }} />
           </Picker>
           <View style={styles.titleOrAuthorStringFlexbox}>
             <Text>{`Select Author:`}</Text>
@@ -316,10 +330,10 @@ const styles = StyleSheet.create({
   searchBarAndSettingsIcon: {
     display: "flex",
     flexDirection: "row",
-    justifyContent:"center",
-    alignContent:"center",
+    justifyContent: "center",
+    alignContent: "center",
     width: windowWidth,
-    height:80,
+    height: 80,
     backgroundColor: "black",
     paddingLeft: 0,
     paddingTop: 10,
@@ -331,10 +345,10 @@ const styles = StyleSheet.create({
   },
   settingsIcon: {
     backgroundColor: "black",
-    left:-5,
-    height:62,
+    left: -5,
+    height: 62,
     borderWidth: 1,
-    top:5,
+    top: 5,
     borderRadius: 2,
   },
   checkboxRow: {
@@ -350,6 +364,5 @@ const styles = StyleSheet.create({
   scrollStyle: {
     height: windowHeight / 1.225,
   },
-  test: {
-  },
+  test: {},
 });

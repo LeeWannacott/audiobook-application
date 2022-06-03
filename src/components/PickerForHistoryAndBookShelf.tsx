@@ -15,25 +15,15 @@ function PickerForHistoryAndBookShelf(props: any) {
     asyncDataKeyName,
   } = props;
 
-  const [loaded] = useFonts({
-    IBMPlexMono: require('../../assets/fonts/Helvetica.ttf'),
-  });
-
-  if (!loaded) {
-    return null;
-  }
   return (
     <View style={styles.SQLQueryPickerAndIcon}>
       <View style={styles.SQLQueryPicker}>
         <Picker
-          style={{fontFamily:"Helvetica",fontSize:90}}
+          style={{ color: "black" }}
           selectedValue={pickerAndQueryState.orderBy}
           mode={"dropdown"}
           dropdownIconRippleColor={"grey"}
-          
-
           onValueChange={(itemValue, itemPosition) => {
-
             setPickerAndQueryState({
               ...pickerAndQueryState,
               orderBy: itemValue,
@@ -51,30 +41,55 @@ function PickerForHistoryAndBookShelf(props: any) {
             });
           }}
         >
-          <Picker.Item label="Order Visited" value="order by id" />
-          <Picker.Item label="Title" value="order by audiobook_title" />
-          <Picker.Item label="Rating" value="order by audiobook_rating + 0" />
+          <Picker.Item
+            label="Order Visited"
+            value="order by id"
+            style={{ fontSize: 18 }}
+          />
+          <Picker.Item
+            label="Title"
+            value="order by audiobook_title"
+            style={{ fontSize: 18 }}
+          />
+          <Picker.Item
+            label="Rating"
+            value="order by audiobook_rating + 0"
+            style={{ fontSize: 18 }}
+          />
           <Picker.Item
             label="Total Time"
             value="order by audiobook_total_time_secs"
+            style={{ fontSize: 18 }}
           />
           <Picker.Item
             label="Author First Name"
             value="order by audiobook_author_first_name"
+            style={{ fontSize: 18 }}
           />
           <Picker.Item
             label="Author Last Name"
             value="order by audiobook_author_last_name"
+            style={{ fontSize: 18 }}
           />
-          <Picker.Item label="Language" value="order by audiobook_language" />
-          <Picker.Item label="Genre" value="order by audiobook_genres" />
           <Picker.Item
-            label="Copyright year"
+            label="Language"
+            value="order by audiobook_language"
+            style={{ fontSize: 18 }}
+          />
+          <Picker.Item
+            label="Genre"
+            value="order by audiobook_genres"
+            style={{ fontSize: 18 }}
+          />
+          <Picker.Item
+            label="Copyright Year"
             value="order by audiobook_copyright_year"
+            style={{ fontSize: 18 }}
           />
           <Picker.Item
             label="Listening Progress"
             value="order by listening_progress_percent"
+            style={{ fontSize: 18 }}
           />
         </Picker>
       </View>
@@ -110,16 +125,16 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     width: windowWidth - 100,
     margin: 5,
-    height:55,
+    height: 55,
     marginLeft: 0,
   },
   SQLQueryPickerAndIcon: {
     display: "flex",
     flexDirection: "row",
-    justifyContent:"center",
-    alignItems:"center",
-    backgroundColor:"black",
-    height:80,
-    paddingTop:10,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "black",
+    height: 80,
+    paddingTop: 10,
   },
 });

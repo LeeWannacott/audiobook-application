@@ -52,7 +52,6 @@ export function deleteAudiobookHistoryDB(db: any) {
   }, null);
 }
 
-
 export function updateAudioTrackPositionsDB(db: any, audiotrackProgress: any) {
   db.transaction((tx: any) => {
     tx.executeSql(

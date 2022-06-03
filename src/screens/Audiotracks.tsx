@@ -5,7 +5,7 @@ import { Rating } from "react-native-ratings";
 import * as rssParser from "react-native-rss-parser";
 import { Audio } from "expo-av";
 import { StyleSheet, Text, View, SectionList } from "react-native";
-import { MaterialCommunityIcons,Ionicons } from "@expo/vector-icons";
+import { MaterialCommunityIcons, Ionicons } from "@expo/vector-icons";
 
 import { Button } from "react-native-paper";
 import AudioTrackControls from "../components/audioTrackControls";
@@ -113,7 +113,7 @@ function Audiotracks(props: any) {
     navigation.setOptions({
       headerRight: () => (
         <Button mode={"outlined"} onPress={() => toggleSettingsOverlay()}>
-          <MaterialCommunityIcons name="book-cog" size={30} color="black" />
+          <MaterialCommunityIcons name="cog" size={30} color="black" />
         </Button>
       ),
     });
@@ -738,21 +738,21 @@ function Audiotracks(props: any) {
           {item?.section_number}: {item?.title}
         </ListItem.Title>
 
-        <View style={{ display: "flex", flexDirection: "row" ,alignItems:"center" }}>
-        <MaterialCommunityIcons
-          name="timer"
-          size={15}
-          color="black"
-        />
-        <Text>  
-          {": "}
+        <View
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
+          }}
+        >
+          <MaterialCommunityIcons name="timer" size={15} color="black" />
+          <Text>
+            {": "}
             {GetDurationFormat(
               audiotracksData.currentAudiotrackPositionsMs[index]
             )}
           </Text>
-          <Text>
-            {" | "}
-          </Text>
+          <Text>{" | "}</Text>
           <Text>{FormatChapterDurations(chapters[index]?.playtime)}</Text>
         </View>
 
@@ -764,18 +764,23 @@ function Audiotracks(props: any) {
           animation={false}
         />
 
-        <View style={{ display: "flex", flexDirection: "row" ,alignItems:"center" }}>
-        <MaterialCommunityIcons
-          name="account-tie-voice"
-          size={15}
-          color="black"
-        />
-        <Text>{": "}</Text>
-        <ListItem.Subtitle numberOfLines={1} ellipsizeMode="clip">
-          {item?.readers[0]?.display_name}
-        </ListItem.Subtitle>
-      </View>
-
+        <View
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
+          }}
+        >
+          <MaterialCommunityIcons
+            name="account-tie-voice"
+            size={15}
+            color="black"
+          />
+          <Text>{": "}</Text>
+          <ListItem.Subtitle numberOfLines={1} ellipsizeMode="clip">
+            {item?.readers[0]?.display_name}
+          </ListItem.Subtitle>
+        </View>
       </ListItem.Content>
       <Button
         mode="outlined"
