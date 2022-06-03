@@ -760,7 +760,7 @@ function Audiotracks(props: any) {
           color="#50C878"
           value={audiotracksData.linearProgessBars[index]}
           variant="determinate"
-          trackColor="grey"
+          trackColor="#DCDCDC"
           animation={false}
         />
 
@@ -881,7 +881,7 @@ function Audiotracks(props: any) {
               color="#50C878"
               value={audiotracksData?.totalAudioBookListeningProgress}
               variant="determinate"
-              trackColor="grey"
+              trackColor="#DCDCDC"
               animation={false}
               style={{
                 width: 200,

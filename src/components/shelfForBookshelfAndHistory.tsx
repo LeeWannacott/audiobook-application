@@ -164,14 +164,14 @@ function ShelfForBookshelfAndHistory(props: any) {
                 audioBookInfo[item.audiobook_id]?.listening_progress_percent
               }
               variant="determinate"
-              trackColor="grey"
+              trackColor="#DCDCDC"
               animation={false}
             />
           ) : (
             <LinearProgress
               color="#50C878"
               variant="determinate"
-              trackColor="grey"
+              trackColor="#DCDCDC"
               animation={false}
             />
           )}
