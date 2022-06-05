@@ -57,8 +57,8 @@ function PickerForHistoryAndBookShelf(props: any) {
             style={{ fontSize: 18 }}
           />
           <Picker.Item
-            label="Total Time"
-            value="order by audiobook_total_time_secs"
+            label="Listening Progress"
+            value="order by listening_progress_percent"
             style={{ fontSize: 18 }}
           />
           <Picker.Item
@@ -69,6 +69,11 @@ function PickerForHistoryAndBookShelf(props: any) {
           <Picker.Item
             label="Author Last Name"
             value="order by audiobook_author_last_name"
+            style={{ fontSize: 18 }}
+          />
+          <Picker.Item
+            label="Total Time"
+            value="order by audiobook_total_time_secs"
             style={{ fontSize: 18 }}
           />
           <Picker.Item
@@ -84,11 +89,6 @@ function PickerForHistoryAndBookShelf(props: any) {
           <Picker.Item
             label="Copyright Year"
             value="order by audiobook_copyright_year"
-            style={{ fontSize: 18 }}
-          />
-          <Picker.Item
-            label="Listening Progress"
-            value="order by listening_progress_percent"
             style={{ fontSize: 18 }}
           />
         </Picker>

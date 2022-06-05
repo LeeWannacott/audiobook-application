@@ -98,23 +98,23 @@ function ShelfForBookshelfAndHistory(props: any) {
       case 2:
         return audioBookInfo[item?.audiobook_id]?.audiobook_rating;
       case 3:
-        return item?.audiobook_total_time;
-      case 4:
-        return item?.audiobook_author_first_name;
-      case 5:
-        return item?.audiobook_author_last_name;
-      case 6:
-        return item?.audiobook_language;
-      case 7:
-        return JSON.parse(item.audiobook_genres)[0].name;
-      case 8:
-        return item?.audiobook_copyright_year;
-      case 9:
         return (
           roundNumberTwoDecimal(
             audioBookInfo[item?.audiobook_id]?.listening_progress_percent * 100
           ) + "%"
         );
+      case 4:
+        return item?.audiobook_author_first_name;
+      case 5:
+        return item?.audiobook_author_last_name;
+      case 6:
+        return item?.audiobook_total_time;
+      case 7:
+        return item?.audiobook_language;
+      case 8:
+        return JSON.parse(item.audiobook_genres)[0].name;
+      case 9:
+        return item?.audiobook_copyright_year;
     }
   }
 
@@ -162,7 +162,7 @@ function ShelfForBookshelfAndHistory(props: any) {
               name={
                 audioBookInfo[item.audiobook_id]?.audiobook_shelved
                   ? "star"
-                  : "star-outline"
+                  : undefined
               }
               size={30}
               color={"#DAA520"}
@@ -175,10 +175,8 @@ function ShelfForBookshelfAndHistory(props: any) {
                 height: 55,
               }}
             />
-
           </Pressable>
-          {audioBookInfo[item.audiobook_id]?.audiobook_id ==
-          item.audiobook_id ? (
+
             <LinearProgress
               color="#50C878"
               value={
@@ -188,14 +186,7 @@ function ShelfForBookshelfAndHistory(props: any) {
               trackColor="#DCDCDC"
               animation={false}
             />
-          ) : (
-            <LinearProgress
-              color="#50C878"
-              variant="determinate"
-              trackColor="#DCDCDC"
-              animation={false}
-            />
-          )}
+
         </View>
       </ListItem>
       {audioBookInfo[item.audiobook_id]?.audiobook_id == item.audiobook_id &&
