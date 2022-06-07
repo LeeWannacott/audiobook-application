@@ -20,17 +20,17 @@ function AudioTrackControls(props: any) {
   return (
     <View style={styles.controlsVert}>
       <View style={styles.controls}>
-        <Button mode="outlined" onPress={() => rewindTenSeconds()}>
-          <MaterialCommunityIcons
-            name="rewind-10"
+        <Button mode="outlined" onPress={() => HandlePrev()}>
+          <MaterialIcons
+            name="skip-previous"
             size={controlPanelButtonSize}
             color="black"
             style={styles.control}
           />
         </Button>
-        <Button mode="outlined" onPress={() => HandlePrev()}>
-          <MaterialIcons
-            name="skip-previous"
+        <Button mode="outlined" onPress={() => rewindTenSeconds()}>
+          <MaterialCommunityIcons
+            name="rewind-10"
             size={controlPanelButtonSize}
             color="black"
             style={styles.control}
@@ -82,17 +82,17 @@ function AudioTrackControls(props: any) {
             />
           </Button>
         )}
-        <Button mode="outlined" onPress={() => HandleNext()}>
-          <MaterialIcons
-            name="skip-next"
+        <Button mode="outlined" onPress={() => forwardTenSeconds()}>
+          <MaterialCommunityIcons
+            name="fast-forward-10"
             size={controlPanelButtonSize}
             color="black"
             style={styles.control}
           />
         </Button>
-        <Button mode="outlined" onPress={() => forwardTenSeconds()}>
-          <MaterialCommunityIcons
-            name="fast-forward-10"
+        <Button mode="outlined" onPress={() => HandleNext()}>
+          <MaterialIcons
+            name="skip-next"
             size={controlPanelButtonSize}
             color="black"
             style={styles.control}

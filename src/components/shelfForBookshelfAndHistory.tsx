@@ -177,16 +177,13 @@ function ShelfForBookshelfAndHistory(props: any) {
             />
           </Pressable>
 
-            <LinearProgress
-              color="#50C878"
-              value={
-                audioBookInfo[item.audiobook_id]?.listening_progress_percent
-              }
-              variant="determinate"
-              trackColor="#DCDCDC"
-              animation={false}
-            />
-
+          <LinearProgress
+            color="#50C878"
+            value={audioBookInfo[item.audiobook_id]?.listening_progress_percent}
+            variant="determinate"
+            trackColor="#DCDCDC"
+            animation={false}
+          />
         </View>
       </ListItem>
       {audioBookInfo[item.audiobook_id]?.audiobook_id == item.audiobook_id &&

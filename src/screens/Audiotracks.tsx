@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { ActivityIndicator, Dimensions,Image } from "react-native";
+import { ActivityIndicator, Dimensions, Image } from "react-native";
 import { ListItem, LinearProgress, Card } from "@rneui/themed";
 import { Rating } from "react-native-ratings";
 import * as rssParser from "react-native-rss-parser";
@@ -44,7 +44,7 @@ function Audiotracks(props: any) {
     loadingCurrentAudiotrack: false,
   });
   const [audioPaused, setAudioPaused] = useState(false);
-  const [Playing, SetPlaying] = useState(false);
+  const [Playing, setPlaying] = useState(false);
   const [currentAudiotrackPlayingInfo, setCurrentPlayingInformation] = useState(
     {
       audioTrackChapterPlayingTitle: "",
@@ -430,7 +430,15 @@ function Audiotracks(props: any) {
     try {
       if (data.didJustFinish) {
         updateAndStoreAudiobookPositions(data);
-        return HandleNext();
+        if (
+          currentAudioTrackIndex.current >=
+          URLSToPlayAudiotracks.length - 1
+        ) {
+          setPlaying(false);
+          setAudioPaused(true);
+        } else {
+          return HandleNext();
+        }
       } else if (data.positionMillis && data.durationMillis) {
         updateAndStoreAudiobookPositions(data);
       }
@@ -454,7 +462,6 @@ function Audiotracks(props: any) {
   const forwardTenSeconds = async () => {
     try {
       const result = await sound.current.getStatusAsync();
-      console.log(result);
       if (result.isLoaded === true) {
         const result =
           audiotracksData.currentAudiotrackPositionsMs[
@@ -470,7 +477,6 @@ function Audiotracks(props: any) {
   const rewindTenSeconds = async () => {
     try {
       const result = await sound.current.getStatusAsync();
-      console.log(result);
       if (result.isLoaded === true) {
         const result =
           audiotracksData.currentAudiotrackPositionsMs[
@@ -487,7 +493,7 @@ function Audiotracks(props: any) {
     try {
       const checkLoading = await sound.current.getStatusAsync();
       if (checkLoading.isLoaded === true) {
-        SetPlaying(false);
+        setPlaying(false);
         await sound.current.setPositionAsync(0);
         await sound.current.stopAsync();
       }
@@ -567,7 +573,7 @@ function Audiotracks(props: any) {
         if (result.isPlaying === false) {
           console.log("playing");
           await sound.current.playAsync();
-          SetPlaying(true);
+          setPlaying(true);
         }
       }
     } catch (error) {
@@ -583,7 +589,7 @@ function Audiotracks(props: any) {
         if (result.isPlaying === true) {
           await sound.current.pauseAsync();
           setAudioPaused(true);
-          SetPlaying(false);
+          setPlaying(false);
         }
       }
     } catch (error) {
@@ -623,6 +629,11 @@ function Audiotracks(props: any) {
             ]
           );
         }
+        console.log(
+          "yeeeet",
+          currentAudioTrackIndex.current,
+          URLSToPlayAudiotracks.length
+        );
       }
     } catch (err) {
       console.log(err);
@@ -868,7 +879,11 @@ function Audiotracks(props: any) {
                 marginLeft: 35,
               }}
             >
-              <Image resizeMode="cover" source={{ uri: coverImage }} style={{flex:1,borderRadius:5}} />
+              <Image
+                resizeMode="cover"
+                source={{ uri: coverImage }}
+                style={{ flex: 1, borderRadius: 5 }}
+              />
               <Button
                 mode="text"
                 onPress={() => {
@@ -885,13 +900,13 @@ function Audiotracks(props: any) {
               >
                 <MaterialCommunityIcons
                   name={
-                    audiotracksData.shelveIconToggle
-                      ? "star"
-                    : "star-outline"
+                    audiotracksData.shelveIconToggle ? "star" : "star-outline"
                   }
                   size={30}
-                  color={audiotracksData.shelveIconToggle ? "#DAA520" : "#DAA520"}
-                  style={{borderColor:"black",borderWidth:2}}
+                  color={
+                    audiotracksData.shelveIconToggle ? "#DAA520" : "#DAA520"
+                  }
+                  style={{ borderColor: "black", borderWidth: 2 }}
                 />
               </Button>
             </View>
@@ -927,8 +942,7 @@ function Audiotracks(props: any) {
               readonly={true}
               style={{ paddingVertical: 10 }}
             />
-            <View style={styles.shelveButtons}>
-            </View>
+            <View style={styles.shelveButtons}></View>
           </Card>
         </View>
       );

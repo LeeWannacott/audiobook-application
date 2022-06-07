@@ -144,11 +144,13 @@ function AudioTrackSettings(props: any) {
         value={props.audioPlayerSettings.isMuted}
         onValueChange={onToggleMuteSwitch}
       />
+      {/*
       <Text>looping: {props.audioPlayerSettings.isLooping}</Text>
       <Switch
         value={props.audioPlayerSettings.isLooping}
         onValueChange={onToggleLoopSwitch}
       />
+      */}
       <Text>Speed of Audiotrack: {props.audioPlayerSettings.rate}X</Text>
       <View style={styles.sliderWithIconsOnSides}>
         <MaterialCommunityIcons name={"tortoise"} size={30} color={"black"} />
