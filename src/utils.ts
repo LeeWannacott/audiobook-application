@@ -12,7 +12,7 @@ export function openDatabase() {
     };
   }
 
-  const db = SQLite.openDatabase("audiobooktest10.db");
+  const db = SQLite.openDatabase("libri_audire.db");
   return db;
 }
 

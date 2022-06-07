@@ -1,6 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-export const audiobookProgressTableName = "testaudio23";
+export const audiobookProgressTableName = "users_audiobooks_progress";
 export function createAudioBookDataTable(db: any) {
   db.transaction((tx: any) => {
     tx.executeSql(
@@ -9,7 +9,7 @@ export function createAudioBookDataTable(db: any) {
   });
 }
 
-export const audiobookHistoryTableName = "testHistory21";
+export const audiobookHistoryTableName = "librivox_audiobooks_cache";
 export function createHistoryTableDB(db: any) {
   db.transaction((tx: any) => {
     tx.executeSql(

@@ -156,7 +156,6 @@ function Audiotracks(props: any) {
     audiotrack_progress_bars: any,
     current_audiotrack_positions: any
   ) => {
-    console.log("updating audiobook position");
     try {
       const initialValue = 0;
       const current_listening_time = current_audiotrack_positions.reduce(
@@ -570,7 +569,6 @@ function Audiotracks(props: any) {
       const result = await sound.current.getStatusAsync();
       if (result.isLoaded) {
         if (result.isPlaying === false) {
-          console.log("playing");
           await sound.current.playAsync();
           setPlaying(true);
         }
