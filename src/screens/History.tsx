@@ -29,7 +29,7 @@ function History() {
         `select * from ${audiobookHistoryTableName} inner join ${audiobookProgressTableName} on ${audiobookProgressTableName}.audiobook_id = ${audiobookHistoryTableName}.audiobook_id ${pickerAndQueryStatePassedIn.orderBy} ${pickerAndQueryStatePassedIn.order} limit 100`,
         [],
         (_, { rows }) => {
-          let start = performance.now();
+          // let start = performance.now();
           let newHistory = [];
           for (let row of rows._array) {
             if (
@@ -41,10 +41,10 @@ function History() {
               newHistory.push(row);
             }
           }
-          setAudiobookHistory(newHistory);
           // setAudiobookHistory(rows["_array"]);
-          let end = performance.now();
-          console.log("time: ", end - start);
+          setAudiobookHistory(newHistory);
+          // let end = performance.now();
+          // console.log("time: ", end - start);
           setLoadingHistory(false);
         }
       );

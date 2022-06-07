@@ -15,7 +15,6 @@ function AudioTrackControls(props: any) {
     currentAudioTrackIndex,
     trackPositions,
   } = props;
-  console.log(trackPositions.currentAudiotrackPositionsMs);
 
   return (
     <View style={styles.controlsVert}>

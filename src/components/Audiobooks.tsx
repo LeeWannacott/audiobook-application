@@ -34,7 +34,6 @@ export default function Audiobooks(props: any) {
   const addAudiobookToHistory = (bookDataForHistory: {
     audiobook_genres: string;
   }) => {
-    console.log(bookDataForHistory);
     bookDataForHistory.audiobook_genres = JSON.stringify(
       bookDataForHistory.audiobook_genres
     );
@@ -59,10 +58,11 @@ export default function Audiobooks(props: any) {
     let apiFetchQuery;
     switch (props.apiSettings["searchBy"]) {
       case "recent":
-        const twoMonthsAgoInUnixTime =
-          (new Date().getTime() - 60 * 24 * 60 * 60 * 1000) / 1000;
+        const oneMonthsAgoInUnixTime =
+          // TODO: Add a range slider for period of time; currently is for past month...
+          (new Date().getTime() - 30 * 24 * 60 * 60 * 1000) / 1000;
         apiFetchQuery = encodeURI(
-          `${librivoxAudiobooksAPI}/?since=${twoMonthsAgoInUnixTime}&fields={${fields}}&extended=1&format=json&limit=${amountOfAudiobooks}`
+          `${librivoxAudiobooksAPI}/?since=${oneMonthsAgoInUnixTime}&fields={${fields}}&extended=1&format=json&limit=${amountOfAudiobooks}`
         );
         break;
       case "title":
@@ -140,7 +140,6 @@ export default function Audiobooks(props: any) {
             style={({ pressed }) => [{ opacity: pressed ? 0.75 : 1.0 }]}
             onPress={() => {
               if (avatarOnPressEnabled) {
-                console.log(item);
                 addAudiobookToHistory({
                   audiobook_rss_url: item?.url_rss,
                   audiobook_id: item?.id,
@@ -228,7 +227,7 @@ export default function Audiobooks(props: any) {
       <View>
         <ActivityIndicator
           size="large"
-          color="#00ff00"
+          color="#50C878"
           style={styles.ActivityIndicatorStyle}
         />
       </View>

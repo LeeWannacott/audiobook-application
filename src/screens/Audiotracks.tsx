@@ -509,7 +509,6 @@ function Audiotracks(props: any) {
       ...audiotrackLoadingStatuses,
       loadingCurrentAudiotrack: true,
     });
-    console.log(index, "Playing");
     const checkLoading = await sound.current.getStatusAsync();
     if (checkLoading.isLoaded === false) {
       try {
@@ -629,11 +628,6 @@ function Audiotracks(props: any) {
             ]
           );
         }
-        console.log(
-          "yeeeet",
-          currentAudioTrackIndex.current,
-          URLSToPlayAudiotracks.length
-        );
       }
     } catch (err) {
       console.log(err);
@@ -833,7 +827,6 @@ function Audiotracks(props: any) {
 
   useEffect(() => {
     if (dataRSS.length > 0) {
-      // console.log(dataRSS);
       // console.log(dataRSS)
       const RSSDict = Object.entries(dataRSS);
       const RSSURLS = RSSDict.map(([key, value]) => {

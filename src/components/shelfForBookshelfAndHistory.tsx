@@ -286,7 +286,7 @@ function ShelfForBookshelfAndHistory(props: any) {
         />
         <View style={styles.flatListStyle}>
           <View style={styles.ActivityIndicatorStyle}>
-            <ActivityIndicator size="large" color="#00ff00" />
+            <ActivityIndicator size="large" color="#50C878" />
           </View>
         </View>
       </View>
@@ -323,7 +323,7 @@ const styles = StyleSheet.create({
   ActivityIndicatorStyle: {
     top: windowHeight / 3,
     backgroundColor: "#331800",
-    color: "green",
+    color: "#50C878",
   },
   test: {
     backgroundColor: "#331800",

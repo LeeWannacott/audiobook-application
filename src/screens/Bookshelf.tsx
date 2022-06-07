@@ -25,10 +25,10 @@ function History() {
   }) {
     db.transaction((tx) => {
       tx.executeSql(
-        `select * from ${audiobookHistoryTableName} inner join ${audiobookProgressTableName} on ${audiobookProgressTableName}.audiobook_id = ${audiobookHistoryTableName}.audiobook_id where ${audiobookProgressTableName}.audiobook_shelved=1 ${pickerAndQueryStatePassedIn.orderBy} ${pickerAndQueryStatePassedIn.order} limit 100`,
+        `select * from ${audiobookHistoryTableName} inner join ${audiobookProgressTableName} on ${audiobookProgressTableName}.audiobook_id = ${audiobookHistoryTableName}.audiobook_id where ${audiobookProgressTableName}.audiobook_shelved=1 ${pickerAndQueryStatePassedIn.orderBy} ${pickerAndQueryStatePassedIn.order}`,
         [],
         (_, { rows }) => {
-          let start = performance.now();
+          // let start = performance.now();
           let newHistory = [];
           for (let row of rows._array) {
             if (
@@ -42,9 +42,8 @@ function History() {
           }
           setAudiobookHistory(newHistory);
           // setAudiobookHistory(rows["_array"]);
-          console.log("yogibear", rows["_array"]);
-          let end = performance.now();
-          console.log("time: ", end - start);
+          // let end = performance.now();
+          // console.log("time: ", end - start);
           setLoadingHistory(false);
         }
       );
