@@ -4,7 +4,7 @@ export const audiobookProgressTableName = "users_audiobooks_progress";
 export function createAudioBookDataTable(db: any) {
   db.transaction((tx: any) => {
     tx.executeSql(
-      `create table if not exists ${audiobookProgressTableName} (id integer primary key not null, audiobook_id text not null unique, audiotrack_progress_bars text, current_audiotrack_positions text, audiobook_shelved int, audiobook_rating real, listening_progress_percent real, current_listening_time int, current_audiotrack_index int, downloaded int);`
+      `create table if not exists ${audiobookProgressTableName} (id integer primary key not null, audiobook_id text not null unique, audiotrack_progress_bars text, current_audiotrack_positions text, audiobook_shelved int, audiobook_rating real, listening_progress_percent real, current_listening_time int, current_audiotrack_index int, audiobook_downloaded int, audiobook_finished int);`
     );
   });
 }
@@ -50,6 +50,21 @@ export function deleteAudiobookHistoryDB(db: any) {
   db.transaction((tx: any) => {
     tx.executeSql(`delete from ${audiobookHistoryTableName}`);
   }, null);
+}
+
+export function deleteAudiobookProgressDB(db: any) {
+  db.transaction((tx: any) => {
+    tx.executeSql(`delete from ${audiobookProgressTableName}`);
+  }, null);
+}
+
+{
+  /*export function dropTableAudiobookProgressDB(db: any) {
+  db.transaction((tx: any) => {
+    tx.executeSql(`drop table ${audiobookProgressTableName}`);
+  }, null);
+}
+  */
 }
 
 export function updateAudioTrackPositionsDB(db: any, audiotrackProgress: any) {

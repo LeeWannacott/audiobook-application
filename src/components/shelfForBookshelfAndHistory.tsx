@@ -275,7 +275,7 @@ function ShelfForBookshelfAndHistory(props: any) {
     );
   } else {
     return (
-      <View style={styles.test}>
+      <View style={styles.pickerContainer}>
         <PickerForHistoryAndBookShelf
           pickerAndQueryState={pickerAndQueryState}
           setPickerAndQueryState={setPickerAndQueryState}
@@ -321,11 +321,11 @@ const styles = StyleSheet.create({
     backgroundColor: "#51361a",
   },
   ActivityIndicatorStyle: {
-    top: windowHeight / 3,
+    top: windowHeight / 2,
     backgroundColor: "#331800",
     color: "#50C878",
   },
-  test: {
+  pickerContainer: {
     backgroundColor: "#331800",
   },
 });

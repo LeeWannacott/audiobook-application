@@ -116,7 +116,7 @@ function Search() {
       case "recent":
         return "Latest Releases";
       case "title":
-        return "Search by title";
+        return "Search by title:";
       case "author":
         return `Author: ${apiSettings["authorLastName"]}`;
       case "genre":

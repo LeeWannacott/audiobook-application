@@ -5,11 +5,12 @@ import SettingsList from "react-native-settings-list";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import {
   deleteAudiobookHistoryDB,
+  deleteAudiobookProgressDB,
   storeAsyncData,
   getAsyncData,
 } from "../database_functions";
-// import { openDatabase } from "../utils";
-// const db = openDatabase();
+import { openDatabase } from "../utils";
+const db = openDatabase();
 
 const UserSettings = () => {
   const [audioModeSettings, setAudioModeSettings] = useState({
@@ -69,6 +70,9 @@ const UserSettings = () => {
 
   const deleteAudiobookHistory = (db: any) => {
     deleteAudiobookHistoryDB(db);
+  };
+  const deleteAudiobookProgress = (db: any) => {
+    deleteAudiobookProgressDB(db);
   };
 
   return (
@@ -172,6 +176,7 @@ const UserSettings = () => {
               )
             }
           />
+
           {/*<SettingsList.Item
             icon={
               <MaterialCommunityIcons name="history" size={50} color={"black"} />
@@ -198,6 +203,38 @@ const UserSettings = () => {
               )
             }
         />*/}
+
+          {/*
+          <SettingsList.Item
+            icon={
+              <MaterialCommunityIcons
+                name="history"
+                size={50}
+                color={"black"}
+              />
+            }
+            hasNavArrow={true}
+            title="Delete audiobook progress"
+            onPress={() =>
+              Alert.alert(
+                "Delete audiobook progress",
+                "Are you sure you want to delete audiobook progress ?",
+                [
+                  {
+                    text: "Cancel",
+                    onPress: () => console.log("Cancel Pressed"),
+                  },
+                  {
+                    text: "Delete audiobook progress",
+                    onPress: () => deleteAudiobookProgress(db),
+                  },
+                ],
+                {
+                  cancelable: true,
+                }
+              )
+            }
+          />*/}
           <SettingsList.Header
             headerText="About"
             headerStyle={styles.audiobookSettingsSubHeading}

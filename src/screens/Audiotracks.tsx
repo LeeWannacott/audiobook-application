@@ -954,7 +954,9 @@ function Audiotracks(props: any) {
         keyExtractor: audiotracksKeyExtractor,
       },
       {
-        title: "Average of reviews: " + audiotracksData?.audiobookRating,
+        title:
+          "Average of reviews: " +
+          roundNumberTwoDecimal(audiotracksData?.audiobookRating),
         renderItem: renderReviews,
         data: reviews,
         keyExtractor: reviewsKeyExtractor,
