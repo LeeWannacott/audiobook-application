@@ -11,7 +11,7 @@ function AudiobookAccordionList(props: any) {
       title={props.accordionTitle}
       style={styles.accordionStyle}
       titleNumberOfLines={1}
-      accessibilityLabel={props.audiobookTitle}
+      accessibilityLabel={`${props.accordionTitle}`}
       theme={{ colors: { text: "white" } }}
     >
       <List.Section style={styles.accordianItemsStyle}>

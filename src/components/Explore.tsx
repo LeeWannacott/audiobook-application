@@ -116,7 +116,7 @@ function Search() {
       case "recent":
         return "Latest Releases";
       case "title":
-        return "Search by title:";
+        return "Enter title:";
       case "author":
         return `Author: ${apiSettings["authorLastName"]}`;
       case "genre":
@@ -143,6 +143,8 @@ function Search() {
           />
         </View>
         <Button
+          accessibilityLabel="Search options"
+          accessibilityHint="Opens options for searching by Title, Author, Genre and changing amount of audiobooks requested per search."
           onPress={toggleOverlay}
           mode="contained"
           style={styles.settingsIcon}
@@ -285,29 +287,71 @@ function Search() {
             {genreListRender}
           </Picker>
           <View style={styles.checkboxRow}>
-            <Text>
+            <Text style={{ fontSize: 15 }}>
               Audiobooks requested per search:{" "}
               {apiSettings["audiobookAmountRequested"]}.
             </Text>
           </View>
-
-          <Slider
-            value={apiSettings["audiobookAmountRequested"]}
-            maximumValue={420}
-            minimumValue={1}
-            onValueChange={changeAudiobookAmountRequested}
-            step={1}
-            trackStyle={{
-              height: 10,
-              width: windowWidth - 50,
-              backgroundColor: "transparent",
+          <View
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "center",
             }}
-            thumbStyle={{
-              height: 12,
-              width: 12,
-              backgroundColor: "black",
-            }}
-          />
+          >
+            <Button
+              accessibilityLabel="Decrease audiobooks requested per search."
+              accessibilityHint={`Currently: ${apiSettings.audiobookAmountRequested} requested`}
+              onPress={() =>
+                apiSettings.audiobookAmountRequested >= 6
+                  ? setApiSettings({
+                      ...apiSettings,
+                      audiobookAmountRequested:
+                        apiSettings.audiobookAmountRequested - 5,
+                    })
+                  : undefined
+              }
+              mode="contained"
+              style={{ backgroundColor: "white" }}
+            >
+              <MaterialIconCommunity name="minus" size={30} color="black" />
+            </Button>
+            <Slider
+              value={apiSettings["audiobookAmountRequested"]}
+              maximumValue={420}
+              minimumValue={1}
+              onValueChange={changeAudiobookAmountRequested}
+              step={1}
+              style={{ width: 180, height: 40, margin: 10 }}
+              trackStyle={{
+                height: 10,
+                backgroundColor: "transparent",
+              }}
+              thumbStyle={{
+                height: 12,
+                width: 12,
+                backgroundColor: "black",
+              }}
+            />
+            <Button
+              accessibilityLabel="Increase audiobooks requested per search."
+              accessibilityHint={`Currently ${apiSettings.audiobookAmountRequested} requested`}
+              onPress={() =>
+                apiSettings.audiobookAmountRequested <= 415
+                  ? setApiSettings({
+                      ...apiSettings,
+                      audiobookAmountRequested:
+                        apiSettings.audiobookAmountRequested + 5,
+                    })
+                  : undefined
+              }
+              mode="contained"
+              style={{ backgroundColor: "white" }}
+            >
+              <MaterialIconCommunity name="plus" size={30} color="black" />
+            </Button>
+          </View>
         </Overlay>
       </View>
       <View style={styles.scrollStyle}>

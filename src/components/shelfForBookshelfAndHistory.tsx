@@ -123,6 +123,7 @@ function ShelfForBookshelfAndHistory(props: any) {
       <ListItem topDivider containerStyle={styles.AudioBookListView}>
         <View style={styles.ImageContainer}>
           <Pressable
+            accessibilityLabel={`${item?.audiobook_title}`}
             style={({ pressed }) => [{ opacity: pressed ? 0.75 : 1.0 }]}
             onPress={() => {
               if (avatarOnPressEnabled) {
@@ -286,7 +287,11 @@ function ShelfForBookshelfAndHistory(props: any) {
         />
         <View style={styles.flatListStyle}>
           <View style={styles.ActivityIndicatorStyle}>
-            <ActivityIndicator size="large" color="#50C878" />
+            <ActivityIndicator
+              size="large"
+              color="#50C878"
+              accessibilityLabel={"loading"}
+            />
           </View>
         </View>
       </View>

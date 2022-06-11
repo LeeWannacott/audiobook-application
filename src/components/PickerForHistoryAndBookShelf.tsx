@@ -94,6 +94,11 @@ function PickerForHistoryAndBookShelf(props: any) {
         </Picker>
       </View>
       <Button
+        accessibilityLabel={`${
+          pickerAndQueryState.toggle
+            ? "sort ascending up arrow"
+            : "sort descending down arrow"
+        }`}
         mode="contained"
         style={{
           backgroundColor: "black",

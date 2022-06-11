@@ -101,23 +101,35 @@ function Audiotracks(props: any) {
   } = props.route.params;
 
   const navigation = useNavigation();
-  useEffect(() => {
+  // useEffect(() => {
+  // try {
+  // navigation.setOptions({
+  // headerTitle: title,
+  // });
+  // } catch (err) {
+  // console.log(err);
+  // }
+  // }, [title]);
+
+  React.useLayoutEffect(() => {
     try {
-      navigation.setOptions({ headerTitle: title });
+      navigation.setOptions({
+        headerTitle: title,
+        headerRight: () => (
+          <Button
+            accessibilityLabel="Audiotack player settings"
+            accessibilityHint="Contains options such as changing speed of audiotrack."
+            mode={"outlined"}
+            onPress={() => toggleSettingsOverlay()}
+          >
+            <MaterialCommunityIcons name="cog" size={30} color="black" />
+          </Button>
+        ),
+      });
     } catch (err) {
       console.log(err);
     }
   }, [title]);
-
-  React.useLayoutEffect(() => {
-    navigation.setOptions({
-      headerRight: () => (
-        <Button mode={"outlined"} onPress={() => toggleSettingsOverlay()}>
-          <MaterialCommunityIcons name="cog" size={30} color="black" />
-        </Button>
-      ),
-    });
-  }, []);
 
   React.useEffect(() => {
     try {
@@ -373,7 +385,6 @@ function Audiotracks(props: any) {
     try {
       return sound
         ? () => {
-            console.log("Unloading Sound");
             sound.current.unloadAsync();
           }
         : undefined;
@@ -727,6 +738,8 @@ function Audiotracks(props: any) {
     <ListItem bottomDivider>
       <Button
         mode="outlined"
+        accessibilityLabel={`Play from start of Audiotrack ${item?.section_number}: ${item?.title}`}
+        accessibilityHint=""
         onPress={() => PlayFromStartOfTrack(index)}
         style={{ margin: 0, padding: 0 }}
       >
@@ -787,6 +800,12 @@ function Audiotracks(props: any) {
       </ListItem.Content>
       <Button
         mode="outlined"
+        accessibilityLabel={`Resume playing ${item?.section_number}: ${
+          item?.title
+        } ${GetDurationFormat(
+          audiotracksData.currentAudiotrackPositionsMs[index]
+        )} out of ${FormatChapterDurations(chapters[index]?.playtime)}`}
+        accessibilityHint=""
         onPress={() => {
           PlayFromListenButton(index);
         }}
@@ -871,11 +890,15 @@ function Audiotracks(props: any) {
               }}
             >
               <Image
+                accessibilityLabel={`Audiobook image With button to shelve in top right corner`}
                 resizeMode="cover"
                 source={{ uri: coverImage }}
                 style={{ flex: 1, borderRadius: 5 }}
               />
               <Button
+                accessibilityLabel={`Shelve audiobook: ${title} currently ${
+                  audiotracksData.shelveIconToggle ? "shelved" : "not shelved"
+                }`}
                 mode="text"
                 onPress={() => {
                   pressedToShelveBook(audioBookId);
@@ -1036,6 +1059,7 @@ function Audiotracks(props: any) {
     return (
       <View>
         <ActivityIndicator
+          accessibilityLabel={"loading"}
           size="large"
           color="#50C878"
           style={styles.ActivityIndicatorStyle}

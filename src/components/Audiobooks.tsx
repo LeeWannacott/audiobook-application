@@ -137,6 +137,7 @@ export default function Audiobooks(props: any) {
       >
         <View style={styles.ImageContainer}>
           <Pressable
+            accessibilityLabel={`${item?.title}`}
             style={({ pressed }) => [{ opacity: pressed ? 0.75 : 1.0 }]}
             onPress={() => {
               if (avatarOnPressEnabled) {
@@ -226,6 +227,7 @@ export default function Audiobooks(props: any) {
     return (
       <View>
         <ActivityIndicator
+          accessibilityLabel={"loading"}
           size="large"
           color="#50C878"
           style={styles.ActivityIndicatorStyle}
