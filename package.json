@@ -31,21 +31,17 @@
     "react-dom": "17.0.1",
     "react-native": "0.64.3",
     "react-native-elements": "^4.0.0-rc.2",
-    "react-native-fast-image": "^8.5.11",
     "react-native-gesture-handler": "~2.1.0",
     "react-native-paper": "^4.11.2",
     "react-native-ratings": "^8.1.0",
-    "react-native-reanimated": "~2.3.1",
     "react-native-rss-parser": "^1.5.1",
     "react-native-safe-area-context": "3.3.2",
     "react-native-screens": "~3.10.1",
     "react-native-settings-list": "^1.8.0",
-    "react-native-sound": "^0.11.0",
-    "react-native-track-player": "^1.2.7",
-    "react-native-unimodules": "~0.15.0",
     "react-native-vector-icons": "^9.1.0",
     "react-native-web": "0.17.1",
-    "rss-parser": "^3.12.0"
+    "rss-parser": "^3.12.0",
+    "expo-modules-core": "~0.6.4"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",
