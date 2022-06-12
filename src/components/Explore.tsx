@@ -114,7 +114,7 @@ function Search() {
   function searchBarPlaceholder() {
     switch (apiSettings["searchBy"]) {
       case "recent":
-        return "Latest Releases";
+        return "New Releases";
       case "title":
         return "Enter title:";
       case "author":
@@ -230,7 +230,7 @@ function Search() {
             }}
           >
             <Picker.Item
-              label="Latest Releases"
+              label="New Releases"
               value="recent"
               style={{ fontSize: 18 }}
             />
