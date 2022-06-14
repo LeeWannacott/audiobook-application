@@ -332,11 +332,9 @@ function Audiotracks(props: any) {
         let averageAudiobookRating = 0;
         if (reviews.length == 1) {
           averageAudiobookRating = sumOfStarsFromReviews;
-          console.log(1, averageAudiobookRating);
         } else {
           averageAudiobookRating =
             sumOfStarsFromReviews / starsFromReviews.length;
-          console.log(2, averageAudiobookRating);
         }
         setAudiotracksData({
           ...audiotracksData,
