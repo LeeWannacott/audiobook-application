@@ -4,7 +4,12 @@
   "expo": {
     "name": "audiobook-application",
     "slug": "audiobook-application",
-    "version": "1.0.0",
-    "assetBundlePatterns": ["**/*"]
+    "version": "0.1.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "android": {
+      "package": "libre.audire"
+    }
   }
 }
