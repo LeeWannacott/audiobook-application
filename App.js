@@ -19,7 +19,7 @@ const TabNavigation = () => {
     <Tab.Navigator
       screenOptions={({ route }) => ({
         headerShown: false,
-        tabBarStyle: { height: 75 },
+        tabBarStyle: { height: 75, backgroundColor: "#F9F6EE" },
         tabBarIcon: ({ focused, color, size }) => {
           size = 40;
           let iconName;
@@ -99,7 +99,8 @@ function App() {
           component={AudioTracks}
         />
       </Stack.Navigator>
-      <StatusBar style="dark" backgroundColor="white" translucent={false} />
+      <StatusBar navigationBar="red"
+      style="dark" backgroundColor="#F9F6EE" translucent={false} />
     </NavigationContainer>
   );
 }

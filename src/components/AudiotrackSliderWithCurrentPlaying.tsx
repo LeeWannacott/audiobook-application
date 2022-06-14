@@ -58,7 +58,7 @@ const windowHeight = Dimensions.get("window").height;
 const styles = StyleSheet.create({
   AudiobookTime: {
     display: "flex",
-    backgroundColor: "white",
+    backgroundColor: "#F9F6EE",
     flexDirection: "row",
     justifyContent: "space-between",
     // top: -200,
@@ -66,13 +66,10 @@ const styles = StyleSheet.create({
     minHeight: 20,
   },
   SliderStyle: {
-    backgroundColor: "white",
-    // top: -200,
-    // padding: 10,
-    // flex: 1,
+    backgroundColor: "#F9F6EE",
   },
   SliderContainer: {
-    backgroundColor: "white",
+    backgroundColor: "#F9F6EE",
     flexDirection: "row",
     paddingLeft: 5,
     maxWidth: windowWidth - 70,

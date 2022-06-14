@@ -326,7 +326,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#51361a",
   },
   ActivityIndicatorStyle: {
-    top: windowHeight / 2,
+    top: windowHeight / 3,
     backgroundColor: "#331800",
     color: "#50C878",
   },

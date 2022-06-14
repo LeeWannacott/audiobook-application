@@ -5,9 +5,11 @@
     "name": "audiobook-application",
     "slug": "audiobook-application",
     "version": "0.1.0",
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
+    "androidNavigationBar": {
+      "barStyle": "light-content",
+      "backgroundColor": "#F9F6EE"
+    },
     "android": {
       "package": "libre.audire"
     }

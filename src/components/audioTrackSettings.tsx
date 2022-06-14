@@ -141,7 +141,9 @@ function AudioTrackSettings(props: any) {
       isVisible={props.visible}
       onBackdropPress={props.toggleOverlay}
       fullScreen={false}
+      overlayStyle={{backgroundColor:"#F9F6EE"}}
     >
+      <View style={{backgroundColor:"#F9F6EE"}}>
       <Text style={{ marginBottom: 10 }}>
         Volume of Audiotrack: {props.audioPlayerSettings.volume}
       </Text>
@@ -154,7 +156,7 @@ function AudioTrackSettings(props: any) {
               ? updateAudiotrackVolume(props.audioPlayerSettings.volume - 0.25)
               : undefined;
           }}
-          style={{ backgroundColor: "white" }}
+          style={{ backgroundColor: "#F9F6EE" }}
           mode="contained"
         >
           <MaterialCommunityIcons name="volume-minus" size={30} color="black" />
@@ -179,7 +181,7 @@ function AudioTrackSettings(props: any) {
               ? updateAudiotrackVolume(props.audioPlayerSettings.volume + 0.25)
               : undefined;
           }}
-          style={{ backgroundColor: "white" }}
+          style={{ backgroundColor: "#F9F6EE" }}
           mode="contained"
         >
           <MaterialCommunityIcons name="volume-plus" size={30} color="black" />
@@ -220,7 +222,7 @@ function AudioTrackSettings(props: any) {
               ? updateAudtiotrackSpeed(props.audioPlayerSettings.rate - 0.25)
               : undefined;
           }}
-          style={{ backgroundColor: "white" }}
+          style={{ backgroundColor: "#F9F6EE" }}
           mode="contained"
         >
           <MaterialCommunityIcons name="tortoise" size={30} color="black" />
@@ -245,12 +247,13 @@ function AudioTrackSettings(props: any) {
               ? updateAudtiotrackSpeed(props.audioPlayerSettings.rate + 0.25)
               : undefined;
           }}
-          style={{ backgroundColor: "white" }}
+          style={{ backgroundColor: "#F9F6EE" }}
           mode="contained"
         >
           <MaterialCommunityIcons name="rabbit" size={30} color="black" />
         </Button>
       </View>
+    </View>
     </Overlay>
   );
 }

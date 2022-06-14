@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, Dimensions, View } from "react-native";
+import { StyleSheet, Dimensions, View,TouchableOpacity } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import { Button } from "react-native-paper";
 import MaterialIconCommunity from "react-native-vector-icons/MaterialCommunityIcons.js";
@@ -19,7 +19,7 @@ function PickerForHistoryAndBookShelf(props: any) {
     <View style={styles.SQLQueryPickerAndIcon}>
       <View style={styles.SQLQueryPicker}>
         <Picker
-          style={{ color: "black" }}
+          style={{ color: "black", backgroundColor: "#F9F6EE" }}
           selectedValue={pickerAndQueryState.orderBy}
           mode={"dropdown"}
           dropdownIconRippleColor={"grey"}
@@ -41,15 +41,17 @@ function PickerForHistoryAndBookShelf(props: any) {
             });
           }}
         >
+
+
           <Picker.Item
             label="Order Visited"
             value="order by id"
-            style={{ fontSize: 18 }}
+            style={{ fontSize: 18, backgroundColor: "red" }}
           />
           <Picker.Item
             label="Title"
             value="order by audiobook_title"
-            style={{ fontSize: 18 }}
+            style={{ fontSize: 18, backgroundColor: "#AAA" }}
           />
           <Picker.Item
             label="Rating"
@@ -92,6 +94,7 @@ function PickerForHistoryAndBookShelf(props: any) {
             style={{ fontSize: 18 }}
           />
         </Picker>
+
       </View>
       <Button
         accessibilityLabel={`${
@@ -124,10 +127,9 @@ const windowWidth = Dimensions.get("window").width;
 
 const styles = StyleSheet.create({
   SQLQueryPicker: {
-    borderColor: "green",
+    borderColor: "black",
     borderWidth: 1,
-    borderRadius: 2,
-    backgroundColor: "white",
+    borderRadius: 1,
     width: windowWidth - 100,
     margin: 5,
     height: 55,

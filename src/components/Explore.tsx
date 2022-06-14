@@ -137,8 +137,8 @@ function Search() {
             }}
             onSubmitEditing={() => setUserInputEntered(search)}
             value={search}
-            inputContainerStyle={{ backgroundColor: "white", height: 55 }}
-            inputStyle={{ backgroundColor: "white", height: 55 }}
+            inputContainerStyle={{ backgroundColor: "#F9F6EE", height: 55 }}
+            inputStyle={{ backgroundColor: "#F9F6EE", height: 55 }}
             containerStyle={{ backgroundColor: "black", height: 70 }}
           />
         </View>
@@ -149,12 +149,13 @@ function Search() {
           mode="contained"
           style={styles.settingsIcon}
         >
-          <MaterialIconCommunity name="cog" size={40} color="white" />
+          <MaterialIconCommunity name="cog" size={40} color="#F9F6EE" />
         </Button>
         <Overlay
           isVisible={visible}
           onBackdropPress={toggleOverlay}
           fullScreen={false}
+          overlayStyle={{ backgroundColor: "#F9F6EE" }}
         >
           <View style={styles.titleOrAuthorStringFlexbox}>
             <Text>{`Searching by:`}</Text>
@@ -313,7 +314,7 @@ function Search() {
                   : undefined
               }
               mode="contained"
-              style={{ backgroundColor: "white" }}
+              style={{ backgroundColor: "#F9F6EE" }}
             >
               <MaterialIconCommunity name="minus" size={30} color="black" />
             </Button>
@@ -347,7 +348,7 @@ function Search() {
                   : undefined
               }
               mode="contained"
-              style={{ backgroundColor: "white" }}
+              style={{ backgroundColor: "#F9F6EE" }}
             >
               <MaterialIconCommunity name="plus" size={30} color="black" />
             </Button>

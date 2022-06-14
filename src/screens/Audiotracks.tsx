@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { ActivityIndicator, Dimensions, Image } from "react-native";
 import { ListItem, LinearProgress, Card } from "@rneui/themed";
-import { Rating } from "react-native-ratings";
+import { Rating, AirbnbRating } from "react-native-ratings";
 import * as rssParser from "react-native-rss-parser";
 import { Audio } from "expo-av";
 import { StyleSheet, Text, View, SectionList } from "react-native";
@@ -101,19 +101,13 @@ function Audiotracks(props: any) {
   } = props.route.params;
 
   const navigation = useNavigation();
-  // useEffect(() => {
-  // try {
-  // navigation.setOptions({
-  // headerTitle: title,
-  // });
-  // } catch (err) {
-  // console.log(err);
-  // }
-  // }, [title]);
 
   React.useLayoutEffect(() => {
     try {
       navigation.setOptions({
+        headerStyle: {
+          backgroundColor: "#F9F6EE",
+        },
         headerTitle: title,
         headerRight: () => (
           <Button
@@ -735,11 +729,10 @@ function Audiotracks(props: any) {
   };
 
   const renderAudiotracks = ({ item, index }: any) => (
-    <ListItem bottomDivider>
+    <ListItem bottomDivider containerStyle={{ backgroundColor: "#F9F6EE" }}>
       <Button
         mode="outlined"
         accessibilityLabel={`Play from start of Audiotrack ${item?.section_number}: ${item?.title}`}
-        accessibilityHint=""
         onPress={() => PlayFromStartOfTrack(index)}
         style={{ margin: 0, padding: 0 }}
       >
@@ -805,7 +798,6 @@ function Audiotracks(props: any) {
         } ${GetDurationFormat(
           audiotracksData.currentAudiotrackPositionsMs[index]
         )} out of ${FormatChapterDurations(chapters[index]?.playtime)}`}
-        accessibilityHint=""
         onPress={() => {
           PlayFromListenButton(index);
         }}
@@ -817,8 +809,13 @@ function Audiotracks(props: any) {
   );
 
   const renderReviews = ({ item, index }: any) => (
-    <Card>
-      <ListItem.Title>{item?.reviewtitle}</ListItem.Title>
+    <Card
+      containerStyle={{ backgroundColor: "#F9F6EE" }}
+      wrapperStyle={{ backgroundColor: "#F9F6EE" }}
+    >
+      <ListItem.Title style={{ backgroundColor: "#F9F6EE" }}>
+        {item?.reviewtitle}
+      </ListItem.Title>
       <Card.Divider />
       <Rating
         imageSize={20}
@@ -826,17 +823,26 @@ function Audiotracks(props: any) {
         startingValue={item?.stars}
         showRating={false}
         readonly={true}
+        tintColor="#F9F6EE"
+        type="custom"
+        ratingBackgroundColor="#E2DFD2"
       />
-      <ListItem>
-        <ListItem.Subtitle>{item?.reviewbody}</ListItem.Subtitle>
+      <ListItem containerStyle={{ backgroundColor: "#F9F6EE" }}>
+        <ListItem.Subtitle style={{ backgroundColor: "#F9F6EE" }}>
+          {item?.reviewbody}
+        </ListItem.Subtitle>
       </ListItem>
 
       <View style={styles.reviewFooter}>
-        <ListItem>
-          <ListItem.Subtitle>By: {item?.reviewer}</ListItem.Subtitle>
+        <ListItem containerStyle={{ backgroundColor: "#F9F6EE" }}>
+          <ListItem.Subtitle style={{ backgroundColor: "#F9F6EE" }}>
+            By: {item?.reviewer}
+          </ListItem.Subtitle>
         </ListItem>
-        <ListItem>
-          <ListItem.Subtitle>{item?.reviewdate}</ListItem.Subtitle>
+        <ListItem containerStyle={{ backgroundColor: "#F9F6EE" }}>
+          <ListItem.Subtitle style={{ backgroundColor: "#F9F6EE" }}>
+            {item?.reviewdate}
+          </ListItem.Subtitle>
         </ListItem>
       </View>
     </Card>
@@ -878,7 +884,10 @@ function Audiotracks(props: any) {
     const getHeader = () => {
       return (
         <View style={styles.bookHeader}>
-          <Card>
+          <Card
+            containerStyle={{ backgroundColor: "#F9F6EE" }}
+            wrapperStyle={{ backgroundColor: "#F9F6EE" }}
+          >
             <Card.Title style={styles.bookTitle}>{title}</Card.Title>
             <Card.Divider />
 
@@ -954,7 +963,12 @@ function Audiotracks(props: any) {
               startingValue={audiotracksData?.audiobookRating}
               fractions={1}
               readonly={true}
-              style={{ paddingVertical: 10 }}
+              style={{
+                paddingVertical: 10,
+              }}
+              tintColor="#F9F6EE"
+              type="custom"
+              ratingBackgroundColor="#E2DFD2"
             />
             <View style={styles.shelveButtons}></View>
           </Card>
@@ -1057,7 +1071,7 @@ function Audiotracks(props: any) {
     );
   } else {
     return (
-      <View>
+      <View style={{ backgroundColor: "#F9F6EE", flex: 1 }}>
         <ActivityIndicator
           accessibilityLabel={"loading"}
           size="large"
@@ -1082,27 +1096,6 @@ const styles = StyleSheet.create({
     flex: 7,
     paddingBottom: 2,
   },
-  AudiobookTime: {
-    display: "flex",
-    backgroundColor: "white",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    // top: -200,
-    // padding: 10,
-    minHeight: 20,
-  },
-  SliderStyle: {
-    backgroundColor: "white",
-    // top: -200,
-    // padding: 10,
-    // flex: 1,
-  },
-  SliderContainer: {
-    backgroundColor: "white",
-    flexDirection: "row",
-    paddingLeft: 5,
-    maxWidth: windowWidth - 70,
-  },
   listItemHeaderStyle: {
     fontSize: 20,
     backgroundColor: "black",
@@ -1111,15 +1104,12 @@ const styles = StyleSheet.create({
     top: windowHeight / 2.5,
   },
   bookTitle: {
-    // top:100,
     fontSize: 30,
   },
   bookAuthor: {
-    // top:100,
     fontWeight: "bold",
   },
   bookDescription: {
-    // top:100,
     fontSize: 16,
     padding: 2,
   },
@@ -1138,12 +1128,16 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flexWrap: "wrap",
   },
+  audiotrackListItems: {
+    backgroundColor: "red",
+    color: "red",
+  },
   sectionTitles: {
     display: "flex",
     flexDirection: "row",
     justifyContent: "center",
     alignSelf: "center",
-    color: "white",
+    color: "#F9F6EE",
     fontSize: 16,
   },
   coverImageTimeListened: {

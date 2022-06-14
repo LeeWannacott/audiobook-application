@@ -81,7 +81,7 @@ const UserSettings = () => {
         <Text style={styles.settingsTitleText}>Settings</Text>
       </View>
       <View style={styles.sectionHeadings}>
-        <SettingsList>
+        <SettingsList backgroundColor="#F9F6EE">
           <SettingsList.Header
             headerText="Audiobook settings"
             headerStyle={styles.audiobookSettingsSubHeading}
@@ -318,9 +318,9 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
   },
-  sectionHeadings: { backgroundColor: "#f6f6f6", flex: 1 },
+  sectionHeadings: { backgroundColor: "#F9F6EE", flex: 1 },
   settingsTitleText: {
-    color: "white",
+    color: "#F9F6EE",
     marginTop: 35,
     marginBottom: 15,
     marginLeft: 15,
