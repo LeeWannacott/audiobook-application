@@ -1,11 +1,21 @@
 import React, { useEffect, useState, useRef } from "react";
-import { ActivityIndicator, Dimensions, Image } from "react-native";
+import {
+  ActivityIndicator,
+  Dimensions,
+  Image,
+  Modal,
+  TextInput,
+} from "react-native";
 import { ListItem, LinearProgress, Card } from "@rneui/themed";
 import { Rating, AirbnbRating } from "react-native-ratings";
 import * as rssParser from "react-native-rss-parser";
 import { Audio } from "expo-av";
 import { StyleSheet, Text, View, SectionList } from "react-native";
-import { MaterialCommunityIcons, Ionicons } from "@expo/vector-icons";
+import {
+  MaterialCommunityIcons,
+  MaterialIcons,
+  Ionicons,
+} from "@expo/vector-icons";
 
 import { Button } from "react-native-paper";
 import AudioTrackControls from "../components/audioTrackControls";
@@ -30,6 +40,11 @@ import {
 import { getAsyncData, storeAsyncData } from "../database_functions";
 
 function Audiotracks(props: any) {
+  const [reviewInformation, setReviewInformation] = useState({
+    reviewTitle: "",
+    reviewText: "",
+    reviewerName: "",
+  });
   const [chapters, setChapters] = useState([]);
   const [dataRSS, setDataRSS] = useState<any[]>([]);
   const [URLSToPlayAudiotracks, setURLSToPlayAudiotracks] = useState<any[]>([]);
@@ -55,7 +70,7 @@ function Audiotracks(props: any) {
 
   const [currentSliderPosition, setCurrentSliderPosition] = React.useState(0.0);
   const [visible, setVisible] = useState(false);
-  const [playOptionsVisible, setPlayOptionsVisible] = useState(false);
+  const [makeReviewOptions, setMakeReviewOptions] = useState(false);
   const [audioPlayerSettings, setAudioPlayerSettings] = useState({
     rate: 1.0,
     shouldCorrectPitch: true,
@@ -874,8 +889,8 @@ function Audiotracks(props: any) {
   const toggleSettingsOverlay = () => {
     setVisible(!visible);
   };
-  const togglePlayOptions = () => {
-    setPlayOptionsVisible(!playOptionsVisible);
+  const toggleWriteReviewOverlay = () => {
+    setMakeReviewOptions(!makeReviewOptions);
   };
 
   if (!loadingAudioListeningLinks && !loadingAudiobookData) {
@@ -974,6 +989,25 @@ function Audiotracks(props: any) {
       );
     };
 
+    const sectionTitleIcon = () => {
+      return (
+        <Button
+          accessibilityLabel=""
+          accessibilityHint=""
+          mode={"outlined"}
+          onPress={() => toggleWriteReviewOverlay()}
+          style={{ backgroundColor: "#F9F6EE", top: 5, height: 45 }}
+        >
+          <MaterialIcons
+            name="rate-review"
+            size={30}
+            color="black"
+            backgroundColor="white"
+          />
+        </Button>
+      );
+    };
+
     const audiotracksKeyExtractor = (item: any) => {
       return item?.id;
     };
@@ -992,11 +1026,14 @@ function Audiotracks(props: any) {
         title:
           "Average of reviews: " +
           roundNumberTwoDecimal(audiotracksData?.audiobookRating),
+        icon: sectionTitleIcon(),
         renderItem: renderReviews,
         data: reviews,
         keyExtractor: reviewsKeyExtractor,
       },
     ];
+
+    function sendUsersReviewToAPI(reviewBody) {}
 
     return (
       <View style={styles.container}>
@@ -1010,12 +1047,89 @@ function Audiotracks(props: any) {
         />
 
         <Overlay
-          isVisible={playOptionsVisible}
-          onBackdropPress={togglePlayOptions}
+          isVisible={makeReviewOptions}
+          onBackdropPress={toggleWriteReviewOverlay}
           fullScreen={false}
+          overlayStyle={{ backgroundColor: "#F9F6EE", width: windowWidth - 20 }}
         >
-          <Text>PlayFromStart</Text>
-          <Text>PlayFromStart</Text>
+          <Text>{title}</Text>
+          <Text>{urlReview}</Text>
+          <Rating
+            imageSize={20}
+            ratingCount={5}
+            startingValue={0}
+            showRating={false}
+            fractions={false}
+            tintColor="#F9F6EE"
+            type="custom"
+            ratingBackgroundColor="#E2DFD2"
+          />
+          <Text>Review Title:</Text>
+          <TextInput
+            style={styles.reviewerNameStyle}
+            ref={(reviewTitleRef) => {
+              reviewTitleRef;
+            }}
+            onChangeText={(reviewTitleRef) => {
+              console.log(reviewTitleRef);
+              setReviewInformation({
+                ...reviewInformation,
+                reviewTitle: reviewTitleRef,
+              });
+            }}
+          ></TextInput>
+          <Text>Review Text:</Text>
+
+          <TextInput
+            style={styles.reviewTextBodyStyle}
+            ref={(reviewTextRef) => {
+              reviewTextRef;
+            }}
+            onChangeText={(reviewTextRef) => {
+              setReviewInformation({
+                ...reviewInformation,
+                reviewText: reviewTextRef,
+              });
+            }}
+          ></TextInput>
+
+          <Text>Reviewer Name:</Text>
+
+          <TextInput
+            style={styles.reviewerNameStyle}
+            ref={(reviewerNameRef) => {
+              reviewerNameRef;
+            }}
+            onChangeText={(reviewerNameRef) => {
+              setReviewInformation({
+                ...reviewInformation,
+                reviewerName: reviewerNameRef,
+              });
+            }}
+          ></TextInput>
+          <View
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "flex-end",
+              alignItems: "center",
+            }}
+          >
+            <Text>Post review: </Text>
+            <Button
+              accessibilityLabel="Audiotack player settings"
+              accessibilityHint="Contains options such as changing speed of audiotrack."
+              mode={"outlined"}
+              onPress={() => sendUsersReviewToAPI()}
+            >
+              <MaterialIcons
+                name="send"
+                size={30}
+                color="black"
+                backgroundColor="red"
+              />
+            </Button>
+          </View>
         </Overlay>
 
         <View style={styles.AudioTracksStyle}>
@@ -1027,8 +1141,17 @@ function Audiotracks(props: any) {
               }}
               renderItem={({ section: { renderItem } }) => renderItem}
               ListHeaderComponent={getHeader()}
-              renderSectionHeader={({ section: { title } }) => (
-                <Text style={styles.sectionTitles}>{title}</Text>
+              renderSectionHeader={({
+                section: { title },
+                section: { icon },
+              }) => (
+                <View style={styles.sectionTitles}>
+                  <Text View style={styles.sectionTitles}>
+                    {title}
+                    {"   "}
+                  </Text>
+                  {icon}
+                </View>
               )}
             />
           </View>
@@ -1144,6 +1267,20 @@ const styles = StyleSheet.create({
     marginLeft: 35,
     flexDirection: "row",
     justifyContent: "space-between",
+  },
+  reviewTextBodyStyle: {
+    backgroundColor: "white",
+    borderColor: "#000000",
+    borderWidth: 1,
+    height: windowHeight / 3,
+    width: windowWidth - 40,
+  },
+  reviewerNameStyle: {
+    backgroundColor: "white",
+    borderColor: "#000000",
+    borderWidth: 1,
+    marginBottom: 5,
+    width: windowWidth - 40,
   },
 });
 
