@@ -43,7 +43,7 @@ function Audiotracks(props: any) {
   const [reviewInformation, setReviewInformation] = useState({
     reviewTitle: "",
     reviewText: "",
-    reviewerName: "",
+    reviewRating: 0,
   });
   const [chapters, setChapters] = useState([]);
   const [dataRSS, setDataRSS] = useState<any[]>([]);
@@ -114,6 +114,7 @@ function Audiotracks(props: any) {
     urlLibrivox,
     urlIArchive,
   } = props.route.params;
+  // console.log(props.route.params)
 
   const navigation = useNavigation();
 
@@ -1032,8 +1033,37 @@ function Audiotracks(props: any) {
         keyExtractor: reviewsKeyExtractor,
       },
     ];
+    // https://archive.org/services/docs/api/reviews.html
+    // https://archive.org/account/s3.php
+    // Your S3 access key: lgBAqvb3gHMagWyz
+    // Your S3 secret key: ibWdQdBtBeJM4wj0
 
-    function sendUsersReviewToAPI(reviewBody) {}
+    function sendReviewToAPI() {
+      try {
+        console.log(urlIArchive.split("/"));
+        let test = urlIArchive.split("/");
+        test = test[test.length - 1];
+        console.log(test);
+        console.log(reviewInformation);
+        fetch(`https://archive.org/services/reviews.php?identifier=${test}`, {
+          method: "POST",
+          headers: new Headers({
+            "Authorization": "LOW lgBAqvb3gHMagWyz:ibWdQdBtBeJM4wj0",
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          }),
+          body: JSON.stringify({
+            title: reviewInformation.reviewTitle,
+            body: reviewInformation.reviewText,
+            stars: reviewInformation.reviewRating,
+          }),
+        })
+          .then((response) => response.json())
+          .then((data) => console.log(data));
+      } catch (err) {
+        console.log(err);
+      }
+    }
 
     return (
       <View style={styles.container}>
@@ -1063,6 +1093,12 @@ function Audiotracks(props: any) {
             tintColor="#F9F6EE"
             type="custom"
             ratingBackgroundColor="#E2DFD2"
+            onFinishRating={(userRating: number) => {
+              setReviewInformation({
+                ...reviewInformation,
+                reviewRating: userRating,
+              });
+            }}
           />
           <Text>Review Title:</Text>
           <TextInput
@@ -1092,21 +1128,6 @@ function Audiotracks(props: any) {
               });
             }}
           ></TextInput>
-
-          <Text>Reviewer Name:</Text>
-
-          <TextInput
-            style={styles.reviewerNameStyle}
-            ref={(reviewerNameRef) => {
-              reviewerNameRef;
-            }}
-            onChangeText={(reviewerNameRef) => {
-              setReviewInformation({
-                ...reviewInformation,
-                reviewerName: reviewerNameRef,
-              });
-            }}
-          ></TextInput>
           <View
             style={{
               display: "flex",
@@ -1120,7 +1141,7 @@ function Audiotracks(props: any) {
               accessibilityLabel="Audiotack player settings"
               accessibilityHint="Contains options such as changing speed of audiotrack."
               mode={"outlined"}
-              onPress={() => sendUsersReviewToAPI()}
+              onPress={() => sendReviewToAPI()}
             >
               <MaterialIcons
                 name="send"

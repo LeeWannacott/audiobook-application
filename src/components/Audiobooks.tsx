@@ -105,6 +105,7 @@ export default function Audiobooks(props: any) {
       const dataKeys = Object.values(data.books);
       let bookCoverImagePath;
       dataKeys.forEach((bookCoverURLPath: any) => {
+        // console.log(bookCoverURLPath)
         bookCoverImagePath = bookCoverURLPath.url_zip_file.split("/");
         bookCoverImagePath = bookCoverImagePath[bookCoverImagePath.length - 2];
         const reviewUrl = encodeURI(

@@ -141,8 +141,11 @@ function ShelfForBookshelfAndHistory(props: any) {
                   language: item?.audiobook_language,
                   urlReview: item?.audiobook_review_url,
                   numSections: item?.audiobook_num_sections,
-                  urlTextSource: item.audiobook_ebook_url,
-                  urlZipFile: item.audiobook_zip,
+                  urlTextSource: item?.audiobook_ebook_url,
+                  urlZipFile: item?.audiobook_zip,
+                  urlProject:item?.audiobook_project_url,
+                  urlLibrivox:item?.audiobook_librivox_url,
+                  urlIArchive: item.audiobook_iarchive_url,
                 });
               }
               setAvatarOnPressEnabled(false);
