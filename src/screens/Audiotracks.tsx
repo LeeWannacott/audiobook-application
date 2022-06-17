@@ -1033,19 +1033,14 @@ function Audiotracks(props: any) {
         keyExtractor: reviewsKeyExtractor,
       },
     ];
-    // https://archive.org/services/docs/api/reviews.html
-    // https://archive.org/account/s3.php
-    // Your S3 access key: lgBAqvb3gHMagWyz
-    // Your S3 secret key: ibWdQdBtBeJM4wj0
 
     function sendReviewToAPI() {
+      // https://archive.org/services/docs/api/reviews.html
+      // https://archive.org/account/s3.php
       try {
-        console.log(urlIArchive.split("/"));
-        let test = urlIArchive.split("/");
-        test = test[test.length - 1];
-        console.log(test);
-        console.log(reviewInformation);
-        fetch(`https://archive.org/services/reviews.php?identifier=${test}`, {
+        let audiobookIdentifier = urlIArchive.split("/");
+        audiobookIdentifier = audiobookIdentifier[audiobookIdentifier.length - 1];
+        fetch(`https://archive.org/services/reviews.php?identifier=${audiobookIdentifier}`, {
           method: "POST",
           headers: new Headers({
             "Authorization": "LOW lgBAqvb3gHMagWyz:ibWdQdBtBeJM4wj0",
