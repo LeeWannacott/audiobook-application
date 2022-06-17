@@ -1,4 +1,4 @@
-package com.audiobookapplication;
+package com.libri.audire;
 import expo.modules.ReactActivityDelegateWrapper;
 
 import android.os.Bundle;

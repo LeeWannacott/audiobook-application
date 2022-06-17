@@ -131,7 +131,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.audiobookapplication"
+        applicationId "com.libri.audire"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
