@@ -994,15 +994,12 @@ function Audiotracks(props: any) {
     const makeReviewIcon = () => {
       return (
         <Button
-          accessibilityLabel=""
-          accessibilityHint=""
+          accessibilityLabel="Opens overlay for writing a review on the audiobook."
           mode={"outlined"}
           onPress={() => toggleWriteReviewOverlay()}
           style={{
             backgroundColor: "#F9F6EE",
-            top: 6,
             height: 45,
-            marginBottom: 10,
           }}
         >
           <MaterialIcons
@@ -1063,7 +1060,7 @@ function Audiotracks(props: any) {
         title:
           "Average of reviews: " +
           roundNumberTwoDecimal(audiotracksData?.audiobookRating),
-        icon: makeReviewIcon(),
+        reviewIcon: makeReviewIcon(),
         renderItem: renderReviews,
         data: reviews,
         keyExtractor: reviewsKeyExtractor,
@@ -1102,14 +1099,16 @@ function Audiotracks(props: any) {
               ListHeaderComponent={getHeader()}
               renderSectionHeader={({
                 section: { title },
-                section: { icon },
+                section: { reviewIcon },
               }) => (
                 <View style={styles.sectionTitles}>
-                  <Text View style={styles.sectionTitles}>
+                  <Text View style={styles.sectionStyle}>
                     {title}
                     {"   "}
                   </Text>
-                  {icon}
+                  <View style={{alignSelf:"center"}}>
+                  {reviewIcon}
+                </View>
                 </View>
               )}
             />
@@ -1208,14 +1207,14 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flexWrap: "wrap",
   },
-  audiotrackListItems: {
-    backgroundColor: "red",
-    color: "red",
-  },
   sectionTitles: {
     display: "flex",
     flexDirection: "row",
-    justifyContent: "center",
+    justifyContent:"space-evenly",
+    height:70,
+
+  },
+  sectionStyle: {
     alignSelf: "center",
     color: "#F9F6EE",
     fontSize: 16,

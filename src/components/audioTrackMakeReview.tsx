@@ -1,17 +1,8 @@
-import {
-  StyleSheet,
-  Dimensions,
-  TextInput,
-  Text,
-  View,
-} from "react-native";
+import { StyleSheet, Dimensions, TextInput, Text, View } from "react-native";
 import { Overlay } from "react-native-elements";
 import { Button } from "react-native-paper";
 import { Rating } from "react-native-ratings";
-import {
-  MaterialCommunityIcons,
-  MaterialIcons,
-} from "@expo/vector-icons";
+import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
 
 function MakeUserReview(props: any) {
   const {
@@ -30,7 +21,7 @@ function MakeUserReview(props: any) {
         fullScreen={false}
         overlayStyle={{ backgroundColor: "#F9F6EE", width: windowWidth - 20 }}
       >
-        <Text>Title: {title}</Text>
+        <Text style={{ marginBottom: 5 }}>Title: {title}</Text>
         <Rating
           imageSize={40}
           ratingCount={5}
@@ -39,6 +30,7 @@ function MakeUserReview(props: any) {
           fractions={false}
           tintColor="#F9F6EE"
           type="custom"
+          style={{ marginBottom: 5 }}
           ratingBackgroundColor="#E2DFD2"
           onFinishRating={(userRating: number) => {
             setReviewInformation({
@@ -85,17 +77,11 @@ function MakeUserReview(props: any) {
         >
           <Text>Post review: </Text>
           <Button
-            accessibilityLabel="Audiotack player settings"
-            accessibilityHint="Contains options such as changing speed of audiotrack."
+            accessibilityLabel="Posts users review for the audiobook."
             mode={"outlined"}
             onPress={() => sendReviewToAPI()}
           >
-            <MaterialIcons
-              name="send"
-              size={30}
-              color="black"
-              backgroundColor="red"
-            />
+            <MaterialIcons name="send" size={30} color="black" />
           </Button>
         </View>
       </Overlay>
