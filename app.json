@@ -1,9 +1,9 @@
 {
-  "name": "audiobook-application",
-  "displayName": "audiobook-application",
+  "name": "libri-audire",
+  "displayName": "libri-audire",
   "expo": {
-    "name": "audiobook-application",
-    "slug": "audiobook-application",
+    "name": "libri-audire",
+    "slug": "libri-audire",
     "version": "0.1.0",
     "assetBundlePatterns": ["**/*"],
     "androidNavigationBar": {
@@ -11,7 +11,7 @@
       "backgroundColor": "#F9F6EE"
     },
     "android": {
-      "package": "libre.audire"
+      "package": "libri.audire"
     }
   }
 }
