@@ -991,14 +991,19 @@ function Audiotracks(props: any) {
       );
     };
 
-    const sectionTitleIcon = () => {
+    const makeReviewIcon = () => {
       return (
         <Button
           accessibilityLabel=""
           accessibilityHint=""
           mode={"outlined"}
           onPress={() => toggleWriteReviewOverlay()}
-          style={{ backgroundColor: "#F9F6EE", top: 5, height: 45 }}
+          style={{
+            backgroundColor: "#F9F6EE",
+            top: 6,
+            height: 45,
+            marginBottom: 10,
+          }}
         >
           <MaterialIcons
             name="rate-review"
@@ -1010,35 +1015,35 @@ function Audiotracks(props: any) {
       );
     };
 
-  function sendReviewToAPI() {
-    // https://archive.org/services/docs/api/reviews.html
-    // https://archive.org/account/s3.php
-    try {
-      let audiobookIdentifier = urlIArchive.split("/");
-      audiobookIdentifier = audiobookIdentifier[audiobookIdentifier.length - 1];
-      fetch(
-        `https://archive.org/services/reviews.php?identifier=${audiobookIdentifier}`,
-        {
-          method: "POST",
-          headers: new Headers({
-            Authorization: "LOW lgBAqvb3gHMagWyz:ibWdQdBtBeJM4wj0",
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          }),
-          body: JSON.stringify({
-            title: reviewInformation.reviewTitle,
-            body: reviewInformation.reviewText,
-            stars: reviewInformation.reviewRating,
-          }),
-        }
-      )
-        .then((response) => response.json())
-        .then((data) => console.log(data));
-    } catch (err) {
-      console.log(err);
+    function sendReviewToAPI() {
+      // https://archive.org/services/docs/api/reviews.html
+      // https://archive.org/account/s3.php
+      try {
+        let audiobookIdentifier = urlIArchive.split("/");
+        audiobookIdentifier =
+          audiobookIdentifier[audiobookIdentifier.length - 1];
+        fetch(
+          `https://archive.org/services/reviews.php?identifier=${audiobookIdentifier}`,
+          {
+            method: "POST",
+            headers: new Headers({
+              Authorization: "LOW lgBAqvb3gHMagWyz:ibWdQdBtBeJM4wj0",
+              Accept: "application/json",
+              "Content-Type": "application/json",
+            }),
+            body: JSON.stringify({
+              title: reviewInformation.reviewTitle,
+              body: reviewInformation.reviewText,
+              stars: reviewInformation.reviewRating,
+            }),
+          }
+        )
+          .then((response) => response.json())
+          .then((data) => console.log(data));
+      } catch (err) {
+        console.log(err);
+      }
     }
-  }
-
 
     const audiotracksKeyExtractor = (item: any) => {
       return item?.id;
@@ -1058,7 +1063,7 @@ function Audiotracks(props: any) {
         title:
           "Average of reviews: " +
           roundNumberTwoDecimal(audiotracksData?.audiobookRating),
-        icon: sectionTitleIcon(),
+        icon: makeReviewIcon(),
         renderItem: renderReviews,
         data: reviews,
         keyExtractor: reviewsKeyExtractor,

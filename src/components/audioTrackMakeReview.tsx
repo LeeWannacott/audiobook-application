@@ -4,7 +4,6 @@ import {
   TextInput,
   Text,
   View,
-  Switch,
 } from "react-native";
 import { Overlay } from "react-native-elements";
 import { Button } from "react-native-paper";
@@ -12,9 +11,7 @@ import { Rating } from "react-native-ratings";
 import {
   MaterialCommunityIcons,
   MaterialIcons,
-  Ionicons,
 } from "@expo/vector-icons";
-import Slider from "@react-native-community/slider";
 
 function MakeUserReview(props: any) {
   const {
@@ -33,9 +30,9 @@ function MakeUserReview(props: any) {
         fullScreen={false}
         overlayStyle={{ backgroundColor: "#F9F6EE", width: windowWidth - 20 }}
       >
-        <Text>{title}</Text>
+        <Text>Title: {title}</Text>
         <Rating
-          imageSize={20}
+          imageSize={40}
           ratingCount={5}
           startingValue={0}
           showRating={false}
