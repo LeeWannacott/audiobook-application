@@ -92,7 +92,7 @@ function ShelfForBookshelfAndHistory(props: any) {
   function selectAccordionPickerTitle(pickerIndex, item) {
     switch (pickerIndex) {
       case 0:
-        return item?.id;
+        return item?.id + ". " + item?.audiobook_title;
       case 1:
         return item?.audiobook_title;
       case 2:
