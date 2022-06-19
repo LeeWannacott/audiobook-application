@@ -21,6 +21,7 @@ import { Button } from "react-native-paper";
 import AudioTrackControls from "../components/audioTrackControls";
 import AudioTrackSettings from "../components/audioTrackSettings";
 import AudiotrackSliderWithCurrentPlaying from "../components/AudiotrackSliderWithCurrentPlaying";
+import MakeUserReview from "../components/audioTrackMakeReview";
 import { Overlay } from "react-native-elements";
 
 import { openDatabase, roundNumberTwoDecimal } from "../utils";
@@ -1009,6 +1010,36 @@ function Audiotracks(props: any) {
       );
     };
 
+  function sendReviewToAPI() {
+    // https://archive.org/services/docs/api/reviews.html
+    // https://archive.org/account/s3.php
+    try {
+      let audiobookIdentifier = urlIArchive.split("/");
+      audiobookIdentifier = audiobookIdentifier[audiobookIdentifier.length - 1];
+      fetch(
+        `https://archive.org/services/reviews.php?identifier=${audiobookIdentifier}`,
+        {
+          method: "POST",
+          headers: new Headers({
+            Authorization: "LOW lgBAqvb3gHMagWyz:ibWdQdBtBeJM4wj0",
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          }),
+          body: JSON.stringify({
+            title: reviewInformation.reviewTitle,
+            body: reviewInformation.reviewText,
+            stars: reviewInformation.reviewRating,
+          }),
+        }
+      )
+        .then((response) => response.json())
+        .then((data) => console.log(data));
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+
     const audiotracksKeyExtractor = (item: any) => {
       return item?.id;
     };
@@ -1034,32 +1065,6 @@ function Audiotracks(props: any) {
       },
     ];
 
-    function sendReviewToAPI() {
-      // https://archive.org/services/docs/api/reviews.html
-      // https://archive.org/account/s3.php
-      try {
-        let audiobookIdentifier = urlIArchive.split("/");
-        audiobookIdentifier = audiobookIdentifier[audiobookIdentifier.length - 1];
-        fetch(`https://archive.org/services/reviews.php?identifier=${audiobookIdentifier}`, {
-          method: "POST",
-          headers: new Headers({
-            "Authorization": "LOW lgBAqvb3gHMagWyz:ibWdQdBtBeJM4wj0",
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          }),
-          body: JSON.stringify({
-            title: reviewInformation.reviewTitle,
-            body: reviewInformation.reviewText,
-            stars: reviewInformation.reviewRating,
-          }),
-        })
-          .then((response) => response.json())
-          .then((data) => console.log(data));
-      } catch (err) {
-        console.log(err);
-      }
-    }
-
     return (
       <View style={styles.container}>
         <AudioTrackSettings
@@ -1071,82 +1076,15 @@ function Audiotracks(props: any) {
           sound={sound}
         />
 
-        <Overlay
-          isVisible={makeReviewOptions}
-          onBackdropPress={toggleWriteReviewOverlay}
-          fullScreen={false}
-          overlayStyle={{ backgroundColor: "#F9F6EE", width: windowWidth - 20 }}
-        >
-          <Text>{title}</Text>
-          <Text>{urlReview}</Text>
-          <Rating
-            imageSize={20}
-            ratingCount={5}
-            startingValue={0}
-            showRating={false}
-            fractions={false}
-            tintColor="#F9F6EE"
-            type="custom"
-            ratingBackgroundColor="#E2DFD2"
-            onFinishRating={(userRating: number) => {
-              setReviewInformation({
-                ...reviewInformation,
-                reviewRating: userRating,
-              });
-            }}
-          />
-          <Text>Review Title:</Text>
-          <TextInput
-            style={styles.reviewerNameStyle}
-            ref={(reviewTitleRef) => {
-              reviewTitleRef;
-            }}
-            onChangeText={(reviewTitleRef) => {
-              console.log(reviewTitleRef);
-              setReviewInformation({
-                ...reviewInformation,
-                reviewTitle: reviewTitleRef,
-              });
-            }}
-          ></TextInput>
-          <Text>Review Text:</Text>
-
-          <TextInput
-            style={styles.reviewTextBodyStyle}
-            ref={(reviewTextRef) => {
-              reviewTextRef;
-            }}
-            onChangeText={(reviewTextRef) => {
-              setReviewInformation({
-                ...reviewInformation,
-                reviewText: reviewTextRef,
-              });
-            }}
-          ></TextInput>
-          <View
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              justifyContent: "flex-end",
-              alignItems: "center",
-            }}
-          >
-            <Text>Post review: </Text>
-            <Button
-              accessibilityLabel="Audiotack player settings"
-              accessibilityHint="Contains options such as changing speed of audiotrack."
-              mode={"outlined"}
-              onPress={() => sendReviewToAPI()}
-            >
-              <MaterialIcons
-                name="send"
-                size={30}
-                color="black"
-                backgroundColor="red"
-              />
-            </Button>
-          </View>
-        </Overlay>
+        <MakeUserReview
+          reviewInformation={reviewInformation}
+          sendReviewToAPI={sendReviewToAPI}
+          setReviewInformation={setReviewInformation}
+          urlIArchive={urlIArchive}
+          makeReviewOptions={makeReviewOptions}
+          toggleWriteReviewOverlay={toggleWriteReviewOverlay}
+          title={title}
+        />
 
         <View style={styles.AudioTracksStyle}>
           <View style={styles.listItemHeaderStyle}>
