@@ -99,8 +99,12 @@ function App() {
           component={AudioTracks}
         />
       </Stack.Navigator>
-      <StatusBar navigationBar="red"
-      style="dark" backgroundColor="#F9F6EE" translucent={false} />
+      <StatusBar
+        navigationBar="red"
+        style="dark"
+        backgroundColor="#F9F6EE"
+        translucent={false}
+      />
     </NavigationContainer>
   );
 }

@@ -1,18 +1,11 @@
 import React, { useEffect, useState, useRef } from "react";
-import {
-  ActivityIndicator,
-  Dimensions,
-  Image,
-} from "react-native";
+import { ActivityIndicator, Dimensions, Image } from "react-native";
 import { ListItem, LinearProgress, Card } from "@rneui/themed";
 import { Rating } from "react-native-ratings";
 import * as rssParser from "react-native-rss-parser";
 import { Audio } from "expo-av";
 import { StyleSheet, Text, View, SectionList } from "react-native";
-import {
-  MaterialCommunityIcons,
-  MaterialIcons,
-} from "@expo/vector-icons";
+import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
 
 import { Button } from "react-native-paper";
 import AudioTrackControls from "../components/audioTrackControls";

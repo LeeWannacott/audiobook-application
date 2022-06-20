@@ -141,119 +141,131 @@ function AudioTrackSettings(props: any) {
       isVisible={props.visible}
       onBackdropPress={props.toggleOverlay}
       fullScreen={false}
-      overlayStyle={{backgroundColor:"#F9F6EE"}}
+      overlayStyle={{ backgroundColor: "#F9F6EE" }}
     >
-      <View style={{backgroundColor:"#F9F6EE"}}>
-      <Text style={{ marginBottom: 10 }}>
-        Volume of Audiotrack: {props.audioPlayerSettings.volume}
-      </Text>
-      <View style={styles.sliderWithIconsOnSides}>
-        <Button
-          accessibilityLabel="Decrease Volume"
-          accessibilityHint={`Current volume level: ${props.audioPlayerSettings.volume} `}
-          onPress={() => {
-            audioPlayerSettings.volume >= 0.25
-              ? updateAudiotrackVolume(props.audioPlayerSettings.volume - 0.25)
-              : undefined;
-          }}
-          style={{ backgroundColor: "#F9F6EE" }}
-          mode="contained"
-        >
-          <MaterialCommunityIcons name="volume-minus" size={30} color="black" />
-        </Button>
-        <Slider
-          value={props.audioPlayerSettings.volume}
-          style={{ width: 200, height: 40 }}
-          minimumValue={0.0}
-          maximumValue={1.0}
-          minimumTrackTintColor="#50C878"
-          thumbTintColor="#228B22"
-          step={0.25}
-          onValueChange={async (volumeLevel: number) => {
-            updateAudiotrackVolume(volumeLevel);
-          }}
+      <View style={{ backgroundColor: "#F9F6EE" }}>
+        <Text style={{ marginBottom: 10 }}>
+          Volume of Audiotrack: {props.audioPlayerSettings.volume}
+        </Text>
+        <View style={styles.sliderWithIconsOnSides}>
+          <Button
+            accessibilityLabel="Decrease Volume"
+            accessibilityHint={`Current volume level: ${props.audioPlayerSettings.volume} `}
+            onPress={() => {
+              audioPlayerSettings.volume >= 0.25
+                ? updateAudiotrackVolume(
+                    props.audioPlayerSettings.volume - 0.25
+                  )
+                : undefined;
+            }}
+            style={{ backgroundColor: "#F9F6EE" }}
+            mode="contained"
+          >
+            <MaterialCommunityIcons
+              name="volume-minus"
+              size={30}
+              color="black"
+            />
+          </Button>
+          <Slider
+            value={props.audioPlayerSettings.volume}
+            style={{ width: 200, height: 40 }}
+            minimumValue={0.0}
+            maximumValue={1.0}
+            minimumTrackTintColor="#50C878"
+            thumbTintColor="#228B22"
+            step={0.25}
+            onValueChange={async (volumeLevel: number) => {
+              updateAudiotrackVolume(volumeLevel);
+            }}
+          />
+          <Button
+            accessibilityLabel="Decrease Volume"
+            accessibilityHint={`Current volume level: ${props.audioPlayerSettings.volume} `}
+            onPress={() => {
+              audioPlayerSettings.volume <= 0.75
+                ? updateAudiotrackVolume(
+                    props.audioPlayerSettings.volume + 0.25
+                  )
+                : undefined;
+            }}
+            style={{ backgroundColor: "#F9F6EE" }}
+            mode="contained"
+          >
+            <MaterialCommunityIcons
+              name="volume-plus"
+              size={30}
+              color="black"
+            />
+          </Button>
+        </View>
+        <Text style={{ marginBottom: 10, marginTop: 10 }}>
+          Pitch Correction: {props.audioPlayerSettings.shouldCorrectPitch}
+        </Text>
+        <Switch
+          accessibilityLabel={`pitch switch: currently: ${props.audioPlayerSettings.shouldCorrectPitch}`}
+          value={props.audioPlayerSettings.shouldCorrectPitch}
+          onValueChange={onTogglePitchSwitch}
         />
-        <Button
-          accessibilityLabel="Decrease Volume"
-          accessibilityHint={`Current volume level: ${props.audioPlayerSettings.volume} `}
-          onPress={() => {
-            audioPlayerSettings.volume <= 0.75
-              ? updateAudiotrackVolume(props.audioPlayerSettings.volume + 0.25)
-              : undefined;
-          }}
-          style={{ backgroundColor: "#F9F6EE" }}
-          mode="contained"
-        >
-          <MaterialCommunityIcons name="volume-plus" size={30} color="black" />
-        </Button>
-      </View>
-      <Text style={{ marginBottom: 10, marginTop: 10 }}>
-        Pitch Correction: {props.audioPlayerSettings.shouldCorrectPitch}
-      </Text>
-      <Switch
-        accessibilityLabel={`pitch switch: currently: ${props.audioPlayerSettings.shouldCorrectPitch}`}
-        value={props.audioPlayerSettings.shouldCorrectPitch}
-        onValueChange={onTogglePitchSwitch}
-      />
-      <Text style={{ marginBottom: 10 }}>
-        Mute : {props.audioPlayerSettings.isMuted}
-      </Text>
-      <Switch
-        accessibilityLabel={`mute switch: currently ${props.audioPlayerSettings.isMuted}`}
-        value={props.audioPlayerSettings.isMuted}
-        onValueChange={onToggleMuteSwitch}
-      />
-      {/*
+        <Text style={{ marginBottom: 10 }}>
+          Mute : {props.audioPlayerSettings.isMuted}
+        </Text>
+        <Switch
+          accessibilityLabel={`mute switch: currently ${props.audioPlayerSettings.isMuted}`}
+          value={props.audioPlayerSettings.isMuted}
+          onValueChange={onToggleMuteSwitch}
+        />
+        {/*
       <Text>looping: {props.audioPlayerSettings.isLooping}</Text>
       <Switch
         value={props.audioPlayerSettings.isLooping}
         onValueChange={onToggleLoopSwitch}
       />
       */}
-      <Text style={{ marginBottom: 10 }}>
-        Speed of Audiotrack: {props.audioPlayerSettings.rate}X
-      </Text>
-      <View style={styles.sliderWithIconsOnSides}>
-        <Button
-          accessibilityLabel="Decrease speed of audiotrack"
-          accessibilityHint={`Current speed: ${props.audioPlayerSettings.rate}X `}
-          onPress={() => {
-            audioPlayerSettings.rate >= 0.5
-              ? updateAudtiotrackSpeed(props.audioPlayerSettings.rate - 0.25)
-              : undefined;
-          }}
-          style={{ backgroundColor: "#F9F6EE" }}
-          mode="contained"
-        >
-          <MaterialCommunityIcons name="tortoise" size={30} color="black" />
-        </Button>
-        <Slider
-          value={props.audioPlayerSettings.rate}
-          style={{ width: 200, height: 40 }}
-          minimumValue={0.25}
-          maximumValue={2.0}
-          minimumTrackTintColor="#50C878"
-          thumbTintColor="#228B22"
-          step={0.25}
-          onValueChange={async (speed: number) => {
-            updateAudtiotrackSpeed(speed);
-          }}
-        />
-        <Button
-          accessibilityLabel="Decrease speed of audiotrack"
-          accessibilityHint={`Current speed: ${props.audioPlayerSettings.rate}x `}
-          onPress={() => {
-            audioPlayerSettings.rate <= 1.75
-              ? updateAudtiotrackSpeed(props.audioPlayerSettings.rate + 0.25)
-              : undefined;
-          }}
-          style={{ backgroundColor: "#F9F6EE" }}
-          mode="contained"
-        >
-          <MaterialCommunityIcons name="rabbit" size={30} color="black" />
-        </Button>
+        <Text style={{ marginBottom: 10 }}>
+          Speed of Audiotrack: {props.audioPlayerSettings.rate}X
+        </Text>
+        <View style={styles.sliderWithIconsOnSides}>
+          <Button
+            accessibilityLabel="Decrease speed of audiotrack"
+            accessibilityHint={`Current speed: ${props.audioPlayerSettings.rate}X `}
+            onPress={() => {
+              audioPlayerSettings.rate >= 0.5
+                ? updateAudtiotrackSpeed(props.audioPlayerSettings.rate - 0.25)
+                : undefined;
+            }}
+            style={{ backgroundColor: "#F9F6EE" }}
+            mode="contained"
+          >
+            <MaterialCommunityIcons name="tortoise" size={30} color="black" />
+          </Button>
+          <Slider
+            value={props.audioPlayerSettings.rate}
+            style={{ width: 200, height: 40 }}
+            minimumValue={0.25}
+            maximumValue={2.0}
+            minimumTrackTintColor="#50C878"
+            thumbTintColor="#228B22"
+            step={0.25}
+            onValueChange={async (speed: number) => {
+              updateAudtiotrackSpeed(speed);
+            }}
+          />
+          <Button
+            accessibilityLabel="Decrease speed of audiotrack"
+            accessibilityHint={`Current speed: ${props.audioPlayerSettings.rate}x `}
+            onPress={() => {
+              audioPlayerSettings.rate <= 1.75
+                ? updateAudtiotrackSpeed(props.audioPlayerSettings.rate + 0.25)
+                : undefined;
+            }}
+            style={{ backgroundColor: "#F9F6EE" }}
+            mode="contained"
+          >
+            <MaterialCommunityIcons name="rabbit" size={30} color="black" />
+          </Button>
+        </View>
       </View>
-    </View>
     </Overlay>
   );
 }

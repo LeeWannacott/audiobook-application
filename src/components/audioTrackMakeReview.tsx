@@ -109,7 +109,7 @@ const styles = StyleSheet.create({
     height: windowHeight / 3,
     width: windowWidth - 40,
     padding: 5,
-    marginBottom:10,
+    marginBottom: 10,
   },
   reviewerTitleStyle: {
     backgroundColor: "white",

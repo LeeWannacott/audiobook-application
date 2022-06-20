@@ -143,8 +143,8 @@ function ShelfForBookshelfAndHistory(props: any) {
                   numSections: item?.audiobook_num_sections,
                   urlTextSource: item?.audiobook_ebook_url,
                   urlZipFile: item?.audiobook_zip,
-                  urlProject:item?.audiobook_project_url,
-                  urlLibrivox:item?.audiobook_librivox_url,
+                  urlProject: item?.audiobook_project_url,
+                  urlLibrivox: item?.audiobook_librivox_url,
                   urlIArchive: item?.audiobook_iarchive_url,
                 });
               }
