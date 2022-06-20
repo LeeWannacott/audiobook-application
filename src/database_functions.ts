@@ -4,7 +4,7 @@ export const audiobookProgressTableName = "users_audiobooks_progress";
 export function createAudioBookDataTable(db: any) {
   db.transaction((tx: any) => {
     tx.executeSql(
-      `create table if not exists ${audiobookProgressTableName} (id integer primary key not null, audiobook_id text not null unique, audiotrack_progress_bars text, current_audiotrack_positions text, audiobook_shelved int, audiobook_rating real, listening_progress_percent real, current_listening_time int, current_audiotrack_index int, audiobook_downloaded int, audiobook_finished int);`
+      `create table if not exists ${audiobookProgressTableName} (id integer primary key not null, audiobook_id text not null unique, audiotrack_progress_bars text, current_audiotrack_positions text, audiobook_shelved int, audiobook_rating real, listening_progress_percent real, current_listening_time int, current_audiotrack_index int, audiobook_downloaded int, audiobook_finished int, users_audiobook_review text);`
     );
   });
 }
@@ -46,17 +46,17 @@ export function addAudiobookToHistoryDB(db: any, bookDataForHistory: any) {
   }, null);
 }
 
-export function deleteAudiobookHistoryDB(db: any) {
-  db.transaction((tx: any) => {
-    tx.executeSql(`delete from ${audiobookHistoryTableName}`);
-  }, null);
-}
-
-export function deleteAudiobookProgressDB(db: any) {
-  db.transaction((tx: any) => {
-    tx.executeSql(`delete from ${audiobookProgressTableName}`);
-  }, null);
-}
+// export function deleteAudiobookHistoryDB(db: any) {
+// db.transaction((tx: any) => {
+// tx.executeSql(`drop table ${audiobookHistoryTableName}`);
+// }, null);
+// }
+//
+// export function deleteAudiobookProgressDB(db: any) {
+// db.transaction((tx: any) => {
+// tx.executeSql(`drop table ${audiobookProgressTableName}`);
+// }, null);
+// }
 
 {
   /*export function dropTableAudiobookProgressDB(db: any) {
@@ -91,6 +91,20 @@ export function updateAudioTrackIndexDB(
     tx.executeSql(
       `update ${audiobookProgressTableName} set current_audiotrack_index=? where audiobook_id=?;`,
       [audioTrackIndex, audiobook_id]
+    );
+  });
+}
+
+export function updateUsersAudiobookReviewDB(
+  db: any,
+  reviewInformation: any,
+  audiobook_id: any
+) {
+  console.log("test", reviewInformation, audiobook_id);
+  db.transaction((tx: any) => {
+    tx.executeSql(
+      `update ${audiobookProgressTableName} set users_audiobook_review=? where audiobook_id=?;`,
+      [reviewInformation, audiobook_id]
     );
   });
 }

@@ -3,18 +3,15 @@ import {
   ActivityIndicator,
   Dimensions,
   Image,
-  Modal,
-  TextInput,
 } from "react-native";
 import { ListItem, LinearProgress, Card } from "@rneui/themed";
-import { Rating, AirbnbRating } from "react-native-ratings";
+import { Rating } from "react-native-ratings";
 import * as rssParser from "react-native-rss-parser";
 import { Audio } from "expo-av";
 import { StyleSheet, Text, View, SectionList } from "react-native";
 import {
   MaterialCommunityIcons,
   MaterialIcons,
-  Ionicons,
 } from "@expo/vector-icons";
 
 import { Button } from "react-native-paper";
@@ -22,7 +19,6 @@ import AudioTrackControls from "../components/audioTrackControls";
 import AudioTrackSettings from "../components/audioTrackSettings";
 import AudiotrackSliderWithCurrentPlaying from "../components/AudiotrackSliderWithCurrentPlaying";
 import MakeUserReview from "../components/audioTrackMakeReview";
-import { Overlay } from "react-native-elements";
 
 import { openDatabase, roundNumberTwoDecimal } from "../utils";
 import { useNavigation } from "@react-navigation/native";
@@ -36,6 +32,7 @@ import {
   updateAudiobookRatingDB,
   updateAudioTrackIndexDB,
   audiobookProgressTableName,
+  updateUsersAudiobookReviewDB,
 } from "../database_functions";
 
 import { getAsyncData, storeAsyncData } from "../database_functions";
@@ -46,6 +43,7 @@ function Audiotracks(props: any) {
     reviewText: "",
     reviewRating: 0,
   });
+  const [userChangedReview, setUserChangedReview] = useState(false);
   const [chapters, setChapters] = useState([]);
   const [dataRSS, setDataRSS] = useState<any[]>([]);
   const [URLSToPlayAudiotracks, setURLSToPlayAudiotracks] = useState<any[]>([]);
@@ -248,6 +246,11 @@ function Audiotracks(props: any) {
                   totalAudioBookListeningProgress:
                     TotalListenTimeAndProgress[1],
                 });
+                if (element?.users_audiobook_review !== undefined) {
+                  setReviewInformation(
+                    JSON.parse(element?.users_audiobook_review)
+                  );
+                }
               }
             });
           }
@@ -288,7 +291,6 @@ function Audiotracks(props: any) {
           setAudioBookDescription(rss?.description);
         }
         if (rss?.items !== undefined) {
-          // console.log(rss)
           setDataRSS(rss?.items);
         }
       })
@@ -319,7 +321,7 @@ function Audiotracks(props: any) {
         }
       })
       .catch((error) => console.log("Error: ", error));
-  }, [urlReview]);
+  }, [urlReview, userChangedReview]);
 
   function updateCoverBookProgress(current_audiotrack_positions: any) {
     const initialValue = 0;
@@ -865,7 +867,6 @@ function Audiotracks(props: any) {
 
   useEffect(() => {
     if (dataRSS.length > 0) {
-      // console.log(dataRSS)
       const RSSDict = Object.entries(dataRSS);
       const RSSURLS = RSSDict.map(([key, value]) => {
         return value?.enclosures[0]?.url;
@@ -1036,7 +1037,19 @@ function Audiotracks(props: any) {
           }
         )
           .then((response) => response.json())
-          .then((data) => console.log(data));
+          .then((data) => {
+            /*console.log(data)*/
+          })
+          .finally(() => {
+            setUserChangedReview(!userChangedReview);
+            const reviewInformationStringified =
+              JSON.stringify(reviewInformation);
+            updateUsersAudiobookReviewDB(
+              db,
+              reviewInformationStringified,
+              audioBookId
+            );
+          });
       } catch (err) {
         console.log(err);
       }
@@ -1106,9 +1119,7 @@ function Audiotracks(props: any) {
                     {title}
                     {"   "}
                   </Text>
-                  <View style={{alignSelf:"center"}}>
-                  {reviewIcon}
-                </View>
+                  <View style={{ alignSelf: "center" }}>{reviewIcon}</View>
                 </View>
               )}
             />
@@ -1210,9 +1221,8 @@ const styles = StyleSheet.create({
   sectionTitles: {
     display: "flex",
     flexDirection: "row",
-    justifyContent:"space-evenly",
-    height:70,
-
+    justifyContent: "center",
+    height: 70,
   },
   sectionStyle: {
     alignSelf: "center",

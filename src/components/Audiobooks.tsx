@@ -7,7 +7,7 @@ import {
   Image,
   Pressable,
 } from "react-native";
-import { ListItem, Avatar, Icon } from "react-native-elements";
+import { ListItem} from "react-native-elements";
 import { useNavigation } from "@react-navigation/native";
 import React, { useState, useEffect } from "react";
 import AudiobookAccordionList from "../components/audiobookAccordionList";

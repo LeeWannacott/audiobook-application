@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, Dimensions, View,TouchableOpacity } from "react-native";
+import { StyleSheet, Dimensions, View, TouchableOpacity } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import { Button } from "react-native-paper";
 import MaterialIconCommunity from "react-native-vector-icons/MaterialCommunityIcons.js";
@@ -41,17 +41,15 @@ function PickerForHistoryAndBookShelf(props: any) {
             });
           }}
         >
-
-
           <Picker.Item
             label="Order Visited"
             value="order by id"
-            style={{ fontSize: 18, backgroundColor: "red" }}
+            style={{ fontSize: 18 }}
           />
           <Picker.Item
             label="Title"
             value="order by audiobook_title"
-            style={{ fontSize: 18, backgroundColor: "#AAA" }}
+            style={{ fontSize: 18 }}
           />
           <Picker.Item
             label="Rating"
@@ -94,7 +92,6 @@ function PickerForHistoryAndBookShelf(props: any) {
             style={{ fontSize: 18 }}
           />
         </Picker>
-
       </View>
       <Button
         accessibilityLabel={`${

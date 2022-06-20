@@ -21,11 +21,12 @@ function MakeUserReview(props: any) {
         fullScreen={false}
         overlayStyle={{ backgroundColor: "#F9F6EE", width: windowWidth - 20 }}
       >
-        <Text style={{ marginBottom: 5 }}>Title: {title}</Text>
+        <Text style={{ marginBottom: 5, fontSize: 18 }}>Title: {title}</Text>
         <Rating
+          accessibilityLabel="Tap to give audiobook a rating out of 5"
           imageSize={40}
           ratingCount={5}
-          startingValue={0}
+          startingValue={reviewInformation?.reviewRating}
           showRating={false}
           fractions={false}
           tintColor="#F9F6EE"
@@ -39,27 +40,34 @@ function MakeUserReview(props: any) {
             });
           }}
         />
-        <Text>Review Title:</Text>
+        <Text style={{ fontSize: 18 }}>Review Title:</Text>
         <TextInput
-          style={styles.reviewerNameStyle}
+          accessibilityLabel="Write your reviews title inside this text input"
+          style={styles.reviewerTitleStyle}
+          fontSize={18}
           ref={(reviewTitleRef) => {
             reviewTitleRef;
           }}
+          value={reviewInformation?.reviewTitle}
           onChangeText={(reviewTitleRef) => {
-            console.log(reviewTitleRef);
             setReviewInformation({
               ...reviewInformation,
               reviewTitle: reviewTitleRef,
             });
           }}
         ></TextInput>
-        <Text>Review Text:</Text>
+        <Text style={{ fontSize: 18 }}>Review Text:</Text>
 
         <TextInput
+          accessibilityLabel="Write your review inside this text input."
           style={styles.reviewTextBodyStyle}
           ref={(reviewTextRef) => {
             reviewTextRef;
           }}
+          value={reviewInformation?.reviewText}
+          multiline={true}
+          textAlignVertical={"top"}
+          fontSize={18}
           onChangeText={(reviewTextRef) => {
             setReviewInformation({
               ...reviewInformation,
@@ -75,7 +83,7 @@ function MakeUserReview(props: any) {
             alignItems: "center",
           }}
         >
-          <Text>Post review: </Text>
+          <Text style={{ fontSize: 18 }}>Post review: </Text>
           <Button
             accessibilityLabel="Posts users review for the audiobook."
             mode={"outlined"}
@@ -100,9 +108,12 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     height: windowHeight / 3,
     width: windowWidth - 40,
+    padding: 5,
+    marginBottom:10,
   },
-  reviewerNameStyle: {
+  reviewerTitleStyle: {
     backgroundColor: "white",
+    padding: 5,
     borderColor: "#000000",
     borderWidth: 1,
     marginBottom: 5,

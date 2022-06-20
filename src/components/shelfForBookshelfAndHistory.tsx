@@ -145,7 +145,7 @@ function ShelfForBookshelfAndHistory(props: any) {
                   urlZipFile: item?.audiobook_zip,
                   urlProject:item?.audiobook_project_url,
                   urlLibrivox:item?.audiobook_librivox_url,
-                  urlIArchive: item.audiobook_iarchive_url,
+                  urlIArchive: item?.audiobook_iarchive_url,
                 });
               }
               setAvatarOnPressEnabled(false);

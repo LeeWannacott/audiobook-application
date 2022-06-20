@@ -3,12 +3,10 @@ import { SearchBar, Overlay, Slider } from "react-native-elements";
 import AudioBooks from "../components/Audiobooks";
 import { View, Dimensions, Text } from "react-native";
 import { StyleSheet } from "react-native";
-// import { MaterialIcons } from "@expo/vector-icons";
-import MaterialIconCommunity from "react-native-vector-icons/MaterialCommunityIcons.js";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Picker } from "@react-native-picker/picker";
 import authorsListJson from "../resources/audiobookAuthorsList.json";
 import { genreList } from "../resources/audiobookGenreList.js";
-// let authorsListJson = require("../resources/audiobookAuthorsList.json");
 import { getAsyncData, storeAsyncData } from "../database_functions";
 import { Button } from "react-native-paper";
 
@@ -149,7 +147,7 @@ function Search() {
           mode="contained"
           style={styles.settingsIcon}
         >
-          <MaterialIconCommunity name="cog" size={40} color="#F9F6EE" />
+          <MaterialCommunityIcons name="cog" size={40} color="#F9F6EE" />
         </Button>
         <Overlay
           isVisible={visible}
@@ -316,7 +314,7 @@ function Search() {
               mode="contained"
               style={{ backgroundColor: "#F9F6EE" }}
             >
-              <MaterialIconCommunity name="minus" size={30} color="black" />
+              <MaterialCommunityIcons name="minus" size={30} color="black" />
             </Button>
             <Slider
               value={apiSettings["audiobookAmountRequested"]}
@@ -350,7 +348,7 @@ function Search() {
               mode="contained"
               style={{ backgroundColor: "#F9F6EE" }}
             >
-              <MaterialIconCommunity name="plus" size={30} color="black" />
+              <MaterialCommunityIcons name="plus" size={30} color="black" />
             </Button>
           </View>
         </Overlay>
