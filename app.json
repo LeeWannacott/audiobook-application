@@ -4,14 +4,15 @@
   "expo": {
     "name": "libri-audire",
     "slug": "libri-audire",
-    "version": "0.1.0",
+    "version": "1.0.0",
+    "sdkVersion": "44.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/LibriAudireIcon.png",
     "assetBundlePatterns": ["**/*"],
     "androidNavigationBar": {
       "barStyle": "light-content",
       "backgroundColor": "#F9F6EE"
     },
-    "android": {
-      "package": "libri.audire"
-    }
+    "platforms": ["android"]
   }
 }

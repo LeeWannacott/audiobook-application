@@ -16,6 +16,7 @@
       "distribution": "internal"
     },
     "production": {
+      "node": "16.15.1",
       "android": {
         "image": "latest"
       }
